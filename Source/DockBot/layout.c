@@ -45,26 +45,26 @@ VOID free_render_bitmap(struct DockWindow *dock)
     if( dock->renderBM ) {
         FreeBitMap(dock->renderBM);
         dock->renderBM = NULL;
-        DEBUG(printf(__FUNC__ ": FreeBitMap\n"));
+        DEBUG(DB_Printf(__FUNC__ ": FreeBitMap\n"));
     }
 
     if( dock->renderL ) {
         if( r = InstallClipRegion(dock->renderL, NULL) ) {
             DisposeRegion(r);
-            DEBUG(printf(__FUNC__ ": DisposeRegion\n"));
+            DEBUG(DB_Printf(__FUNC__ ": DisposeRegion\n"));
         }
 
         dock->renderL->rp->BitMap = NULL;
 
         DeleteLayer(0L, dock->renderL);
         dock->renderL = NULL;
-        DEBUG(printf(__FUNC__ ": DeleteLayer\n"));
+        DEBUG(DB_Printf(__FUNC__ ": DeleteLayer\n"));
     }
 
     if( dock->renderLI ) {
         DisposeLayerInfo(dock->renderLI);
         dock->renderLI = NULL;
-        DEBUG(printf(__FUNC__ ": DisposeLayerInfo\n"));
+        DEBUG(DB_Printf(__FUNC__ ": DisposeLayerInfo\n"));
     }   
 }
 
@@ -79,7 +79,7 @@ VOID update_render_bitmap(struct DockWindow *dock, UWORD w, UWORD h)
         return;
     }
 
-    DEBUG(printf(__FUNC__ ": New window size: %d, %d\n", w, h));
+    DEBUG(DB_Printf(__FUNC__ ": New window size: %d, %d\n", w, h));
 
     free_render_bitmap(dock);
 
@@ -138,7 +138,7 @@ VOID layout_gadgets(struct DockWindow *dock)
     UWORD gadgetCount;
     struct GadgetEnvironment env;
 
-    DEBUG(printf(__FUNC__ "\n"));
+    DEBUG(DB_Printf(__FUNC__ "\n"));
 
     if( dock->disableLayout ) {
         return;
@@ -293,13 +293,13 @@ VOID layout_gadgets(struct DockWindow *dock)
 
 VOID disable_layout(struct DockWindow *dock)
 {
-    DEBUG(printf(__FUNC__ "\n"));
+    DEBUG(DB_Printf(__FUNC__ "\n"));
     dock->disableLayout = TRUE;
 }
 
 VOID enable_layout(struct DockWindow *dock)
 {
-    DEBUG(printf(__FUNC__ "\n"));
+    DEBUG(DB_Printf(__FUNC__ "\n"));
 
     dock->disableLayout = FALSE;
 

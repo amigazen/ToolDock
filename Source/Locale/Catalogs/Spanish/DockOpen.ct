@@ -1,0 +1,22 @@
+## version $VER: DockOpen.catalog 1.0 (31.10.2026)
+## language español
+## codeset 0
+;
+MSG_Description
+Una caja que abre archivos con la herramienta adecuada
+;
+MSG_Label
+Abrir
+;
+MSG_ERR_OpenFailed
+No se pudo abrir el elemento soltado.
+;
+MSG_FR_Choose
+Elegir un archivo para abrir
+;
+MSG_FR_Ok
+Abrir
+;
+MSG_FR_Cancel
+Cancelar
+;

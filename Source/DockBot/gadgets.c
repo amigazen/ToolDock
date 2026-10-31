@@ -25,25 +25,25 @@ BOOL create_dock_handle(struct DockWindow *dock)
 {
     struct DgNode *dg;
 
-    DEBUG(printf(__FUNC__ "\n"));
+    DEBUG(DB_Printf(__FUNC__ "\n"));
 
     if( dg = TD_AllocGadget(HANDLE_CLASS_NAME) ) {
 
         AddTail(&dock->cfg.gadgets, (struct Node *)dg);
 
-        DEBUG(printf("  Created handle.\n"));
+        DEBUG(DB_Printf("  Created handle.\n"));
 
         return TRUE;
     }
 
-    DEBUG(printf(__FUNC__ ": Failed to create handle.\n"));
+    DEBUG(DB_Printf(__FUNC__ ": Failed to create handle.\n"));
 
     return FALSE;
 }
 
 BOOL init_gadget_classes(struct DockWindow *dock)
 {
-    DEBUG(printf(__FUNC__ "\n"));
+    DEBUG(DB_Printf(__FUNC__ "\n"));
 
     if( dock->gadgetPort = CreateMsgPort() ) {
         if( dock->handleClass = init_dock_handle_class() ) {
@@ -51,13 +51,13 @@ BOOL init_gadget_classes(struct DockWindow *dock)
         }   
     }
 
-    DEBUG(printf(__FUNC__ ": Failed\n"));
+    DEBUG(DB_Printf(__FUNC__ ": Failed\n"));
     return FALSE;
 }
 
 BOOL free_gadget_classes(struct DockWindow *dock)
 {
-    DEBUG(printf(__FUNC__ "\n"));
+    DEBUG(DB_Printf(__FUNC__ "\n"));
 
     if( dock->handleClass ) {
         
@@ -77,7 +77,7 @@ VOID remove_dock_gadgets(struct DockWindow *dock)
 {
     struct DgNode *dg;
 
-    DEBUG(printf(__FUNC__ "\n"));
+    DEBUG(DB_Printf(__FUNC__ "\n"));
 
     disable_layout(dock);
 
@@ -246,7 +246,7 @@ VOID draw_edit_controls(struct DockWindow *dock, struct Screen *screen, struct R
 
 VOID update_window(struct DockWindow *dock, UWORD x, UWORD y, UWORD w, UWORD h)
 {
-    DEBUG(printf(__FUNC__ ": %d,%d %d,%d\n", x, y, w, h));
+    DEBUG(DB_Printf(__FUNC__ ": %d,%d %d,%d\n", x, y, w, h));
 
     if( dock->renderBM && dock->win ) {
         BltBitMapRastPort(dock->renderBM, x, y, dock->win->RPort, x, y, w, h, 0xC0);
@@ -255,7 +255,7 @@ VOID update_window(struct DockWindow *dock, UWORD x, UWORD y, UWORD w, UWORD h)
 
 VOID update_entire_window(struct DockWindow *dock)
 {
-    DEBUG(printf(__FUNC__ "\n"));
+    DEBUG(DB_Printf(__FUNC__ "\n"));
 
     BeginRefresh(dock->win);
 
@@ -280,7 +280,7 @@ struct Region *clip_to_gadget(struct DockWindow *dock, struct GadgetEnvironment 
         bounds.MaxX = env->gadgetBounds.x + env->gadgetBounds.w - 1;
         bounds.MaxY = env->gadgetBounds.y + env->gadgetBounds.h - 1;
 
-        DEBUG(printf(__FUNC__ ": Clip to %ld,%ld -> %ld,%ld\n", 
+        DEBUG(DB_Printf(__FUNC__ ": Clip to %ld,%ld -> %ld,%ld\n", 
             bounds.MinX, bounds.MinY, bounds.MaxX, bounds.MaxY));
 
         OrRectRegion(newR, &bounds);
@@ -331,7 +331,7 @@ VOID draw_gadgets(struct DockWindow *dock)
 
         FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
     
-            DEBUG(printf(__FUNC__ ": Drawing %s\n", curr->n.ln_Name));
+            DEBUG(DB_Printf(__FUNC__ ": Drawing %s\n", curr->n.ln_Name));
 
             TD_GetDockGadgetEnvironment(curr->dg, &env);
 
@@ -615,7 +615,7 @@ VOID register_gadget_port(struct DgNode *g, struct GadgetMessagePort *portMsg)
 {
     struct PortReg *pr;
 
-    DEBUG(printf(__FUNC__ ": %s %lx\n", g->n.ln_Name, portMsg->port));
+    DEBUG(DB_Printf(__FUNC__ ": %s %lx\n", g->n.ln_Name, portMsg->port));
     
     if( pr = TD_AllocMem(sizeof(struct PortReg), MEMF_CLEAR) ) {
 
@@ -629,7 +629,7 @@ VOID unregister_gadget_port(struct DgNode *g, struct GadgetMessagePort *portMsg)
 {
     struct PortReg *pr;
 
-    DEBUG(printf(__FUNC__ ": %s %lx\n", g->n.ln_Name, portMsg->port));
+    DEBUG(DB_Printf(__FUNC__ ": %s %lx\n", g->n.ln_Name, portMsg->port));
 
     FOR_EACH_PORTREG(&g->ports, pr) {
         if( pr->port == portMsg->port ) {
@@ -697,7 +697,7 @@ ULONG get_custom_sigs(struct DockWindow *dock)
     struct PortReg *pr;
     ULONG sig = 0;
 
-//    DEBUG(printf("get_custom_sigs\n"));
+//    DEBUG(DB_Printf("get_custom_sigs\n"));
 
     FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
         FOR_EACH_PORTREG(&curr->ports, pr) {
@@ -714,12 +714,12 @@ VOID handle_custom_message(struct DockWindow *dock, ULONG signal)
     struct DgNode *curr;
     struct PortReg *pr;
 
-    DEBUG(printf("handle_custom_message\n"));
+    DEBUG(DB_Printf("handle_custom_message\n"));
 
     FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
         FOR_EACH_PORTREG(&curr->ports, pr) {
 
-            DEBUG(printf("  dg = %s, p = %lx\n", curr->n.ln_Name, pr->port));
+            DEBUG(DB_Printf("  dg = %s, p = %lx\n", curr->n.ln_Name, pr->port));
 
             if( signal & (1 << pr->port->mp_SigBit) ) {
     

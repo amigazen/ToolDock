@@ -1,0 +1,47 @@
+#
+# SAS/C smake for DockOpen.class
+#
+include ../../debug.defs
+
+LIBNAME = DockOpen
+LIBFILE = $(LIBNAME).class
+LIBDIR = //$(DIR)/Gadgets/
+FD_FILE = /template.fd
+PRAGMA_FILE = pragmas.h
+
+TRITON_INC = ////OpenTriton/SDK/Include_h
+TRITON_LIB = ////OpenTriton/Source/lib/triton.lib
+
+INC = INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/ INCLUDEDIRECTORY=$(TRITON_INC)
+C_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO $(INC) $(DEF_DS) $(DEF_BV)
+
+OBJECTS = lib.o open.o open_item.o dockopen_cat.o
+CLASS_LIBS = LIB:sc.lib LIB:amiga.lib $(TRITON_LIB)
+
+all: $(LIBFILE)
+
+$(LIBFILE): $(OBJECTS) $(PRAGMA_FILE)
+	$(LINKER) WITH <<
+TO $(LIBDIR)$(LIBFILE)
+FROM $(OBJECTS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
+<
+
+.c.o:
+	$(COMPILER) $(C_OPTS) $*.c
+
+lib.o: lib.c /template.c
+open.o: open.c open_item.h
+open_item.o: open_item.c open_item.h
+dockopen_cat.o: dockopen_cat.c
+
+$(PRAGMA_FILE): $(FD_FILE)
+	$(FD_CONV) $(FD_FILE) $(PRAGMA_FILE)
+
+cleanobj:
+	-Delete $(OBJECTS)
+
+clean:
+	-Delete $(OBJECTS)
+	-Delete $(LIBDIR)$(LIBFILE)(|.info)
+	-Delete $(PRAGMA_FILE)

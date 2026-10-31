@@ -1,0 +1,22 @@
+;
+; DockOpen
+;
+;
+MSG_Description (//)
+A drop box that opens files with the right tool
+;
+MSG_Label (//)
+Open
+;
+MSG_ERR_OpenFailed (//)
+Could not open the dropped item.
+;
+MSG_FR_Choose (//)
+Choose a file to open
+;
+MSG_FR_Ok (//)
+Open
+;
+MSG_FR_Cancel (//)
+Cancel
+;

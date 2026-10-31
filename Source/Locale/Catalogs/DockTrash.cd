@@ -1,0 +1,16 @@
+;
+; DockTrash
+;
+;
+MSG_Description (//)
+A trashcan gadget that uses the TRASH: volume
+;
+MSG_Label (//)
+Trash
+;
+MSG_ERR_NoTrash (//)
+TRASH: is not available. Start WBTrash first.
+;
+MSG_ERR_MoveFailed (//)
+Could not move the dropped item to the trash.
+;

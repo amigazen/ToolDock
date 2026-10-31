@@ -21,7 +21,7 @@
 
 BOOL init_timer_notification(struct DockWindow *dock)
 {
-    DEBUG(printf("init_timer_notification\n"));
+    DEBUG(DB_Printf("init_timer_notification\n"));
 
     if( dock->timerPort = CreateMsgPort() ) {
 
@@ -34,13 +34,13 @@ BOOL init_timer_notification(struct DockWindow *dock)
         }
     }
 
-    DEBUG(printf(" Failed\n"));
+    DEBUG(DB_Printf(" Failed\n"));
     return FALSE;
 }
 
 VOID free_timer_notification(struct DockWindow *dock)
 {
-    DEBUG(printf("free_timer_notification\n"));
+    DEBUG(DB_Printf("free_timer_notification\n"));
 
     if( dock->timerPort ) {
 

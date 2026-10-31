@@ -64,7 +64,7 @@ BOOL build_menu(struct DockWindow *dock) {
     struct DrawInfo *di;
     APTR* vi;
 
-    DEBUG(printf("build_menu\n"));
+    DEBUG(DB_Printf("build_menu\n"));
 
     mainMenu[MENU_IDX_Project].nm_Label    = (STRPTR)MSG_MENU_Project;
     mainMenu[MENU_IDX_About].nm_Label      = (STRPTR)MSG_MENU_About;
@@ -109,7 +109,7 @@ BOOL build_menu(struct DockWindow *dock) {
     }
 
     if( ! result ) {
-        DEBUG(printf(" Failed\n"));
+        DEBUG(DB_Printf(" Failed\n"));
     }
 
     return result;
@@ -169,7 +169,7 @@ BOOL show_dock_window(struct DockWindow *dock)
 		{ TAG_DONE, NULL }
 	};
 
-    DEBUG(printf("show_dock_window\n"));
+    DEBUG(DB_Printf("show_dock_window\n"));
 
 	if( dock->win = OpenWindowTagList(NULL, tags) ) {
 	
@@ -177,31 +177,45 @@ BOOL show_dock_window(struct DockWindow *dock)
 
             if( dock->awPort = CreateMsgPort() ) {
 
-                if( dock->appWin = AddAppWindow(1, 0, dock->win, dock->awPort, NULL) ) {
+                if( dock->appWin = AddAppWindowA(1, 0, dock->win, dock->awPort, NULL) ) {
                     
                     result = TRUE;
                                     
                 } else {
-                    DEBUG(printf(" AddAppWindow Failed\n"));
+                    DEBUG(DB_Printf(" AddAppWindow Failed\n"));
                 }
             
             } else {
-                DEBUG(printf(" CreateMsgPort Failed\n"));
+                DEBUG(DB_Printf(" CreateMsgPort Failed\n"));
             }
         }
     } else {
-       DEBUG(printf(" OpenWindow Failed\n"));
+       DEBUG(DB_Printf(" OpenWindow Failed\n"));
     }
     return result;     
 }
 
 VOID hide_dock_window(struct DockWindow *dock)
 {
-    DEBUG(printf("hide_dock_window\n"));
+    struct Message *amsg;
+
+    DEBUG(DB_Printf("hide_dock_window\n"));
+
+    if( dock->awPort ) {
+        while( amsg = GetMsg(dock->awPort) ) {
+            ReplyMsg(amsg);
+        }
+    }
 
     if( dock->appWin ) {
         RemoveAppWindow(dock->appWin);
         dock->appWin = NULL;
+    }
+
+    if( dock->awPort ) {
+        while( amsg = GetMsg(dock->awPort) ) {
+            ReplyMsg(amsg);
+        }
     }
 
     delete_port(dock->awPort);

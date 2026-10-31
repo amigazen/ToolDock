@@ -1,0 +1,22 @@
+## version $VER: DockOpen.catalog 1.0 (31.10.2026)
+## language italiano
+## codeset 0
+;
+MSG_Description
+Un riquadro che apre i file con lo strumento giusto
+;
+MSG_Label
+Apri
+;
+MSG_ERR_OpenFailed
+Impossibile aprire l'elemento rilasciato.
+;
+MSG_FR_Choose
+Scegli un file da aprire
+;
+MSG_FR_Ok
+Apri
+;
+MSG_FR_Cancel
+Annulla
+;

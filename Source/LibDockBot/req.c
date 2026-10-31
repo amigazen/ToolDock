@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "dockbot.h"
+#include "td_request.h"
 
 #include "lib.h"
 
@@ -31,17 +32,7 @@ extern struct DockBotLibrary *ToolDockBaseFull;
  
 VOID ShowErrorInternal(STRPTR message)
 {
-
-    struct EasyStruct req = {
-        sizeof(struct EasyStruct),
-        0,
-        "Error",
-        "%s",
-        "Ok"
-    };
-
-
-    EasyRequest(NULL, &req, NULL, message);
+    TD_OpenRequest(NULL, "Error", message, "_Ok", TDREQIMAGE_ERROR);
 }
 
 VOID __asm __saveds TD_ShowError(

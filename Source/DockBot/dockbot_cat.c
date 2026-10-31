@@ -17,8 +17,6 @@
 
 #include "DockBot_cat.h"
 
-#include <stdio.h>
-
 struct FC_String DockBot_Strings[23] = {
     { (STRPTR) "OK", 0 },
     { (STRPTR) "Unable to open version %d of %s.", 1 },
@@ -52,9 +50,9 @@ VOID open_catalog(VOID)
     struct FC_String *fc;
 	UWORD i;
 
-	DEBUG(printf(__FUNC__ ": ToolDock.catalog\n"));
+	DEBUG(DB_Printf(__FUNC__ ": ToolDock.catalog\n"));
 	if( ! LocaleBase ) {
-		DEBUG(printf(__FUNC__ ": Locale library not found.\n"));
+		DEBUG(DB_Printf(__FUNC__ ": Locale library not found.\n"));
 		return;
 	}
 
@@ -62,7 +60,7 @@ VOID open_catalog(VOID)
 			 			 		     OC_BuiltInLanguage, "english",
 								     OC_Version, 1,
 								     TAG_DONE))) {
-		DEBUG(printf(__FUNC__ ": Unable to open catalog.\n"));
+		DEBUG(DB_Printf(__FUNC__ ": Unable to open catalog.\n"));
 		return;
 	}
 
@@ -74,9 +72,9 @@ VOID open_catalog(VOID)
 
 VOID close_catalog(VOID) 
 {
-	DEBUG(printf(__FUNC__ ": ToolDock.catalog\n"));
+	DEBUG(DB_Printf(__FUNC__ ": ToolDock.catalog\n"));
 	if( ! DockBotCatalog ) {
-		DEBUG(printf(__FUNC__ ": Catalog not open.\n"));
+		DEBUG(DB_Printf(__FUNC__ ": Catalog not open.\n"));
 		return;
 	}
 

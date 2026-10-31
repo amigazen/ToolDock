@@ -1,0 +1,47 @@
+#
+# SAS/C smake for Dock (Reaction prefs)
+# From Source/DockPrefs: smake
+#
+include ../debug.defs
+
+# NDK 3.2 R4 lives next to github/ at the ToolBox root.
+NDK_INC = ////NDK3.2R4/Include_H
+
+INC = INCLUDEDIRECTORY=//include INCLUDEDIRECTORY=$(NDK_INC)
+EXENAME = Dock
+EXEPATH = /$(DIR)/
+
+C_OPTS = cpu=$(CPU) $(SC_OPTS) $(INC) $(DEF_DS) $(DEF_BV)
+
+OBJECTS = main.o dock_cat.o settings.o new_gadget.o gadget_list.o \
+ editor.o classes.o gadgets.o
+
+DOCK_LIBS = $(LIBS) LIB:reaction.lib
+
+all: $(EXENAME)
+
+$(EXENAME): $(OBJECTS)
+	$(LINKER) WITH <<
+TO $(EXEPATH)$(EXENAME)
+FROM LIB:c.o $(OBJECTS)
+LIBRARY $(DOCK_LIBS) $(LD_OPTS)
+<
+
+.c.o:
+	$(COMPILER) $(C_OPTS) $*.c
+
+main.o: main.c prefs.h
+dock_cat.o: dock_cat.c dock_cat.h
+settings.o: settings.c prefs.h
+new_gadget.o: new_gadget.c prefs.h
+gadget_list.o: gadget_list.c prefs.h
+editor.o: editor.c prefs.h
+classes.o: classes.c prefs.h
+gadgets.o: gadgets.c prefs.h
+
+cleanobj:
+	-Delete $(OBJECTS)
+
+clean:
+	-Delete $(OBJECTS)
+	-Delete $(EXEPATH)$(EXENAME)

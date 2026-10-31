@@ -23,9 +23,8 @@
 #include <clib/layers_protos.h>
 #include <clib/graphics_protos.h>
 #include <devices/timer.h>
-#include <string.h>
-
 #include "dock_handle.h"
+#include "td_request.h"
 
 #ifndef WBOPENA_ArgLock
 #define WBOPENA_ArgLock  (TAG_USER + 0x1B01)
@@ -40,12 +39,17 @@
 extern struct Library *WorkbenchBase;
 
 BOOL OpenWorkbenchObjectA(STRPTR name, struct TagItem *tags);
-#pragma libcall WorkbenchBase OpenWorkbenchObjectA 8a 9802
+#pragma libcall WorkbenchBase OpenWorkbenchObjectA 60 9802
 
 struct WBLaunchArg {
     BPTR lock;
     UBYTE name[WB_ARG_NAME_LEN];
 };
+
+STATIC VOID __asm put_fmt_char(register __d0 UBYTE c, register __a3 STRPTR *p)
+{
+    *(*p)++ = c;
+}
 
 STATIC BOOL next_arg(STRPTR *pp, STRPTR out, UWORD outLen)
 {
@@ -121,8 +125,15 @@ STATIC BOOL path_to_wbarg(STRPTR path, struct WBLaunchArg *arg)
     if( parent && file && *file ) {
         UnLock(lock);
         arg->lock = parent;
-        strncpy(arg->name, file, WB_ARG_NAME_LEN - 1);
-        arg->name[WB_ARG_NAME_LEN - 1] = '\0';
+        {
+            UWORD ni;
+            ni = 0;
+            while( ni < (WB_ARG_NAME_LEN - 1) && file[ni] ) {
+                arg->name[ni] = file[ni];
+                ni++;
+            }
+            arg->name[ni] = '\0';
+        }
         return TRUE;
     }
 
@@ -206,26 +217,24 @@ STATIC BOOL execute_workbench(STRPTR path, STRPTR args)
 VOID show_about(struct DockWindow *dock)
 {
     STRPTR msg;
+    STRPTR body;
     STRPTR p;
     STRPTR name;
     STRPTR version;
     STRPTR desc;
     STRPTR copy;
-    ULONG msgLen, l;
+    STRPTR cursor;
+    ULONG msgLen;
+    ULONG bodyLen;
+    ULONG l;
+    UBYTE fmtArgs[8];
     struct DgNode *curr;
-    ClassID lastClass = 0, currClass;
-    struct EasyStruct es = {
-            sizeof(struct EasyStruct),
-            0,
-            0 /* MSG_ABOUT_Title */,
-            0 /* MSG_ABOUT_Text */,
-            0 /* MSG_OK */
-    };
+    ClassID lastClass;
+    ClassID currClass;
 
-    es.es_Title = (STRPTR)MSG_ABOUT_Title;
-    es.es_TextFormat = (STRPTR)MSG_ABOUT_Text;
-    es.es_GadgetFormat = (STRPTR)MSG_OK;    
- 
+    lastClass = 0;
+    msg = NULL;
+    body = NULL;
     msgLen = 0;
     FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
 
@@ -241,13 +250,16 @@ VOID show_about(struct DockWindow *dock)
 
             msgLen += strlen(name) + strlen(version) + strlen(desc) + strlen(copy) + 8;
         }
-    } 
+    }
 
-    if( msg = (STRPTR)TD_AllocMem(msgLen, MEMF_CLEAR) ) {
+    if( msgLen > 0 ) {
+        msg = (STRPTR)TD_AllocMem(msgLen, MEMF_CLEAR);
+    }
 
+    if( msg ) {
         p = msg;
         lastClass = 0;
-    
+
         FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
 
             if( ! dock_gadget_builtin(curr->dg) ) {
@@ -257,7 +269,6 @@ VOID show_about(struct DockWindow *dock)
                     continue;
                 }
                 lastClass = currClass;
-
 
                 dock_gadget_get_info(curr->dg, &name, &version, &desc, &copy);
 
@@ -279,12 +290,23 @@ VOID show_about(struct DockWindow *dock)
                 *(p++) = '\n';
                 *(p++) = '\n';
             }
-        } 
+        }
         *p = '\0';
-    
-        EasyRequest(NULL, &es, NULL, VERSION_STR, msg);
+    }
 
+    bodyLen = strlen((STRPTR)MSG_ABOUT_Text) + strlen(VERSION_STR)
+        + (msg ? msgLen : 0) + 1;
+    if( body = (STRPTR)TD_AllocMem(bodyLen, MEMF_CLEAR) ) {
+        *(STRPTR *)fmtArgs = VERSION_STR;
+        *(STRPTR *)(fmtArgs + 4) = msg ? msg : (STRPTR)"";
+        cursor = body;
+        RawDoFmt((STRPTR)MSG_ABOUT_Text, fmtArgs, (VOID (*)())put_fmt_char, &cursor);
+        TD_OpenRequest(NULL, (STRPTR)MSG_ABOUT_Title, body,
+            (STRPTR)MSG_OK, TDREQIMAGE_INFO);
+        TD_FreeMem(body, bodyLen);
+    }
 
+    if( msg ) {
         TD_FreeMem(msg, msgLen);
     }
 }
@@ -326,7 +348,7 @@ struct DockWindow* create_dock(VOID)
 {
 	struct DockWindow *dock;
 
-    DEBUG(printf("create_dock\n"));
+    DEBUG(DB_Printf("create_dock\n"));
 
     if( dock = (struct DockWindow *)TD_AllocMem(sizeof(struct DockWindow), MEMF_CLEAR) ) {
 
@@ -361,7 +383,7 @@ struct DockWindow* create_dock(VOID)
 
 VOID free_dock(struct DockWindow* dock)
 {
-    DEBUG(printf("free_dock\n"));
+    DEBUG(DB_Printf("free_dock\n"));
 
     free_cx_broker(dock);
 
@@ -387,7 +409,7 @@ VOID free_dock(struct DockWindow* dock)
 
 	TD_FreeMem(dock, sizeof(struct DockWindow));
 
-    DEBUG(printf("Done\n"));
+    DEBUG(DB_Printf("Done\n"));
 }
 
 
@@ -440,7 +462,7 @@ VOID execute_external(struct DockWindow* dock, STRPTR path, STRPTR args, STRPTR 
                 shellTags[2].ti_Data = fhIn;
                 shellTags[3].ti_Data = fhOut;
                 
-                DEBUG(printf(__FUNC__ ": cmd = >%s<\n", cmd));             
+                DEBUG(DB_Printf(__FUNC__ ": cmd = >%s<\n", cmd));             
 
                 if( SystemTagList(cmd, (struct TagItem*)&shellTags) == -1 ) {
                     Close(fhIn);

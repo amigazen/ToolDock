@@ -1,0 +1,23 @@
+## version $VER: DockTrash.catalog 1.0 (31.10.2026)
+## language français
+## codeset 0
+;
+; DockTrash
+;
+;
+MSG_Description
+Un gadget corbeille qui utilise le volume TRASH:
+; A trashcan gadget that uses the TRASH: volume
+;
+MSG_Label
+Corbeille
+; Trash
+;
+MSG_ERR_NoTrash
+TRASH: n'est pas disponible. Demarrez WBTrash d'abord.
+; TRASH: is not available. Start WBTrash first.
+;
+MSG_ERR_MoveFailed
+Impossible de deplacer l'element vers la corbeille.
+; Could not move the dropped item to the trash.
+;

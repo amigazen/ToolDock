@@ -25,8 +25,6 @@
 #include <libraries/commodities.h>
 #include <graphics/layers.h>
 
-#include <stdio.h>
-
 #include "dockbot.h"
 #include "dockbot_protos.h"
 #include "dockbot_pragmas.h"
@@ -179,7 +177,8 @@ struct DockWindow
 
 #define HOVER_COUNT 8
 
-#define MIN_ICON "PROGDIR:" APP_NAME "Min"
+/* GetDiskObject()/GetIconTagList() append ".info" to this name. */
+#define APP_ICON "PROGDIR:" APP_NAME
 
 #define DOCK_HORIZONTAL(dock) (dock->cfg.pos == DP_TOP || dock->cfg.pos == DP_BOTTOM)
 
@@ -231,6 +230,8 @@ VOID handle_drop_event(struct DockWindow* dock);
 VOID handle_window_event(struct DockWindow *dock);
 
 VOID open_settings(struct DockWindow *dock);
+
+VOID open_dock_prefs(struct DockWindow *dock);
 
 VOID handle_change_config(struct DockWindow *dock);
 

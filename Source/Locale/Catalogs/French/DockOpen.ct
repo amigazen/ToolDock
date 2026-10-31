@@ -1,0 +1,22 @@
+## version $VER: DockOpen.catalog 1.0 (31.10.2026)
+## language français
+## codeset 0
+;
+MSG_Description
+Un depot qui ouvre les fichiers avec le bon outil
+;
+MSG_Label
+Ouvrir
+;
+MSG_ERR_OpenFailed
+Impossible d'ouvrir l'element depose.
+;
+MSG_FR_Choose
+Choisir un fichier a ouvrir
+;
+MSG_FR_Ok
+Ouvrir
+;
+MSG_FR_Cancel
+Annuler
+;

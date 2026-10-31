@@ -122,11 +122,11 @@ Class *init_dock_handle_class(VOID)
     ULONG HookEntry();
     Class *c;
 
-    DEBUG(printf("init_dock_handle_class\n"));
+    DEBUG(DB_Printf("init_dock_handle_class\n"));
 
     if( c = MakeClass(HANDLE_CLASS_NAME, DB_ROOT_CLASS, NULL, sizeof(struct DockHandleData), 0) )
     {
-        DEBUG(printf("Class %s registered\n", HANDLE_CLASS_NAME));
+        DEBUG(DB_Printf("Class %s registered\n", HANDLE_CLASS_NAME));
 
         c->cl_Dispatcher.h_Entry = HookEntry;
         c->cl_Dispatcher.h_SubEntry = dock_handle_dispatch;

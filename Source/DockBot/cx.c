@@ -23,7 +23,7 @@ BOOL create_cx_broker(struct DockWindow *dock)
         NBU_UNIQUE, COF_SHOW_HIDE, 0, 0, 0
     };
 
-    DEBUG(printf("create_cx_broker\n"));
+    DEBUG(DB_Printf("create_cx_broker\n"));
 
     nb.nb_Descr = (STRPTR)MSG_CX_Description;
 
@@ -38,14 +38,14 @@ BOOL create_cx_broker(struct DockWindow *dock)
 
     }
 
-    DEBUG(printf(" Failed\n"));
+    DEBUG(DB_Printf(" Failed\n"));
 
     return FALSE;
 }
 
 VOID free_cx_broker(struct DockWindow *dock) 
 {
-    DEBUG(printf("free_cx_broker\n"));
+    DEBUG(DB_Printf("free_cx_broker\n"));
 
     if( dock->cxBroker ) {
 
@@ -66,7 +66,7 @@ BOOL init_cx_broker(struct DockWindow *dock)
     CxObj *filter, *sender, *translate;
     UWORD msgId;    
     
-    DEBUG(printf("init_cx_broker\n"));
+    DEBUG(DB_Printf("init_cx_broker\n"));
 
     if( dock->cxBroker ) {
         free_cx_broker(dock);
@@ -93,20 +93,20 @@ BOOL init_cx_broker(struct DockWindow *dock)
                             AttachCxObj(filter, translate);
     
                             if( CxObjError(filter) ) {
-    DEBUG(printf(" Failed 1\n"));
+    DEBUG(DB_Printf(" Failed 1\n"));
                                 return FALSE;
                             }
                         } else {
-    DEBUG(printf(" Failed 2\n"));
+    DEBUG(DB_Printf(" Failed 2\n"));
                             return FALSE;
                         }
                     } else {
-    DEBUG(printf(" Failed 3\n"));
+    DEBUG(DB_Printf(" Failed 3\n"));
                         return FALSE;
                     }
 
                 } else {
-    DEBUG(printf(" Failed 4\n"));
+    DEBUG(DB_Printf(" Failed 4\n"));
                     return FALSE;
                 }
             }
@@ -118,7 +118,7 @@ BOOL init_cx_broker(struct DockWindow *dock)
         return TRUE;
     }
 
-    DEBUG(printf(" Failed 5\n"));
+    DEBUG(DB_Printf(" Failed 5\n"));
     return FALSE;
 }
 

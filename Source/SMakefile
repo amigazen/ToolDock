@@ -24,18 +24,25 @@ TRITON = //OpenTriton
 TRITON_INC = $(TRITON)/SDK/Include_h
 TRITON_LIB = $(TRITON)/SDK/lib/triton.lib
 
+# NDK 3.2 R4 lives next to github/ at the ToolBox root.
+NDK_INC = ///NDK3.2R4/Include_H
+
 LIB_OPTS = CPU=$(CPU) $(SC_OPTS) IDIR=/include IDIR=LibDockBot $(DEF_DS) $(DEF_BV)
 EXE_OPTS = CPU=$(CPU) $(SC_OPTS) IDIR=/include IDIR=shared IDIR=DockBot $(DEF_DS) $(DEF_BV)
 PREFS_OPTS = CPU=$(CPU) $(SC_OPTS) IDIR=/include IDIR=shared IDIR=DockBotPrefs IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
+DOCK_OPTS = CPU=$(CPU) $(SC_OPTS) IDIR=/include IDIR=DockPrefs IDIR=$(NDK_INC) $(DEF_DS) $(DEF_BV)
 BTN_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Button IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
 CLK_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Clock IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
 MEM_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Mem IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
 NET_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Net IDIR=$(ROADSHOW) IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
 SW_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Switcher IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
 EYES_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Eyes IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
+TRASH_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Trash IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
+OPEN_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Open IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
 
 CLASS_LIBS = LIB:sc.lib LIB:amiga.lib $(TRITON_LIB)
 PREFS_LIBS = $(LIBS) $(TRITON_LIB)
+DOCK_LIBS = $(LIBS) LIB:reaction.lib
 EYES_LIBS = $(CLASS_LIBS) LIB:scm.lib
 
 LIB_OBJS = LibDockBot/lib.o LibDockBot/gfx.o LibDockBot/gadget.o \
@@ -53,6 +60,10 @@ PREFS_OBJS = DockBotPrefs/main.o DockBotPrefs/dockbotprefs_cat.o \
  DockBotPrefs/new_gadget.o DockBotPrefs/gadget_list.o \
  DockBotPrefs/tags.o
 
+DOCK_OBJS = DockPrefs/main.o DockPrefs/dock_cat.o DockPrefs/settings.o \
+ DockPrefs/new_gadget.o DockPrefs/gadget_list.o DockPrefs/editor.o \
+ DockPrefs/classes.o DockPrefs/gadgets.o
+
 BTN_OBJS = Classes/Button/lib.o Classes/Button/button.o \
  Classes/Button/triton_icon.o Classes/Button/dockbutton_cat.o
 
@@ -68,6 +79,12 @@ SW_OBJS = Classes/Switcher/lib.o Classes/Switcher/switcher.o \
 
 EYES_OBJS = Classes/Eyes/lib.o Classes/Eyes/eyes.o Classes/Eyes/eyes_cat.o
 
+TRASH_OBJS = Classes/Trash/lib.o Classes/Trash/trash.o Classes/Trash/trash_move.o \
+ Classes/Trash/docktrash_cat.o
+
+OPEN_OBJS = Classes/Open/lib.o Classes/Open/open.o Classes/Open/open_item.o \
+ Classes/Open/dockopen_cat.o
+
 #-----------------------------------------------------------------------------
 
 .c.o:
@@ -81,22 +98,28 @@ EYES_OBJS = Classes/Eyes/lib.o Classes/Eyes/eyes.o Classes/Eyes/eyes_cat.o
 all: lib
 all: exe
 all: prefs
+all: dock
 all: button
 all: clock
 all: mem
 all: switcher
 all: eyes
+all: trash
+all: open
 all: catalogs
 
 lib: $(DIR)/tooldock.library
 exe: $(DIR)/ToolDock
 prefs: $(DIR)/ToolDockPrefs
+dock: $(DIR)/Dock
 button: $(DIR)/Gadgets/DockButton.class
 clock: $(DIR)/Gadgets/DockClock.class
 mem: $(DIR)/Gadgets/DockMem.class
 net: $(DIR)/Gadgets/DockNet.class
 switcher: $(DIR)/Gadgets/Switcher.class
 eyes: $(DIR)/Gadgets/Eyes.class
+trash: $(DIR)/Gadgets/DockTrash.class
+open: $(DIR)/Gadgets/DockOpen.class
 
 release:
 	@echo "        Building release..."
@@ -126,6 +149,13 @@ $(DIR)/ToolDockPrefs: dirs $(PREFS_OBJS)
 TO $(DIR)/ToolDockPrefs
 FROM LIB:c.o $(PREFS_OBJS)
 LIBRARY $(PREFS_LIBS) $(LD_OPTS)
+<
+
+$(DIR)/Dock: dirs $(DOCK_OBJS)
+	$(LINKER) WITH <<
+TO $(DIR)/Dock
+FROM LIB:c.o $(DOCK_OBJS)
+LIBRARY $(DOCK_LIBS) $(LD_OPTS)
 <
 
 $(DIR)/Gadgets/DockButton.class: dirs Classes/Button/pragmas.h $(BTN_OBJS)
@@ -168,6 +198,20 @@ $(DIR)/Gadgets/Eyes.class: dirs Classes/Eyes/pragmas.h $(EYES_OBJS)
 TO $(DIR)/Gadgets/Eyes.class
 FROM $(EYES_OBJS)
 LIB $(EYES_LIBS) $(LD_OPTS)
+<
+
+$(DIR)/Gadgets/DockTrash.class: dirs Classes/Trash/pragmas.h $(TRASH_OBJS)
+	$(LINKER) WITH <<
+TO $(DIR)/Gadgets/DockTrash.class
+FROM $(TRASH_OBJS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
+<
+
+$(DIR)/Gadgets/DockOpen.class: dirs Classes/Open/pragmas.h $(OPEN_OBJS)
+	$(LINKER) WITH <<
+TO $(DIR)/Gadgets/DockOpen.class
+FROM $(OPEN_OBJS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
 <
 
 dirs:
@@ -232,6 +276,23 @@ DockBotPrefs/tags.o: DockBotPrefs/tags.c DockBotPrefs/prefs.h
 DockBotPrefs/main.o DockBotPrefs/dockbotprefs_cat.o DockBotPrefs/settings.o DockBotPrefs/new_gadget.o DockBotPrefs/gadget_list.o DockBotPrefs/tags.o:
 	@echo "        Compiling $*.c..."
 	@$(COMPILER) $(PREFS_OPTS) $*.c to $*.o
+
+#-----------------------------------------------------------------------------
+# Dock (Reaction prefs)
+#-----------------------------------------------------------------------------
+
+DockPrefs/main.o: DockPrefs/main.c DockPrefs/prefs.h
+DockPrefs/dock_cat.o: DockPrefs/dock_cat.c DockPrefs/dock_cat.h
+DockPrefs/settings.o: DockPrefs/settings.c DockPrefs/prefs.h
+DockPrefs/new_gadget.o: DockPrefs/new_gadget.c DockPrefs/prefs.h
+DockPrefs/gadget_list.o: DockPrefs/gadget_list.c DockPrefs/prefs.h
+DockPrefs/editor.o: DockPrefs/editor.c DockPrefs/prefs.h
+DockPrefs/classes.o: DockPrefs/classes.c DockPrefs/prefs.h
+DockPrefs/gadgets.o: DockPrefs/gadgets.c DockPrefs/prefs.h
+
+DockPrefs/main.o DockPrefs/dock_cat.o DockPrefs/settings.o DockPrefs/new_gadget.o DockPrefs/gadget_list.o DockPrefs/editor.o DockPrefs/classes.o DockPrefs/gadgets.o:
+	@echo "        Compiling $*.c..."
+	@$(COMPILER) $(DOCK_OPTS) $*.c to $*.o
 
 #-----------------------------------------------------------------------------
 # Classes
@@ -306,6 +367,30 @@ $(EYES_OBJS):
 	@echo "        Compiling $*.c..."
 	@$(COMPILER) $(EYES_OPTS) $*.c to $*.o
 
+Classes/Trash/pragmas.h: Classes/template.fd
+	$(FD_CONV) Classes/template.fd Classes/Trash/pragmas.h
+
+Classes/Trash/lib.o: Classes/Trash/lib.c Classes/template.c
+Classes/Trash/trash.o: Classes/Trash/trash.c Classes/Trash/trash_move.h
+Classes/Trash/trash_move.o: Classes/Trash/trash_move.c Classes/Trash/trash_move.h
+Classes/Trash/docktrash_cat.o: Classes/Trash/docktrash_cat.c
+
+$(TRASH_OBJS):
+	@echo "        Compiling $*.c..."
+	@$(COMPILER) $(TRASH_OPTS) $*.c to $*.o
+
+Classes/Open/pragmas.h: Classes/template.fd
+	$(FD_CONV) Classes/template.fd Classes/Open/pragmas.h
+
+Classes/Open/lib.o: Classes/Open/lib.c Classes/template.c
+Classes/Open/open.o: Classes/Open/open.c Classes/Open/open_item.h
+Classes/Open/open_item.o: Classes/Open/open_item.c Classes/Open/open_item.h
+Classes/Open/dockopen_cat.o: Classes/Open/dockopen_cat.c
+
+$(OPEN_OBJS):
+	@echo "        Compiling $*.c..."
+	@$(COMPILER) $(OPEN_OPTS) $*.c to $*.o
+
 #-----------------------------------------------------------------------------
 # Locale catalogs (CatComp, same as AWeb / ToolManager)
 #-----------------------------------------------------------------------------
@@ -314,33 +399,44 @@ CATDIR = Locale/Catalogs
 
 catalogs: $(CATDIR)/French/ToolDock.catalog
 catalogs: $(CATDIR)/French/ToolDockPrefs.catalog
+catalogs: $(CATDIR)/French/Dock.catalog
 catalogs: $(CATDIR)/French/DockButton.catalog
 catalogs: $(CATDIR)/French/DockClock.catalog
 catalogs: $(CATDIR)/French/DockMem.catalog
 catalogs: $(CATDIR)/French/DockNet.catalog
 catalogs: $(CATDIR)/French/Switcher.catalog
 catalogs: $(CATDIR)/French/Eyes.catalog
+catalogs: $(CATDIR)/French/DockTrash.catalog
+catalogs: $(CATDIR)/French/DockOpen.catalog
 catalogs: $(CATDIR)/Italian/ToolDock.catalog
 catalogs: $(CATDIR)/Italian/ToolDockPrefs.catalog
+catalogs: $(CATDIR)/Italian/Dock.catalog
 catalogs: $(CATDIR)/Italian/DockButton.catalog
 catalogs: $(CATDIR)/Italian/DockClock.catalog
 catalogs: $(CATDIR)/Italian/DockMem.catalog
 catalogs: $(CATDIR)/Italian/DockNet.catalog
 catalogs: $(CATDIR)/Italian/Switcher.catalog
 catalogs: $(CATDIR)/Italian/Eyes.catalog
+catalogs: $(CATDIR)/Italian/DockTrash.catalog
+catalogs: $(CATDIR)/Italian/DockOpen.catalog
 catalogs: $(CATDIR)/Spanish/ToolDock.catalog
 catalogs: $(CATDIR)/Spanish/ToolDockPrefs.catalog
+catalogs: $(CATDIR)/Spanish/Dock.catalog
 catalogs: $(CATDIR)/Spanish/DockButton.catalog
 catalogs: $(CATDIR)/Spanish/DockClock.catalog
 catalogs: $(CATDIR)/Spanish/DockMem.catalog
 catalogs: $(CATDIR)/Spanish/DockNet.catalog
 catalogs: $(CATDIR)/Spanish/Switcher.catalog
 catalogs: $(CATDIR)/Spanish/Eyes.catalog
+catalogs: $(CATDIR)/Spanish/DockTrash.catalog
+catalogs: $(CATDIR)/Spanish/DockOpen.catalog
 
 $(CATDIR)/French/ToolDock.catalog: $(CATDIR)/DockBot.cd $(CATDIR)/French/DockBot.ct
 	catcomp $(CATDIR)/DockBot.cd $(CATDIR)/French/DockBot.ct CATALOG $(CATDIR)/French/ToolDock.catalog
 $(CATDIR)/French/ToolDockPrefs.catalog: $(CATDIR)/DockBotPrefs.cd $(CATDIR)/French/DockBotPrefs.ct
 	catcomp $(CATDIR)/DockBotPrefs.cd $(CATDIR)/French/DockBotPrefs.ct CATALOG $(CATDIR)/French/ToolDockPrefs.catalog
+$(CATDIR)/French/Dock.catalog: $(CATDIR)/Dock.cd $(CATDIR)/French/Dock.ct
+	catcomp $(CATDIR)/Dock.cd $(CATDIR)/French/Dock.ct CATALOG $(CATDIR)/French/Dock.catalog
 $(CATDIR)/French/DockButton.catalog: $(CATDIR)/DockButton.cd $(CATDIR)/French/DockButton.ct
 	catcomp $(CATDIR)/DockButton.cd $(CATDIR)/French/DockButton.ct CATALOG $(CATDIR)/French/DockButton.catalog
 $(CATDIR)/French/DockClock.catalog: $(CATDIR)/DockClock.cd $(CATDIR)/French/DockClock.ct
@@ -353,11 +449,17 @@ $(CATDIR)/French/Switcher.catalog: $(CATDIR)/Switcher.cd $(CATDIR)/French/Switch
 	catcomp $(CATDIR)/Switcher.cd $(CATDIR)/French/Switcher.ct CATALOG $(CATDIR)/French/Switcher.catalog
 $(CATDIR)/French/Eyes.catalog: $(CATDIR)/Eyes.cd $(CATDIR)/French/Eyes.ct
 	catcomp $(CATDIR)/Eyes.cd $(CATDIR)/French/Eyes.ct CATALOG $(CATDIR)/French/Eyes.catalog
+$(CATDIR)/French/DockTrash.catalog: $(CATDIR)/DockTrash.cd $(CATDIR)/French/DockTrash.ct
+	catcomp $(CATDIR)/DockTrash.cd $(CATDIR)/French/DockTrash.ct CATALOG $(CATDIR)/French/DockTrash.catalog
+$(CATDIR)/French/DockOpen.catalog: $(CATDIR)/DockOpen.cd $(CATDIR)/French/DockOpen.ct
+	catcomp $(CATDIR)/DockOpen.cd $(CATDIR)/French/DockOpen.ct CATALOG $(CATDIR)/French/DockOpen.catalog
 
 $(CATDIR)/Italian/ToolDock.catalog: $(CATDIR)/DockBot.cd $(CATDIR)/Italian/DockBot.ct
 	catcomp $(CATDIR)/DockBot.cd $(CATDIR)/Italian/DockBot.ct CATALOG $(CATDIR)/Italian/ToolDock.catalog
 $(CATDIR)/Italian/ToolDockPrefs.catalog: $(CATDIR)/DockBotPrefs.cd $(CATDIR)/Italian/DockBotPrefs.ct
 	catcomp $(CATDIR)/DockBotPrefs.cd $(CATDIR)/Italian/DockBotPrefs.ct CATALOG $(CATDIR)/Italian/ToolDockPrefs.catalog
+$(CATDIR)/Italian/Dock.catalog: $(CATDIR)/Dock.cd $(CATDIR)/Italian/Dock.ct
+	catcomp $(CATDIR)/Dock.cd $(CATDIR)/Italian/Dock.ct CATALOG $(CATDIR)/Italian/Dock.catalog
 $(CATDIR)/Italian/DockButton.catalog: $(CATDIR)/DockButton.cd $(CATDIR)/Italian/DockButton.ct
 	catcomp $(CATDIR)/DockButton.cd $(CATDIR)/Italian/DockButton.ct CATALOG $(CATDIR)/Italian/DockButton.catalog
 $(CATDIR)/Italian/DockClock.catalog: $(CATDIR)/DockClock.cd $(CATDIR)/Italian/DockClock.ct
@@ -370,11 +472,17 @@ $(CATDIR)/Italian/Switcher.catalog: $(CATDIR)/Switcher.cd $(CATDIR)/Italian/Swit
 	catcomp $(CATDIR)/Switcher.cd $(CATDIR)/Italian/Switcher.ct CATALOG $(CATDIR)/Italian/Switcher.catalog
 $(CATDIR)/Italian/Eyes.catalog: $(CATDIR)/Eyes.cd $(CATDIR)/Italian/Eyes.ct
 	catcomp $(CATDIR)/Eyes.cd $(CATDIR)/Italian/Eyes.ct CATALOG $(CATDIR)/Italian/Eyes.catalog
+$(CATDIR)/Italian/DockTrash.catalog: $(CATDIR)/DockTrash.cd $(CATDIR)/Italian/DockTrash.ct
+	catcomp $(CATDIR)/DockTrash.cd $(CATDIR)/Italian/DockTrash.ct CATALOG $(CATDIR)/Italian/DockTrash.catalog
+$(CATDIR)/Italian/DockOpen.catalog: $(CATDIR)/DockOpen.cd $(CATDIR)/Italian/DockOpen.ct
+	catcomp $(CATDIR)/DockOpen.cd $(CATDIR)/Italian/DockOpen.ct CATALOG $(CATDIR)/Italian/DockOpen.catalog
 
 $(CATDIR)/Spanish/ToolDock.catalog: $(CATDIR)/DockBot.cd $(CATDIR)/Spanish/DockBot.ct
 	catcomp $(CATDIR)/DockBot.cd $(CATDIR)/Spanish/DockBot.ct CATALOG $(CATDIR)/Spanish/ToolDock.catalog
 $(CATDIR)/Spanish/ToolDockPrefs.catalog: $(CATDIR)/DockBotPrefs.cd $(CATDIR)/Spanish/DockBotPrefs.ct
 	catcomp $(CATDIR)/DockBotPrefs.cd $(CATDIR)/Spanish/DockBotPrefs.ct CATALOG $(CATDIR)/Spanish/ToolDockPrefs.catalog
+$(CATDIR)/Spanish/Dock.catalog: $(CATDIR)/Dock.cd $(CATDIR)/Spanish/Dock.ct
+	catcomp $(CATDIR)/Dock.cd $(CATDIR)/Spanish/Dock.ct CATALOG $(CATDIR)/Spanish/Dock.catalog
 $(CATDIR)/Spanish/DockButton.catalog: $(CATDIR)/DockButton.cd $(CATDIR)/Spanish/DockButton.ct
 	catcomp $(CATDIR)/DockButton.cd $(CATDIR)/Spanish/DockButton.ct CATALOG $(CATDIR)/Spanish/DockButton.catalog
 $(CATDIR)/Spanish/DockClock.catalog: $(CATDIR)/DockClock.cd $(CATDIR)/Spanish/DockClock.ct
@@ -387,6 +495,10 @@ $(CATDIR)/Spanish/Switcher.catalog: $(CATDIR)/Switcher.cd $(CATDIR)/Spanish/Swit
 	catcomp $(CATDIR)/Switcher.cd $(CATDIR)/Spanish/Switcher.ct CATALOG $(CATDIR)/Spanish/Switcher.catalog
 $(CATDIR)/Spanish/Eyes.catalog: $(CATDIR)/Eyes.cd $(CATDIR)/Spanish/Eyes.ct
 	catcomp $(CATDIR)/Eyes.cd $(CATDIR)/Spanish/Eyes.ct CATALOG $(CATDIR)/Spanish/Eyes.catalog
+$(CATDIR)/Spanish/DockTrash.catalog: $(CATDIR)/DockTrash.cd $(CATDIR)/Spanish/DockTrash.ct
+	catcomp $(CATDIR)/DockTrash.cd $(CATDIR)/Spanish/DockTrash.ct CATALOG $(CATDIR)/Spanish/DockTrash.catalog
+$(CATDIR)/Spanish/DockOpen.catalog: $(CATDIR)/DockOpen.cd $(CATDIR)/Spanish/DockOpen.ct
+	catcomp $(CATDIR)/DockOpen.cd $(CATDIR)/Spanish/DockOpen.ct CATALOG $(CATDIR)/Spanish/DockOpen.catalog
 
 #-----------------------------------------------------------------------------
 
@@ -400,12 +512,16 @@ clean:
 	-Delete DockBotPrefs/main.o DockBotPrefs/dockbotprefs_cat.o
 	-Delete DockBotPrefs/settings.o DockBotPrefs/new_gadget.o
 	-Delete DockBotPrefs/gadget_list.o DockBotPrefs/tags.o
+	-Delete DockPrefs/main.o DockPrefs/dock_cat.o DockPrefs/settings.o
+	-Delete DockPrefs/new_gadget.o DockPrefs/gadget_list.o
+	-Delete DockPrefs/editor.o DockPrefs/classes.o DockPrefs/gadgets.o
 	-Delete shared/dock_gadget.o
-	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS)
-	-Delete $(DIR)/tooldock.library $(DIR)/ToolDock $(DIR)/ToolDockPrefs
+	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS) $(TRASH_OBJS) $(OPEN_OBJS)
+	-Delete $(DIR)/tooldock.library $(DIR)/ToolDock $(DIR)/ToolDockPrefs $(DIR)/Dock
 	-Delete $(DIR)/Gadgets/DockButton.class $(DIR)/Gadgets/DockClock.class
 	-Delete $(DIR)/Gadgets/DockMem.class $(DIR)/Gadgets/DockNet.class
 	-Delete $(DIR)/Gadgets/Switcher.class $(DIR)/Gadgets/Eyes.class
+	-Delete $(DIR)/Gadgets/DockTrash.class $(DIR)/Gadgets/DockOpen.class
 
 cleanobj:
 	-Delete $(LIB_OBJS)
@@ -417,5 +533,8 @@ cleanobj:
 	-Delete DockBotPrefs/main.o DockBotPrefs/dockbotprefs_cat.o
 	-Delete DockBotPrefs/settings.o DockBotPrefs/new_gadget.o
 	-Delete DockBotPrefs/gadget_list.o DockBotPrefs/tags.o
+	-Delete DockPrefs/main.o DockPrefs/dock_cat.o DockPrefs/settings.o
+	-Delete DockPrefs/new_gadget.o DockPrefs/gadget_list.o
+	-Delete DockPrefs/editor.o DockPrefs/classes.o DockPrefs/gadgets.o
 	-Delete shared/dock_gadget.o
-	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS)
+	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS) $(TRASH_OBJS) $(OPEN_OBJS)

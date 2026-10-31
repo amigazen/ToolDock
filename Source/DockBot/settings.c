@@ -42,7 +42,7 @@ BOOL load_config(struct DockWindow *dock)
     struct DgNode *curr;
     BOOL r = FALSE;
 
-    DEBUG(printf(__FUNC__ ": %s\n", CONFIG_FILE));
+    DEBUG(DB_Printf(__FUNC__ ": %s\n", CONFIG_FILE));
 
     free_config(dock);
 
@@ -50,19 +50,19 @@ BOOL load_config(struct DockWindow *dock)
 
     if( s = TD_OpenSettingsRead(CONFIG_FILE) ) {
 
-        DEBUG(printf(__FUNC__ ":  settings opened\n"));
+        DEBUG(DB_Printf(__FUNC__ ":  settings opened\n"));
 
         if( TD_ReadConfig(&dock->cfg, s) ) {
 
-            DEBUG(printf(__FUNC__ ":  config read\n"));
+            DEBUG(DB_Printf(__FUNC__ ":  config read\n"));
 
             if( dock->cfg.bgBrushPath ) {
 
-                DEBUG(printf(__FUNC__ ":  load background %s...", dock->cfg.bgBrushPath));
+                DEBUG(DB_Printf(__FUNC__ ":  load background %s...", dock->cfg.bgBrushPath));
                 if( dock->bgBrush = TD_LoadBrush(dock->cfg.bgBrushPath, BF_NONE) ) {
-                    DEBUG(printf("OK\n"));
+                    DEBUG(DB_Printf("OK\n"));
                 } else {
-                    DEBUG(printf("FAILED\n"));
+                    DEBUG(DB_Printf("FAILED\n"));
                 }
             }
 
@@ -125,14 +125,14 @@ VOID enable_notification(struct DockWindow *dock)
     
     } else {
     
-        DEBUG(printf("init_config_notification: FS does not support notification.\n"));
+        DEBUG(DB_Printf("init_config_notification: FS does not support notification.\n"));
     }
 }   
 
 
 BOOL init_config_notification(struct DockWindow *dock)
 {
-    DEBUG(printf("init_config_notification\n"));
+    DEBUG(DB_Printf("init_config_notification\n"));
 
     if( dock->notifyPort = CreateMsgPort() ) {
         dock->notifyReq.nr_Name = CONFIG_FILE;
@@ -144,13 +144,13 @@ BOOL init_config_notification(struct DockWindow *dock)
         return TRUE;
     }
 
-    DEBUG(printf(" Failed\n"));
+    DEBUG(DB_Printf(" Failed\n"));
     return FALSE; 
 }
 
 VOID free_config_notification(struct DockWindow *dock)
 {
-    DEBUG(printf("free_config_notification\n"));
+    DEBUG(DB_Printf("free_config_notification\n"));
 
     if( dock->notifyPort ) {
 
@@ -164,7 +164,7 @@ VOID handle_notify_message(struct DockWindow *dock)
 {
     struct Message *msg;
 
-    DEBUG(printf("handle_notify_message\n"));
+    DEBUG(DB_Printf("handle_notify_message\n"));
 
     while( msg = GetMsg(dock->notifyPort) ) {
 
@@ -188,7 +188,26 @@ VOID open_settings(struct DockWindow *dock)
     pos--;
     *pos = '\0';
 
-    DEBUG(printf("open_settings: %s\n", path));
+    DEBUG(DB_Printf("open_settings: %s\n", path));
+
+    execute_external(dock, (STRPTR)&path, NULL, NULL, TRUE);
+}
+
+VOID open_dock_prefs(struct DockWindow *dock)
+{
+    UWORD l;
+    UBYTE path[256];
+    STRPTR pos;
+
+    pos = (STRPTR)&path;
+
+    COPY_STRING((STRPTR)dock->progPath, pos);
+    pos--;
+    COPY_STRING("/Dock", pos);
+    pos--;
+    *pos = '\0';
+
+    DEBUG(DB_Printf("open_dock_prefs: %s\n", path));
 
     execute_external(dock, (STRPTR)&path, NULL, NULL, TRUE);
 }
@@ -202,10 +221,10 @@ VOID load_icon_brushes(struct DockWindow *dock)
     STRPTR path;
     UWORD w, h;
 
-    DEBUG(printf(__FUNC__ ": Loading edit icons\n"));
+    DEBUG(DB_Printf(__FUNC__ ": Loading edit icons\n"));
    
     if( dock->iconBrush != NULL ) {
-        DEBUG(printf(__FUNC__ ": Already loaded.\n"));
+        DEBUG(DB_Printf(__FUNC__ ": Already loaded.\n"));
         return;
     }
 
@@ -227,7 +246,7 @@ VOID load_icon_brushes(struct DockWindow *dock)
         path = ICON_PATH_MED;
     }    
 
-    DEBUG(printf(__FUNC__ ": Loading %s\n", path));
+    DEBUG(DB_Printf(__FUNC__ ": Loading %s\n", path));
     dock->iconBrush = TD_LoadBrush(path, BF_CREATE_MASK);
 
     TD_GetBrushSize(dock->iconBrush, &w, &h);
@@ -238,7 +257,7 @@ VOID load_icon_brushes(struct DockWindow *dock)
 
 VOID free_icon_brushes(struct DockWindow *dock)
 {
-    DEBUG(printf(__FUNC__ "\n"));
+    DEBUG(DB_Printf(__FUNC__ "\n"));
 
     if( dock->iconBrush ) {
         TD_FreeBrush(dock->iconBrush);
@@ -249,14 +268,14 @@ VOID handle_change_config(struct DockWindow *dock)
 {
     struct Node *prev;
 
-    DEBUG(printf(__FUNC__ ": editCount = %d\n", dock->editCount));
+    DEBUG(DB_Printf(__FUNC__ ": editCount = %d\n", dock->editCount));
 
     if( dock->editCount == 0 ) {
 
         switch( dock->editOp ) {
 
             case EO_MOVE_UP:
-                DEBUG(printf(__FUNC__ ": Move Up %s\n", dock->editNode->n.ln_Name));
+                DEBUG(DB_Printf(__FUNC__ ": Move Up %s\n", dock->editNode->n.ln_Name));
                 prev = dock->editNode->n.ln_Pred->ln_Pred;
                 if( prev ) {
                     Remove((struct Node *)dock->editNode);
@@ -265,7 +284,7 @@ VOID handle_change_config(struct DockWindow *dock)
                 break;
             
             case EO_MOVE_DOWN:
-                DEBUG(printf(__FUNC__ ": Move Down %s\n", dock->editNode->n.ln_Name));
+                DEBUG(DB_Printf(__FUNC__ ": Move Down %s\n", dock->editNode->n.ln_Name));
 
                 prev = dock->editNode->n.ln_Succ;
                 if( prev ) {
@@ -275,13 +294,13 @@ VOID handle_change_config(struct DockWindow *dock)
                 break;
 
             case EO_DELETE:
-                DEBUG(printf(__FUNC__ ": Delete %lx - %s\n", dock->editNode, dock->editNode->n.ln_Name));
+                DEBUG(DB_Printf(__FUNC__ ": Delete %lx - %s\n", dock->editNode, dock->editNode->n.ln_Name));
 
                 Remove((struct Node *)dock->editNode);
 
-                DEBUG(printf(__FUNC__ ": Removed\n"));                
+                DEBUG(DB_Printf(__FUNC__ ": Removed\n"));                
                 TD_FreeGadget(dock->editNode);
-                DEBUG(printf(__FUNC__ ": Deleted\n"));                
+                DEBUG(DB_Printf(__FUNC__ ": Deleted\n"));                
             
                 break;                
         }
@@ -310,7 +329,7 @@ VOID add_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name)
     struct DgNode *dg;
     BPTR lock;
 
-    DEBUG(printf(__FUNC__ "\n"));
+    DEBUG(DB_Printf(__FUNC__ "\n"));
 
     if( path = (STRPTR)TD_AllocMem(MAX_PATH_LENGTH, MEMF_ANY) ) {
 
@@ -318,7 +337,7 @@ VOID add_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name)
         NameFromLock(dir, path, MAX_PATH_LENGTH);
         AddPart(path, name, MAX_PATH_LENGTH);
         
-        DEBUG(printf(__FUNC__ ":  -> %s\n", path));
+        DEBUG(DB_Printf(__FUNC__ ":  -> %s\n", path));
 
         if( lock = Lock(path, ACCESS_READ) ) {
             

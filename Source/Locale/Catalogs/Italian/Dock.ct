@@ -1,0 +1,239 @@
+## version $VER: Dock.catalog 1.0 (31.10.2026)
+## language italiano
+## codeset 0
+;
+MSG_APP_Title
+Dock
+; Dock
+;
+MSG_APP_Info
+Editor delle preferenze di ToolDock
+; Preferences editor for ToolDock
+;
+MSG_OK
+_OK
+; OK
+MSG_Cancel
+_Annulla
+; Cancel
+;
+MSG_ERR_ClassList
+Impossibile caricare la lista delle classi.
+; Couldn't load class list.
+;
+MSG_ERR_LoadConfig
+Impossibile caricare la configurazione.
+; Couldn't load config.
+;
+MSG_ERR_OpenWindow
+Impossibile aprire la finestra.
+; Couldn't open window.
+;
+MSG_ERR_OpenLibrary
+Impossibile aprire la versione %d di %s.
+; Unable to open version %d of %s.
+;
+MSG_ERR_EditorFailure
+Impossibile visualizzare l'editor di dialogo.
+; Unable to display editor dialogue.
+;
+MSG_ERR_CantAddDirectory
+Spiacente, le directory non possono essere aggiunte al Dock.
+; Sorry, directories cannot be added to the dock.
+;
+MSG_POS_Left
+Sinistra
+; Left
+MSG_POS_Right
+Destra
+; Right
+MSG_POS_Top
+Alto
+; Top
+MSG_POS_Bottom
+Basso
+; Bottom
+;
+MSG_ALIGN_TopLeft
+Alto/sinistra
+; Top/Left
+MSG_ALIGN_Center
+Centrato
+; Center
+MSG_ALIGN_BottomRight
+Basso/destra
+; Bottom/Right
+;
+MSG_NGD_Title
+Nuovo gadget Dock
+; New Dock Gadget
+;
+MSG_NGD_ChooseGadget
+Seleziona gadget
+; Choose Gadget
+;
+MSG_NGD_About
+Informazioni
+; About
+;
+MSG_MENU_Project
+Progetto
+; Project
+;
+MSG_MENU_About
+?_Informazioni
+; ?_About
+;
+MSG_MENU_Quit
+E_Esci
+; Q_Quit
+;
+MSG_MW_Title
+Dock
+; Dock
+;
+MSG_MW_DockSettings
+Configurazione Dock
+; Dock Settings
+;
+MSG_MW_Position
+Posizione
+; Position
+;
+MSG_MW_Alignment
+Allineamento
+; Alignment
+;
+MSG_MW_ShowLabels
+Mostra etichette
+; Show Labels
+;
+MSG_MW_ShowBorders
+Mostra bordi
+; Show Borders
+;
+MSG_MW_Background
+Immagine di sfondo
+; Background Image
+;
+MSG_MW_Gadgets
+Gadget
+; Gadgets
+;
+MSG_MW_NewGadget
+_Nuovo...
+; _New...
+;
+MSG_MW_EditGadget
+_Modifica...
+; _Edit...
+;
+MSG_MW_DeleteGadget
+_Elimina
+; Delete
+;
+MSG_MW_GadgetUp
+_Alto
+; _Up
+;
+MSG_MW_GadgetDown
+_Basso
+; _Down
+;
+MSG_MW_ConfigSave
+_Salva
+; Save
+;
+MSG_MW_ConfigTest
+_Prova
+; Test
+;
+MSG_MW_ConfigUse
+_Usa
+; Use
+;
+MSG_DEL_Title
+Eliminazione gadget
+; Delete Gadget
+;
+MSG_DEL_Text
+Sei sicuro di voler eliminare questo gadget?
+; Are you sure you want to delete this gadget?
+;
+MSG_DEL_Buttons
+_OK|_Annulla
+; _OK|Cancel
+;
+MSG_FR_ChooseBackground
+Seleziona immagine di sfondo
+; Choose a background
+;
+MSG_MW_Padding
+Imbottitura
+; Padding
+;
+MSG_ED_Name
+Nome
+; Name
+;
+MSG_ED_Path
+Percorso
+; Path
+;
+MSG_ED_Brush
+Immagine
+; Brush
+;
+MSG_ED_Args
+Argomenti
+; Arguments
+;
+MSG_ED_Key
+Tasto
+; Key
+;
+MSG_ED_StartType
+Tipo di avvio
+; Start Type
+;
+MSG_ED_Console
+Console
+; Console
+;
+MSG_ED_Format
+Formato
+; Format
+;
+MSG_ED_NumEyes
+Numero di occhi
+; Number of Eyes
+;
+MSG_ED_WinPos
+Posizione finestra
+; Window Position
+;
+MSG_ED_Workbench
+Workbench
+; Workbench
+;
+MSG_ED_Shell
+Shell
+; Shell
+;
+MSG_ED_DockWindow
+Finestra Dock
+; Dock Window
+;
+MSG_ED_ScreenCentre
+Centro dello schermo
+; Screen Centre
+;
+MSG_FR_ChooseTarget
+Scegli un programma
+; Choose a program
+;
+MSG_FR_ChooseBrush
+Scegli un'immagine
+; Choose a brush
+;
+; ***NEW***

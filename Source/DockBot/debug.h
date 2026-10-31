@@ -17,6 +17,7 @@
 #ifdef DEBUG_BUILD
 
 VOID parse_args(VOID);
+VOID DB_Printf(STRPTR fmt, ...);
 
 #endif
 

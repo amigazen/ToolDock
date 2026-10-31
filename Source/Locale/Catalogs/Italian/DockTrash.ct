@@ -1,0 +1,23 @@
+## version $VER: DockTrash.catalog 1.0 (31.10.2026)
+## language italiano
+## codeset 0
+;
+; DockTrash
+;
+;
+MSG_Description
+Gadget cestino che usa il volume TRASH:
+; A trashcan gadget that uses the TRASH: volume
+;
+MSG_Label
+Cestino
+; Trash
+;
+MSG_ERR_NoTrash
+TRASH: non e disponibile. Avvia prima WBTrash.
+; TRASH: is not available. Start WBTrash first.
+;
+MSG_ERR_MoveFailed
+Impossibile spostare l'elemento nel cestino.
+; Could not move the dropped item to the trash.
+;

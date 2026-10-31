@@ -30,6 +30,7 @@ struct Library *ToolDockBase;
 struct Library *GadToolsBase;
 struct Library *CxBase;
 struct Library *LocaleBase;
+struct Library *IconBase;
 
 BOOL already_running(VOID)
 {
@@ -39,30 +40,41 @@ BOOL already_running(VOID)
     return FALSE;
 }
 
+/* RawDoFmt PutChProc: D0 = char, A3 = &cursor. Catalog %d is a WORD. */
+STATIC VOID __asm put_fmt_char(register __d0 UBYTE c, register __a3 STRPTR *p)
+{
+    *(*p)++ = c;
+}
+
 struct Library *open_lib(STRPTR name, UWORD version, BOOL optional) 
 {
     struct Library *lib;
     STRPTR msg;
+    STRPTR cursor;
     UWORD l;
+    UBYTE fmtArgs[6];
 
-    DEBUG(printf("Opening %s V %d...", name, version));
+    DEBUG(DB_Printf("Opening %s V %d...", name, version));
 
     if( !(lib = OpenLibrary(name, version) ) ) {
 
-        DEBUG(printf("Failed\n"));
+        DEBUG(DB_Printf("Failed\n"));
 
         if( optional ) {
             return NULL;
         }
 
-        l = strlen(name) + strlen(MSG_ERR_OpenLibrary);
-        if( msg = TD_AllocMem(l, MEMF_ANY) ) {
-            sprintf(msg, MSG_ERR_OpenLibrary, version, name);
+        l = strlen(name) + strlen(MSG_ERR_OpenLibrary) + 8;
+        if( msg = TD_AllocMem(l, MEMF_CLEAR) ) {
+            *(WORD *)fmtArgs = version;
+            *(STRPTR *)(fmtArgs + 2) = name;
+            cursor = msg;
+            RawDoFmt(MSG_ERR_OpenLibrary, fmtArgs, (VOID (*)())put_fmt_char, &cursor);
             TD_ShowError(msg);
             TD_FreeMem(msg, l);
         }
     } else {
-        DEBUG(printf("OK\n"));
+        DEBUG(DB_Printf("OK\n"));
     }
 
     return lib;
@@ -71,7 +83,7 @@ struct Library *open_lib(STRPTR name, UWORD version, BOOL optional)
 VOID close_lib(STRPTR name, struct Library *lib) 
 {
     if( lib ) {
-        DEBUG(printf("Closing %s\n", name));
+        DEBUG(DB_Printf("Closing %s\n", name));
         CloseLibrary(lib);
     }
 }
@@ -115,17 +127,21 @@ int main(int argc, char** argv)
 
                                     if( LocaleBase = open_lib("locale.library", 38, FALSE) ) {
 
-                                        open_catalog();
+                                        if( IconBase = open_lib("icon.library", 37, FALSE) ) {
 
-                                        if( dock = create_dock() ) {
+                                            open_catalog();
+
+                                            if( dock = create_dock() ) {
                                                                    
-                                            run_event_loop(dock);                     
+                                                run_event_loop(dock);                     
 
-                                            free_dock(dock);   
-                                        }
+                                                free_dock(dock);   
+                                            }
     
-                                        close_catalog();
+                                            close_catalog();
 
+                                            close_lib("icon.library", IconBase);
+                                        }
                                         close_lib("locale.library", LocaleBase);
                                     }
                                     close_lib("commodities.library", CxBase);

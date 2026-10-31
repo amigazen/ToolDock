@@ -35,7 +35,7 @@ VOID run_event_loop(struct DockWindow *dock)
         switch( dock->runState ) {
 
             case RS_STARTING:
-                DEBUG(printf("runState = RS_STARTING\n"));
+                DEBUG(DB_Printf("runState = RS_STARTING\n"));
 
                 load_config(dock);
 
@@ -55,7 +55,7 @@ VOID run_event_loop(struct DockWindow *dock)
                 break;
 
             case RS_LOADING:
-                DEBUG(printf("runState = RS_LOADING\n"));
+                DEBUG(DB_Printf("runState = RS_LOADING\n"));
                 disable_notification(dock);
                 disable_layout(dock);
 
@@ -75,17 +75,25 @@ VOID run_event_loop(struct DockWindow *dock)
                 break;
 
             case RS_ICONIFYING:
-                DEBUG(printf("runState = RS_ICONIFYING\n"));
+                DEBUG(DB_Printf("runState = RS_ICONIFYING\n"));
                 disable_layout(dock);
                 hide_dock_window(dock);
                 if( ! show_app_icon(dock) ) {
-                    return;
+                    DEBUG(DB_Printf("show_app_icon failed; restore dock window\n"));
+                    if( ! show_dock_window(dock) ) {
+                        return;
+                    }
+                    remap_gadgets(dock);
+                    enable_layout(dock);
+                    draw_gadgets(dock);
+                    dock->runState = RS_RUNNING;
+                    break;
                 }
                 dock->runState = RS_HIDDEN;
                 break;
 
             case RS_UNICONIFYING:
-                DEBUG(printf("runState = RS_UNICONIFYING\n"));
+                DEBUG(DB_Printf("runState = RS_UNICONIFYING\n"));
                 if( ! show_dock_window(dock) ) {
                     return;
                 }
@@ -97,7 +105,7 @@ VOID run_event_loop(struct DockWindow *dock)
                 break;
 
             case RS_START_EDIT:
-                DEBUG(printf("runState = RS_START_EDIT\n"));    
+                DEBUG(DB_Printf("runState = RS_START_EDIT\n"));    
                 disable_notification(dock);
                 load_icon_brushes(dock);
                 dock->runState = RS_EDITING;
@@ -108,7 +116,7 @@ VOID run_event_loop(struct DockWindow *dock)
                 break;
 
             case RS_STOP_EDIT:
-                DEBUG(printf("runState = RS_STOP_EDIT\n"));
+                DEBUG(DB_Printf("runState = RS_STOP_EDIT\n"));
                 dock->runState = RS_RUNNING;
                 update_settings_menu(dock);
                 disable_layout(dock);
@@ -176,7 +184,7 @@ VOID run_event_loop(struct DockWindow *dock)
         }
     }
 
-    DEBUG(printf("Exiting event loop.\n"));
+    DEBUG(DB_Printf("Exiting event loop.\n"));
 }
 
 

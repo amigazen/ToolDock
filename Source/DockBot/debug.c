@@ -19,6 +19,11 @@
 
 BOOL __DebugEnabled = FALSE;
 
+VOID DB_Printf(STRPTR fmt, ...)
+{
+    TD_DebugLog(fmt, (LONG *)(&fmt + 1));
+}
+
 #define TEMPLATE "DEBUG/S"
 #define OPT_DEBUG 0
 
