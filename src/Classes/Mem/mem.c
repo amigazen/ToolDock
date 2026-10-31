@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -50,15 +51,18 @@ VOID __saveds set_text_font(struct IntuiText *text)
 {
     struct Screen *screen;
     struct DrawInfo *drawInfo;
+    struct TextAttr *ta;
+
+    ta = (struct TextAttr *)text->ITextFont;
     
     if( screen = LockPubScreen(NULL) ) {
     
         if( drawInfo = GetScreenDrawInfo(screen) ) {
 
-            text->ITextFont->ta_Name = drawInfo->dri_Font->tf_Message.mn_Node.ln_Name;
-            text->ITextFont->ta_YSize = drawInfo->dri_Font->tf_YSize;
-            text->ITextFont->ta_Style = drawInfo->dri_Font->tf_Style;
-            text->ITextFont->ta_Flags = drawInfo->dri_Font->tf_Flags;
+            ta->ta_Name = drawInfo->dri_Font->tf_Message.mn_Node.ln_Name;
+            ta->ta_YSize = drawInfo->dri_Font->tf_YSize;
+            ta->ta_Style = drawInfo->dri_Font->tf_Style;
+            ta->ta_Flags = drawInfo->dri_Font->tf_Flags;
             text->DrawMode = JAM1;
             text->NextText = NULL;
 
@@ -113,10 +117,10 @@ VOID draw_mem(struct RastPort *rp, struct DrawInfo *di, struct Rect *bounds, UWO
     sprintf((STRPTR)&buf, label, (free * 100L) / total);
 
     text.ITextFont = &ta;
-    text.ITextFont->ta_Name = di->dri_Font->tf_Message.mn_Node.ln_Name;
-    text.ITextFont->ta_YSize = di->dri_Font->tf_YSize;
-    text.ITextFont->ta_Style = di->dri_Font->tf_Style;
-    text.ITextFont->ta_Flags = di->dri_Font->tf_Flags;
+    ta.ta_Name = di->dri_Font->tf_Message.mn_Node.ln_Name;
+    ta.ta_YSize = di->dri_Font->tf_YSize;
+    ta.ta_Style = di->dri_Font->tf_Style;
+    ta.ta_Flags = di->dri_Font->tf_Flags;
     text.DrawMode = JAM1;
     text.NextText = NULL;
     text.IText = (STRPTR)&buf;
@@ -191,10 +195,10 @@ DB_METHOD_M(GETSIZE,DockMessageGetSize)
         if( di = GetScreenDrawInfo(screen) ) {
 
             text.ITextFont = &ta;
-            text.ITextFont->ta_Name = di->dri_Font->tf_Message.mn_Node.ln_Name;
-            text.ITextFont->ta_YSize = di->dri_Font->tf_YSize;
-            text.ITextFont->ta_Style = di->dri_Font->tf_Style;
-            text.ITextFont->ta_Flags = di->dri_Font->tf_Flags;
+            ta.ta_Name = di->dri_Font->tf_Message.mn_Node.ln_Name;
+            ta.ta_YSize = di->dri_Font->tf_YSize;
+            ta.ta_Style = di->dri_Font->tf_Style;
+            ta.ta_Flags = di->dri_Font->tf_Flags;
             text.IText = (STRPTR)buf;
             text.LeftEdge = 0;
             text.TopEdge = 0;

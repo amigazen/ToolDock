@@ -1,0 +1,61 @@
+#
+# SAS/C smake for tooldock.library
+# From src/LibDockBot: smake
+# Release: smake -b ../release.defs CPU=68000 DIR=/bin/68000
+#
+include ../debug.defs
+
+LIBNAME = dockbot
+VERSION = 1
+REVISION = 0
+
+INCDIR = //include
+INC = IDIR=$(INCDIR)
+LIBFILE = tooldock.library
+LIBDIR = /$(DIR)/
+FD_FILE = $(LIBNAME).fd
+PRAGMA_FILE = $(INCDIR)/$(LIBNAME)_pragmas.h
+
+C_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) $(DEF_DS) $(DEF_BV)
+
+OBJECTS = lib.o gfx.o gadget.o settings.o memory.o dock_gadget.o classes.o req.o debug.o
+
+all: $(LIBFILE)
+
+$(LIBFILE): $(OBJECTS) $(PRAGMA_FILE)
+	$(LINKER) WITH <<
+TO $(LIBDIR)$(LIBFILE)
+FROM $(OBJECTS)
+LIBFD $(FD_FILE)
+LIBVERSION $(VERSION)
+LIBREVISION $(REVISION)
+LIB $(LIBS) $(LD_OPTS)
+<
+
+$(PRAGMA_FILE): $(FD_FILE)
+	$(FD_CONV) $(FD_FILE) $(PRAGMA_FILE)
+
+.c.o:
+	$(COMPILER) $(C_OPTS) $*.c
+
+lib.o: lib.c
+gfx.o: gfx.c
+gadget.o: gadget.c
+settings.o: settings.c
+memory.o: memory.c
+dock_gadget.o: dock_gadget.c
+classes.o: classes.c
+req.o: req.c
+debug.o: debug.c
+
+cleanobj:
+	-Delete $(OBJECTS)
+
+clean:
+	-Delete $(OBJECTS)
+	-Delete $(LIBDIR)$(LIBFILE)(|.info)
+	-Delete $(PRAGMA_FILE)
+
+reload:
+	@version $(LIBFILE)
+	@flushlibs

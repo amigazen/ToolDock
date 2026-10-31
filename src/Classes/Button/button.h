@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -19,12 +20,16 @@
 
 #include <libraries/triton.h>
 #include <proto/triton.h>
+#include "triton_support.h"
 
 /****
 ** Icon Library v44+
 */
 extern struct Library *IconBase;
 
+#ifdef CONST
+#undef CONST
+#endif
 #define CONST
 
 #include "iconlib/icon.h"

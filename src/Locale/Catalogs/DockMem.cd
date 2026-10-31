@@ -1,11 +1,9 @@
-#language english
-#version 1
 ;
 ; DockClock
 ;
 ;
 MSG_Description (//)
-A memory meter for DockBot
+A memory meter for ToolDock
 ;
 MSG_LBL_Chip (//)
 Chip %d%%

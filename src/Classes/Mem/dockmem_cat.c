@@ -16,7 +16,7 @@
 #include "DockMem_cat.h"
 
 struct FC_String DockMem_Strings[3] = {
-    { (STRPTR) "A memory meter for DockBot", 0 },
+    { (STRPTR) "A memory meter for ToolDock", 0 },
     { (STRPTR) "Chip %d%%", 1 },
     { (STRPTR) "Fast %d%%", 2 }
 };

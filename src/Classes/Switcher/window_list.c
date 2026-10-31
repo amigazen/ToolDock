@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -77,10 +78,11 @@ VOID build_window_list(struct SwitcherGadgetData *data)
                         sprintf(item->n.ln_Name, "%s: %s", &buf, win->Title);
 
                         item->text.ITextFont = &item->ta;
-                        item->text.ITextFont->ta_Name = di->dri_Font->tf_Message.mn_Node.ln_Name;
-                        item->text.ITextFont->ta_YSize = item->height;
-                        item->text.ITextFont->ta_Style = di->dri_Font->tf_Style;
-                        item->text.ITextFont->ta_Flags = di->dri_Font->tf_Flags;
+                        /* ITextFont is CONST TextAttr * in current NDK headers. */
+                        item->ta.ta_Name = di->dri_Font->tf_Message.mn_Node.ln_Name;
+                        item->ta.ta_YSize = item->height;
+                        item->ta.ta_Style = di->dri_Font->tf_Style;
+                        item->ta.ta_Flags = di->dri_Font->tf_Flags;
                         item->text.BackPen = di->dri_Pens[BACKGROUNDPEN];
                         item->text.DrawMode = JAM1;
                         item->text.IText = item->n.ln_Name;

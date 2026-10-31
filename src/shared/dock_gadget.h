@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2016 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 

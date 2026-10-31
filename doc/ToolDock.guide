@@ -1,13 +1,13 @@
-@database The DockBot Manual
+@database The ToolDock Manual
 @wordwrap
 
-@node Main "The DockBot Manual"
+@node Main "The ToolDock Manual"
 
-DockBot is an application launcher for AmigaOS 3.
+ToolDock is an application launcher for AmigaOS 3.
 
 It is (hopefully) lighter on system resources and easier to configure than ToolManager and AmiDock ;)
 
-The main DockBot window is called the Dock. It contains a number of "gadgets" that display information or react to actions. For example, the Clock gadget displays the current time and a Button gadget can launch an application.
+The main ToolDock window is called the Dock. It contains a number of "gadgets" that display information or react to actions. For example, the Clock gadget displays the current time and a Button gadget can launch an application.
 
 @{"Requirements" link requirements}
 @{"Installation" link installation}
@@ -19,15 +19,16 @@ The main DockBot window is called the Dock. It contains a number of "gadgets" th
 @{"Thanks" link thanks}
 @{"History" link history}
 
-DockBot is free software released under the @{"MIT licence" link licence}.
+ToolDock is free software released under the @{"MIT licence" link licence}.
 
 @endnode
 
-@node licence "Licence - The DockBot Manual"
+@node licence "Licence - The ToolDock Manual"
 
 The MIT License (MIT)
 
-Copyright (c) 2020 Andrew Kennan
+Copyright (c) 2026 amigazen project
+Based on DockBot by Andrew Kennan
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -49,37 +50,35 @@ SOFTWARE.
 
 @endnode
 
-@node requirements "Requirements - The DockBot Manual"
+@node requirements "Requirements - The ToolDock Manual"
 
-DockBot depends on a few pieces of third party software.
+ToolDock depends on a few pieces of third party software.
 
 icon.library v46.4 - PeterK's amazing library provides icon manipulation functions not available in the stock system. Why aren't you already using it?
 
-Triton - An object oriented GUI creation system by Stefan Zeiger. A redistributable copy is included with DockBot.
+Triton - An object oriented GUI creation system by Stefan Zeiger. A redistributable copy is included with ToolDock.
 
-WBRun - Runs programs as if executed by Workbench by Sylvain Rougier and Pierre Carrette. A copy is included with DockBot.
-
-ScreenNotify - (Optional) Stefan Becker's handy library allows applications to be notified when the Workbench screen mode is changing. 
+WBRun - Runs programs as if executed by Workbench by Sylvain Rougier and Pierre Carrette. A copy is included with ToolDock.
 
 Roadshow - (Optional) The DockNet gadget uses a feature not found in older network stacks.
 
 @endnode
 
-@node installation "Installation - The DockBot Manual"
+@node installation "Installation - The ToolDock Manual"
 
-Installation of DockBot should be pretty easy.
+Installation of ToolDock should be pretty easy.
 
-By default DockBot will be installed in SYS:Tools however this can be changed.
+By default ToolDock will be installed in SYS:Tools however this can be changed.
 
-DockBot will try to install binaries optimized for your CPU.
+ToolDock will try to install binaries optimized for your CPU.
 
-A startup script named DockBotStart will be placed in SYS:WBStartup. If you move or rename the DockBot drawer this script must be updated.
+A startup script named ToolDockStart will be placed in SYS:WBStartup. If you move or rename the ToolDock drawer this script must be updated.
 
 @endnode
 
-@node configuration "Configuration - The DockBot Manual"
+@node configuration "Configuration - The ToolDock Manual"
 
-The gadgets in the DockBot window can be altered by choosing the Edit option from the Settings menu. In Edit mode, gadgets can be moved around the Dock or deleted. Icons dropped onto the window will be added as new Buttons. Choosing Save Settings from the Settings menu will save the changes. Revert Settings will discard the changes and reload the last saved configuration.
+The gadgets in the ToolDock window can be altered by choosing the Edit option from the Settings menu. In Edit mode, gadgets can be moved around the Dock or deleted. Icons dropped onto the window will be added as new Buttons. Choosing Save Settings from the Settings menu will save the changes. Revert Settings will discard the changes and reload the last saved configuration.
 
 More options are available in the Preferences editor. Open it by choosing Open Settings from the Settings menu.
 
@@ -99,7 +98,7 @@ Background Image selects a picture to display behind the gadgets. Any image form
 
 There are two ways to add a gadget to the dock:
 
-- You can drag an icon from a Workbench window onto the DockBotPrefs window.
+- You can drag an icon from a Workbench window onto the ToolDockPrefs window.
 
 - Click the New button and select the type of gadget to add.
 
@@ -121,9 +120,9 @@ Once added to the dock, gadgets can be ordered with the Up and Down buttons. If 
 
 @endnode
 
-@node configDockButton "Buttons - The DockBot Manual"
+@node configDockButton "Buttons - The ToolDock Manual"
 
-A Button in DockBot represents an executable file. DockBot will display the icon associated with the executable. Clicking on it will launch the application. Dragging and dropping icons from Workbench onto it will launch the application with the icons as parameters.
+A Button in ToolDock represents an executable file. ToolDock will display the icon associated with the executable. Clicking on it will launch the application. Dragging and dropping icons from Workbench onto it will launch the application with the icons as parameters.
 
 Buttons have the following options:
 
@@ -136,7 +135,7 @@ Buttons have the following options:
 
 @endnode
 
-@node timeFormats "Time Formats - The DockBot Manual"
+@node timeFormats "Time Formats - The ToolDock Manual"
 
 The DockClock gadget uses the date and time formats accepted by the Amiga OS.
 
@@ -173,34 +172,33 @@ The DockClock gadget uses the date and time formats accepted by the Amiga OS.
 
 @endnode
 
-@node usage "Usage - The DockBot Manual"
+@node usage "Usage - The ToolDock Manual"
 
-Using DockBot is, hopefully, pretty obvious. Click icons to launch applications. 
+Using ToolDock is, hopefully, pretty obvious. Click icons to launch applications. 
 
 Dragging a workbench icon onto the dock will launch the application with the icon as a parameter.
 
 @endnode
 
-@node developers "Developers - The DockBot Manual"
+@node developers "Developers - The ToolDock Manual"
 
-DockBot is open source software. Feel free to fix it... I mean... contribute...
+ToolDock is open source software. Feel free to fix it... I mean... contribute...
 
-The repository for the DockBot source code can be found at https://github.com/adkennan/DockBot. Feel free to submit a pull request!
+The original DockBot source repository can be found at https://github.com/adkennan/DockBot.
 
 @{"Setting up" link devSetup} the development environment.
-@{"Compiling" link devCompiling} DockBot.
+@{"Compiling" link devCompiling} ToolDock.
 Available @{"Library Functions" link inc/dockbot/MAIN}.
 Writing a new @{"Gadget" link devGadget}.
 
 @endnode
 
-@node devSetup "Development Environment - The DockBot Manual"
+@node devSetup "Development Environment - The ToolDock Manual"
 
-The following third party software has been used in the development of DockBot:
+The following third party software has been used in the development of ToolDock:
 
 - SAS/C 6.58
 - icon.library 46.4 (http://aminet.net/package/util/libs/IconLib_46.4)
-- screennotify.library 1.0 (http://aminet.net/package/util/libs/ScreenNotify10.lha)
 - OpenTriton GUI system (http://aminet.net/package/dev/gui/opentriton-dev)
 - adoc (http://aminet.net/package/dev/misc/adoc-1.02)
 - ADtoHT2 (http://aminet.net/package/text/hyper/ADtoHT2_1)
@@ -210,9 +208,9 @@ The following third party software has been used in the development of DockBot:
 - sashimi (http://aminet.net/package/dev/debug/Sashimi.lha)
 - Roadshow SDK (http://roadshow.apc-tcp.de/download-de.php)
 
-I use the script src/StartDockBotDev to initialize my environment. It expects the following assigns:
+I use the script src/StartToolDockDev to initialize my environment. It expects the following assigns:
 
-- DOCKBOT: pointing to the directory containing DockBot.
+- DOCKBOT: pointing to the directory containing ToolDock.
 - DEV: pointing to a directory with this structure:
 
   DEV:
@@ -226,17 +224,16 @@ I use the script src/StartDockBotDev to initialize my environment. It expects th
   |   \\--MuGuardianAngel
   |-- RoadshowSDK
   |-- SasC/
-  |-- ScreenNotify/
   \\-- Triton/
 
 @endnode
 
-@node devCompiling "Compiling - The DockBot Manual"
+@node devCompiling "Compiling - The ToolDock Manual"
 
-The src drawer contains a number of scripts used to build DockBot:
+The src drawer contains a number of scripts used to build ToolDock:
 
 - Compile - Compiles all components for a single CPU.
-- CompileDist - Compiles DockBot for all 68000, 68020 and 68040 CPUs for distribution.
+- CompileDist - Compiles ToolDock for all 68000, 68020 and 68040 CPUs for distribution.
 - BuildDocs - Generates autodocs and converts them to AmigaGuide.
 - Package - Generates a release package.
 - StartMuForce - Runs MuForce, MuGuardianAngel and Sashimi
@@ -253,7 +250,7 @@ The Compile script has the following options:
   - Otherwise defaults to /bin/<CPU>
 - ALL/S        Compile all components.
 - RELEASE/S    Compile for release - optimize, no debug info.
-- EXE/S        Compile the DockBot executable only.
+- EXE/S        Compile the ToolDock executable only.
 - LIB/S        Compile dockbot.library only.
 - PREFS/S      Compile the preferences application only.
 - BUTTON/S     Compile the button class only.
@@ -269,7 +266,7 @@ CompileDist only has a single option:
 
 BuildDocs and Package has no options.
 
-To build DockBot for your CPU, open a shell window, CD to the src drawer and enter:
+To build ToolDock for your CPU, open a shell window, CD to the src drawer and enter:
 
 > COMPILE ALL
 
@@ -279,9 +276,9 @@ or
 
 @endnode
 
-@node devGadget "Writing Gadgets - The DockBot Manual"
+@node devGadget "Writing Gadgets - The ToolDock Manual"
 
-DockBot is written to be extendable because... why not? :)
+ToolDock is written to be extendable because... why not? :)
 
 Each gadget is a BOOPSI class deriving from a base class named "dockgadget." 
 
@@ -344,7 +341,7 @@ These macros are used to provide implementations of the above methods:
 
 When DEBUG_BUILD is defined the gadget can generate console output using the following functions and macros:
 
-- DB_Printf(fmt, ...) - A printf like function that will write to the output stream of the DockBot or DockBotPrefs applications.
+- DB_Printf(fmt, ...) - A printf like function that will write to the output stream of the ToolDock or ToolDockPrefs applications.
 - __METHOD__ - A macro that combines the gadget name with the current function name.
 - DEBUG() - A macro that used to wrap an operation that is only present in debug builds.
 
@@ -356,9 +353,9 @@ See the DOS function VFPrintf for info on the format string.
 
 @endnode
 
-@node todo "TODO - The DockBot Manual"
+@node todo "TODO - The ToolDock Manual"
 
-Here is an incomplete list of things that could be done to improve DockBot:
+Here is an incomplete list of things that could be done to improve ToolDock:
 
 - More translations.
 - Support multiple dock windows.
@@ -369,19 +366,19 @@ Here is an incomplete list of things that could be done to improve DockBot:
 
 @endnode
 
-@node contact "Contact Me - The DockBot Manual"
+@node contact "Contact Me - The ToolDock Manual"
 
 I am often to be found procrastinating on EAB with the username bwldrbst. Feel free to PM me any questions or raise them in the forums.
 
-If you're actually trying to use DockBot and have run into a bug, please report it at https://github.com/adkennan/DockBot/.
+If you're actually trying to use ToolDock and have run into a bug, please report it at https://github.com/adkennan/DockBot/.
 
 @endnode
 
-@node thanks "Thanks - The DockBot Manual"
+@node thanks "Thanks - The ToolDock Manual"
 
-It's a great thrill to receive positive feedback about DockBot but what is best in life is to receive contributions to your open source project. 
+It's a great thrill to receive positive feedback about ToolDock but what is best in life is to receive contributions to your open source project. 
 
-I'd like to thank the following people for their contributions to DockBot:
+I'd like to thank the following people for their contributions to ToolDock:
 
 - flype for submitting the code to support screennotify.library, a French translation and the DockNet gadget.
 - Gulliver for submitting language catalogs.
@@ -390,11 +387,11 @@ I'd like to thank the following people for their contributions to DockBot:
 - Joel Edberg for bug reports and convincing me to add Edit Mode.
 - Åsmund Nordel for discovering that not all libraries shipped with OS3.0 are V39.
 
-Your suggestions and contributions make me want to keep developing DockBot.
+Your suggestions and contributions make me want to keep developing ToolDock.
 
 @endnode
 
-@node history "History - The DockBot Manual"
+@node history "History - The ToolDock Manual"
 
 Version 1.11 (08-Oct-2020):
 
@@ -448,7 +445,7 @@ Version 1.2 (17-Aug-2019):
 
 Version 1.1 (21-Jun-2019):
 
-* Fixed issues with the installer that prevented DockBot from running.
+* Fixed issues with the installer that prevented ToolDock from running.
 
 Version 1.0 (20-Jun-2019):
 
@@ -456,7 +453,7 @@ Version 1.0 (20-Jun-2019):
 
 Prehistory:
 
-I initially worked on DockBot from around April 2016 to February 2017 before getting distracted by other things.
+I initially worked on ToolDock from around April 2016 to February 2017 before getting distracted by other things.
 
 In June 2019 I decided to finally get it into shape for release.
 

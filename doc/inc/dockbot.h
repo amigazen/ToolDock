@@ -43,9 +43,10 @@
 @NODE File "dockbot.h"
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -399,8 +400,8 @@ int atoi(const char *);
     }
 
 
-#define CONFIG_FILE "ENV:DockBot.prefs"
-#define CONFIG_FILE_PERM "ENVARC:DockBot.prefs"
+#define CONFIG_FILE "ENV:ToolDock.prefs"
+#define CONFIG_FILE_PERM "ENVARC:ToolDock.prefs"
 
 #define S_ALIGN "align"
 #define S_POSITION "position"

@@ -9,8 +9,8 @@
 ;
 ;
 MSG_Description
-Un medidor de memoria para DockBot
-; A memory meter for DockBot
+Un medidor de memoria para ToolDock
+; A memory meter for ToolDock
 ;
 MSG_LBL_Chip
 Chip %d%%

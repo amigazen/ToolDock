@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -467,12 +468,12 @@ int main(char **argv, int argc)
 
     open_catalog();
 
-    if( DockBotBase = OpenLibrary("PROGDIR:dockbot.library", 1) ) {
+    if( DockBotBase = OpenLibrary("PROGDIR:tooldock.library", 1) ) {
 
         DEBUG(DB_RegisterDebugStream(Output()));
 
         if( TR_OpenTriton(TRITON11VERSION,
-            TRCA_Name,      "DockBotPrefs",
+            TRCA_Name,      "ToolDockPrefs",
             TRCA_LongName,  MSG_APP_Title,
             TRCA_Info,      MSG_APP_Info,
             TAG_END) ) {
@@ -519,7 +520,7 @@ int main(char **argv, int argc)
             show_open_lib_err("triton.library", TRITON11VERSION);
         }
             
-        close_lib("PROGDIR:dockbot.library", DockBotBase);
+        close_lib("PROGDIR:tooldock.library", DockBotBase);
     }
 
     close_catalog();

@@ -1,0 +1,47 @@
+#
+# SAS/C smake for ToolDockPrefs
+# From src/DockBotPrefs: smake
+#
+include ../debug.defs
+
+TRITON_INC = ///OpenTriton/SDK/Include_h
+TRITON_LIB = ///OpenTriton/Source/lib/triton.lib
+
+INC = INCLUDEDIRECTORY=//include INCLUDEDIRECTORY=/shared INCLUDEDIRECTORY=$(TRITON_INC)
+EXENAME = ToolDockPrefs
+EXEPATH = /$(DIR)/
+
+C_OPTS = cpu=$(CPU) $(SC_OPTS) $(INC) $(DEF_DS) $(DEF_BV)
+
+OBJECTS = main.o dockbotprefs_cat.o /shared/dock_gadget.o settings.o new_gadget.o gadget_list.o tags.o
+
+PREFS_LIBS = $(LIBS) $(TRITON_LIB)
+
+all: $(EXENAME)
+
+$(EXENAME): $(OBJECTS)
+	$(LINKER) WITH <<
+TO $(EXEPATH)$(EXENAME)
+FROM LIB:c.o $(OBJECTS)
+LIBRARY $(PREFS_LIBS) $(LD_OPTS)
+<
+
+.c.o:
+	$(COMPILER) $(C_OPTS) $*.c
+
+main.o: main.c
+dockbotprefs_cat.o: dockbotprefs_cat.c
+settings.o: settings.c
+new_gadget.o: new_gadget.c
+gadget_list.o: gadget_list.c
+tags.o: tags.c
+
+/shared/dock_gadget.o: /shared/dock_gadget.c
+	$(COMPILER) $(C_OPTS) /shared/dock_gadget.c
+
+cleanobj:
+	-Delete $(OBJECTS)
+
+clean:
+	-Delete $(OBJECTS)
+	-Delete $(EXEPATH)$(EXENAME)

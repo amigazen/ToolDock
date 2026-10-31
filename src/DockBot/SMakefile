@@ -1,0 +1,49 @@
+#
+# SAS/C smake for the ToolDock executable
+# From src/DockBot: smake
+#
+include ../debug.defs
+
+INC = INCLUDEDIRECTORY=//include INCLUDEDIRECTORY=/shared
+EXENAME = ToolDock
+EXEPATH = /$(DIR)/
+
+C_OPTS = cpu=$(CPU) $(SC_OPTS) $(INC) $(DEF_DS) $(DEF_BV)
+
+OBJECTS = main.o dock.o dockbot_cat.o /shared/dock_gadget.o dock_handle.o events.o gadgets.o layout.o settings.o debug.o window.o cx.o appicon.o timer.o
+
+all: $(EXENAME)
+
+$(EXENAME): $(OBJECTS)
+	$(LINKER) WITH <<
+TO $(EXEPATH)$(EXENAME)
+FROM LIB:c.o $(OBJECTS)
+LIBRARY $(LIBS) $(LD_OPTS)
+<
+
+.c.o:
+	$(COMPILER) $(C_OPTS) $*.c
+
+main.o: main.c
+dock.o: dock.c
+dockbot_cat.o: dockbot_cat.c
+dock_handle.o: dock_handle.c
+events.o: events.c
+gadgets.o: gadgets.c
+layout.o: layout.c
+settings.o: settings.c
+debug.o: debug.c
+window.o: window.c
+cx.o: cx.c
+appicon.o: appicon.c
+timer.o: timer.c
+
+/shared/dock_gadget.o: /shared/dock_gadget.c
+	$(COMPILER) $(C_OPTS) /shared/dock_gadget.c
+
+cleanobj:
+	-Delete $(OBJECTS)
+
+clean:
+	-Delete $(OBJECTS)
+	-Delete $(EXEPATH)$(EXENAME)

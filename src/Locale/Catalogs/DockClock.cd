@@ -1,11 +1,9 @@
-#language english
-#version 1
 ;
 ; DockClock
 ;
 ;
 MSG_Description (//)
-A clock gadget for DockBot
+A clock gadget for ToolDock
 ;
 ;
 MSG_UI_Format (//)

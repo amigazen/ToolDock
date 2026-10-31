@@ -1,32 +1,32 @@
 TABLE OF CONTENTS
 
-dockbot.library/DB_AllocMem
-dockbot.library/DB_CloseSettings
-dockbot.library/DB_DebugLog
-dockbot.library/DB_DisposeConfig
-dockbot.library/DB_DrawInsetFrame
-dockbot.library/DB_DrawOutsetFrame
-dockbot.library/DB_FreeMem
-dockbot.library/DB_GetDockGadgetEnvironment
-dockbot.library/DB_ListClasses
-dockbot.library/DB_OpenSettingsRead
-dockbot.library/DB_OpenSettingsWrite
-dockbot.library/DB_ReadBeginBlock
-dockbot.library/DB_ReadConfig
-dockbot.library/DB_ReadEndBlock
-dockbot.library/DB_ReadSetting
-dockbot.library/DB_RegisterDebugStream
-dockbot.library/DB_RegisterPort
-dockbot.library/DB_RequestDockGadgetDraw
-dockbot.library/DB_RequestDockQuit
-dockbot.library/DB_RequestLaunch
-dockbot.library/DB_ShowError
-dockbot.library/DB_UnregisterPort
-dockbot.library/DB_WriteBeginBlock
-dockbot.library/DB_WriteConfig
-dockbot.library/DB_WriteEndBlock
-dockbot.library/DB_WriteSetting
-dockbot.library/DB_AllocMem                          dockbot.library/DB_AllocMem
+tooldock.library/DB_AllocMem
+tooldock.library/DB_CloseSettings
+tooldock.library/DB_DebugLog
+tooldock.library/DB_DisposeConfig
+tooldock.library/DB_DrawInsetFrame
+tooldock.library/DB_DrawOutsetFrame
+tooldock.library/DB_FreeMem
+tooldock.library/DB_GetDockGadgetEnvironment
+tooldock.library/DB_ListClasses
+tooldock.library/DB_OpenSettingsRead
+tooldock.library/DB_OpenSettingsWrite
+tooldock.library/DB_ReadBeginBlock
+tooldock.library/DB_ReadConfig
+tooldock.library/DB_ReadEndBlock
+tooldock.library/DB_ReadSetting
+tooldock.library/DB_RegisterDebugStream
+tooldock.library/DB_RegisterPort
+tooldock.library/DB_RequestDockGadgetDraw
+tooldock.library/DB_RequestDockQuit
+tooldock.library/DB_RequestLaunch
+tooldock.library/DB_ShowError
+tooldock.library/DB_UnregisterPort
+tooldock.library/DB_WriteBeginBlock
+tooldock.library/DB_WriteConfig
+tooldock.library/DB_WriteEndBlock
+tooldock.library/DB_WriteSetting
+tooldock.library/DB_AllocMem                          tooldock.library/DB_AllocMem
 
    NAME
 	DB_AllocMem -- Allocate memory from the pools maintained by the library.
@@ -38,7 +38,7 @@ dockbot.library/DB_WriteSetting
 
    FUNCTION
 	Allocates a block of memory from the pools maintained internally by the
-	DockBot library.
+	ToolDock library.
 
    INPUTS
 	byteSize   - The size, in bytes, to allocate.
@@ -68,7 +68,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	DB_FreeMem(), AllocMem()
 
-dockbot.library/DB_CloseSettings                dockbot.library/DB_CloseSettings
+tooldock.library/DB_CloseSettings                tooldock.library/DB_CloseSettings
 
    NAME
 	DB_CloseSettings -- Closes a previously opened settings file.
@@ -91,7 +91,7 @@ dockbot.library/DB_WriteSetting
 
    EXAMPLE
 	struct DockSettings *s;
-	if( s = DB_OpenSettingsRead("ENV:DockBot.prefs") ) {
+	if( s = DB_OpenSettingsRead("ENV:ToolDock.prefs") ) {
 	  ...
 	  DB_CloseSettings(s);
 	}
@@ -99,7 +99,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	DB_OpenSettingsRead(),DB_OpenSettingsWrite()
 
-dockbot.library/DB_DebugLog                          dockbot.library/DB_DebugLog
+tooldock.library/DB_DebugLog                          tooldock.library/DB_DebugLog
 
    NAME
 	DB_DebugLog - Writes a message to the debug logging stream.
@@ -120,7 +120,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
     DB_RegisterDebugStream, VFPrintf
 
-dockbot.library/DB_DisposeConfig                dockbot.library/DB_DisposeConfig
+tooldock.library/DB_DisposeConfig                tooldock.library/DB_DisposeConfig
 
    NAME
 	DB_DisposeConfig - Cleans up the gadgets on a DockConfig structure.
@@ -143,7 +143,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	DB_ReadConfig()
 
-dockbot.library/DB_DrawInsetFrame              dockbot.library/DB_DrawInsetFrame
+tooldock.library/DB_DrawInsetFrame              tooldock.library/DB_DrawInsetFrame
 
    NAME
 	DB_DrawOutsetFrame -- Draws a lowered 3d rectangle.
@@ -168,7 +168,7 @@ dockbot.library/DB_WriteSetting
 	DB_GetDockGadgetBounds(obj, &bounds);
 	DB_DrawInsetFrame(rp, &bounds);
 
-dockbot.library/DB_DrawOutsetFrame            dockbot.library/DB_DrawOutsetFrame
+tooldock.library/DB_DrawOutsetFrame            tooldock.library/DB_DrawOutsetFrame
 
    NAME
 	DB_DrawOutsetFrame -- Draws a raised 3d rectangle.
@@ -193,7 +193,7 @@ dockbot.library/DB_WriteSetting
 	DB_GetDockGadgetBounds(obj, &bounds);
 	DB_DrawOutsetFrame(rp, &bounds);
 
-dockbot.library/DB_FreeMem                            dockbot.library/DB_FreeMem
+tooldock.library/DB_FreeMem                            tooldock.library/DB_FreeMem
 
    NAME
 	DB_FreeMem - Free a block of memory allocated by DB_AllocMem.
@@ -213,7 +213,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	DB_AllocMem(), FreeMem()
 
-dockbot.library/DB_GetDockGadgetEnvironmentdockbot.library/DB_GetDockGadgetEnvironment
+tooldock.library/DB_GetDockGadgetEnvironmenttooldock.library/DB_GetDockGadgetEnvironment
 
    NAME
 	DB_GetDockGadgetEnvironment -- Get the environment info for the gadget.
@@ -239,7 +239,7 @@ dockbot.library/DB_WriteSetting
 	struct DockGadgetEnvironment env;
 	DB_GetDockGadgetEnvironment(obj, &env);
 
-dockbot.library/DB_ListClasses                    dockbot.library/DB_ListClasses
+tooldock.library/DB_ListClasses                    tooldock.library/DB_ListClasses
 
    NAME
 	DB_ListClasses - List the available gadget classes.
@@ -261,7 +261,7 @@ dockbot.library/DB_WriteSetting
 
    SEE ALSO
 
-dockbot.library/DB_OpenSettingsRead          dockbot.library/DB_OpenSettingsRead
+tooldock.library/DB_OpenSettingsRead          tooldock.library/DB_OpenSettingsRead
 
    NAME
 	DB_OpenSettingsRead -- Open the settings file for reading.
@@ -283,7 +283,7 @@ dockbot.library/DB_WriteSetting
 
    EXAMPLE
 	struct DockSettings *s;
-	if( s = DB_OpenSettingsRead("ENV:DockBot.prefs") ) {
+	if( s = DB_OpenSettingsRead("ENV:ToolDock.prefs") ) {
 	  ...
 	  DB_CloseSettings(s);
 	}
@@ -291,7 +291,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	DB_OpenSettingsWrite(),DB_CloseSettings()
 
-dockbot.library/DB_OpenSettingsWrite        dockbot.library/DB_OpenSettingsWrite
+tooldock.library/DB_OpenSettingsWrite        tooldock.library/DB_OpenSettingsWrite
 
    NAME
 	DB_OpenSettingsWrite -- Open the settings file for writing.
@@ -314,7 +314,7 @@ dockbot.library/DB_WriteSetting
 
    EXAMPLE
 	struct DockSettings *s;
-	if( s = DB_OpenSettingsWrite("ENV:DockBot.prefs") ) {
+	if( s = DB_OpenSettingsWrite("ENV:ToolDock.prefs") ) {
 	  ...
 	  DB_CloseSettings(s);
 	}
@@ -322,7 +322,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	DB_OpenSettingsRead(),DB_CloseSettings()
 
-dockbot.library/DB_ReadBeginBlock              dockbot.library/DB_ReadBeginBlock
+tooldock.library/DB_ReadBeginBlock              tooldock.library/DB_ReadBeginBlock
 
    NAME
 	DB_ReadBeginBlock -- Attempts to read a block start from the setings.
@@ -345,7 +345,7 @@ dockbot.library/DB_WriteSetting
 
    EXAMPLE
 	struct DockSettings *s;
-	if( s = DB_OpenSettingsRead("ENV:DockBot.prefs") ) {
+	if( s = DB_OpenSettingsRead("ENV:ToolDock.prefs") ) {
 	  if( DB_ReadBeginBlock(s) ) {
 	    while(!DB_ReadEndBlock(s)) {
 	      ...
@@ -357,10 +357,10 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	DB_OpenSettingsRead(),DB_ReadEndBlock()
 
-dockbot.library/DB_ReadConfig                      dockbot.library/DB_ReadConfig
+tooldock.library/DB_ReadConfig                      tooldock.library/DB_ReadConfig
 
    NAME
-	DB_ReadConfig - Read the DockBot configuration file.
+	DB_ReadConfig - Read the ToolDock configuration file.
 
    SYNOPSIS
 	success = DB_ReadConfig(cfg,settings)
@@ -378,7 +378,7 @@ dockbot.library/DB_WriteSetting
    RESULT
 	TRUE if the configuration was read.
 
-dockbot.library/DB_ReadEndBlock                  dockbot.library/DB_ReadEndBlock
+tooldock.library/DB_ReadEndBlock                  tooldock.library/DB_ReadEndBlock
 
    NAME
 	DB_ReadEndBlock -- Attempts to read a block end from the setings.
@@ -400,7 +400,7 @@ dockbot.library/DB_WriteSetting
 
    EXAMPLE
 	struct DockSettings *s;
-	if( s = DB_OpenSettingsRead("ENV:DockBot.prefs") ) {
+	if( s = DB_OpenSettingsRead("ENV:ToolDock.prefs") ) {
 	  if( DB_ReadBeginBlock(s) ) {
 	    while(!DB_ReadEndBlock(s)) {
 	      ...
@@ -412,7 +412,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	DB_OpenSettingsRead(),DB_ReadBeginBlock()
 
-dockbot.library/DB_ReadSetting                    dockbot.library/DB_ReadSetting
+tooldock.library/DB_ReadSetting                    tooldock.library/DB_ReadSetting
 
    NAME
 	DB_ReadSetting -- Attempts to read a value from the settings file.
@@ -436,7 +436,7 @@ dockbot.library/DB_WriteSetting
    EXAMPLE
 	struct DockSettings *s;
 	struct DockSettingValue val;
-	if( s = DB_OpenSettingsRead("ENV:DockBot.prefs") ) {
+	if( s = DB_OpenSettingsRead("ENV:ToolDock.prefs") ) {
 	  if( DB_ReadBeginBlock(s) ) {
 	    while(!DB_ReadEndBlock(s)) {
 	      if( DB_ReadSetting(s, &val) ) {
@@ -450,10 +450,10 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	DB_OpenSettingsRead()
 
-dockbot.library/DB_RegisterDebugStream    dockbot.library/DB_RegisterDebugStream
+tooldock.library/DB_RegisterDebugStream    tooldock.library/DB_RegisterDebugStream
 
    NAME
-	DB_RegisterDebugStream - Registers an output stream with dockbot.library.
+	DB_RegisterDebugStream - Registers an output stream with tooldock.library.
 
    SYNOPSIS
 	DB_RegisterDebugStream(fh);
@@ -470,7 +470,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
     DB_DebugLog
 
-dockbot.library/DB_RegisterPort                  dockbot.library/DB_RegisterPort
+tooldock.library/DB_RegisterPort                  tooldock.library/DB_RegisterPort
 
    NAME
 	DB_RegisterPort - Registers a message port with the Dock so that gadgets
@@ -494,7 +494,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
     DB_UnregisterPort
 
-dockbot.library/DB_RequestDockGadgetDrawdockbot.library/DB_RequestDockGadgetDraw
+tooldock.library/DB_RequestDockGadgetDrawtooldock.library/DB_RequestDockGadgetDraw
 
    NAME
 	DB_RequestDockGadgetDraw -- Requests the redraw of a dock gadget.
@@ -505,7 +505,7 @@ dockbot.library/DB_WriteSetting
 	DB_RequestDockGadgetDraw(Object *);
 
    FUNCTION
-	Sends an asynchronous message from a gadget to the DockBot application
+	Sends an asynchronous message from a gadget to the ToolDock application
 	requesting that it be redrawn.
 
    INPUTS
@@ -519,10 +519,10 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	dockbot.h
 
-dockbot.library/DB_RequestDockQuit            dockbot.library/DB_RequestDockQuit
+tooldock.library/DB_RequestDockQuit            tooldock.library/DB_RequestDockQuit
 
    NAME
-	DB_RequestDockQuit -- Asks the DockBot application to quit.
+	DB_RequestDockQuit -- Asks the ToolDock application to quit.
 
    SYNOPSIS
 	DB_RequestDockQuit(obj)
@@ -530,7 +530,7 @@ dockbot.library/DB_WriteSetting
 	DB_RequestDockQuit(Object *);
 
    FUNCTION
-	Sends an asynchronous message from a gadget to the DockBot application
+	Sends an asynchronous message from a gadget to the ToolDock application
 	requesting that it quit.
 
    INPUTS
@@ -544,7 +544,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	dockbot.h
 
-dockbot.library/DB_RequestLaunch                dockbot.library/DB_RequestLaunch
+tooldock.library/DB_RequestLaunch                tooldock.library/DB_RequestLaunch
 
    NAME
 	DB_RequestLaunch -- Requests the launch of an external program.
@@ -555,7 +555,7 @@ dockbot.library/DB_WriteSetting
 	DB_RequestLaunch(Object *, STRPTR, STRPTR, STRPTR, BOOL);
 
    FUNCTION
-	Sends an asynchronous message from a gadget to the DockBot application
+	Sends an asynchronous message from a gadget to the ToolDock application
 	requesting that it launch an external program.
 
    INPUTS
@@ -572,7 +572,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	dockbot.h
 
-dockbot.library/DB_ShowError                        dockbot.library/DB_ShowError
+tooldock.library/DB_ShowError                        tooldock.library/DB_ShowError
 
    NAME
 	DB_ShowError - Display an error message to the user.
@@ -588,7 +588,7 @@ dockbot.library/DB_WriteSetting
    INPUTS
     message - The error message to display to the user.
 
-dockbot.library/DB_UnregisterPort              dockbot.library/DB_UnregisterPort
+tooldock.library/DB_UnregisterPort              tooldock.library/DB_UnregisterPort
 
    NAME
 	DB_UnregisterPort - Removes a previously registered port from the Dock.
@@ -609,7 +609,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
     DB_RegisterPort
 
-dockbot.library/DB_WriteBeginBlock            dockbot.library/DB_WriteBeginBlock
+tooldock.library/DB_WriteBeginBlock            tooldock.library/DB_WriteBeginBlock
 
    NAME
 	DB_WriteBeginBlock -- Writes the start of a block to the settings file.
@@ -631,7 +631,7 @@ dockbot.library/DB_WriteSetting
 
    EXAMPLE
 	struct DockSettings *s;
-	if( s = DB_OpenSettingsWrite("ENV:DockBot.prefs") ) {
+	if( s = DB_OpenSettingsWrite("ENV:ToolDock.prefs") ) {
 	  if( DB_WriteBeginBlock(s) ) {
 	    ...
 	  }
@@ -641,10 +641,10 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	DB_OpenSettingsWrite(), DB_WriteEndBlock()
 
-dockbot.library/DB_WriteConfig                    dockbot.library/DB_WriteConfig
+tooldock.library/DB_WriteConfig                    tooldock.library/DB_WriteConfig
 
    NAME
-	DB_WriteConfig - Write the DockBot configuration file.
+	DB_WriteConfig - Write the ToolDock configuration file.
 
    SYNOPSIS
 	success = DB_WriteConfig(cfg,settings)
@@ -661,7 +661,7 @@ dockbot.library/DB_WriteSetting
    RESULT
 	TRUE if the configuration was written.
 
-dockbot.library/DB_WriteEndBlock                dockbot.library/DB_WriteEndBlock
+tooldock.library/DB_WriteEndBlock                tooldock.library/DB_WriteEndBlock
 
    NAME
 	DB_WriteEndBlock -- Writes the end of a block to the settings file.
@@ -683,7 +683,7 @@ dockbot.library/DB_WriteSetting
 
    EXAMPLE
 	struct DockSettings *s;
-	if( s = DB_OpenSettingsWrite("ENV:DockBot.prefs") ) {
+	if( s = DB_OpenSettingsWrite("ENV:ToolDock.prefs") ) {
 	  if( DB_WriteBeginBlock(s) ) {
 	    ...
 	    if( DB_WriteEndBlock(s) ) {
@@ -696,7 +696,7 @@ dockbot.library/DB_WriteSetting
    SEE ALSO
 	DB_OpenSettingsWrite(), DB_WriteBeginBlock()
 
-dockbot.library/DB_WriteSetting                  dockbot.library/DB_WriteSetting
+tooldock.library/DB_WriteSetting                  tooldock.library/DB_WriteSetting
 
    NAME
 	DB_WriteSetting -- Writes a key and value pair to the settings file.
@@ -720,7 +720,7 @@ dockbot.library/DB_WriteSetting
 
    EXAMPLE
 	struct DockSettings *s;
-	if( s = DB_OpenSettingsWrite("ENV:DockBot.prefs") ) {
+	if( s = DB_OpenSettingsWrite("ENV:ToolDock.prefs") ) {
 	  if( DB_WriteBeginBlock(s) ) {
 	    if( DB_WriteSetting(s, "key", "value") ) {
 	      ...

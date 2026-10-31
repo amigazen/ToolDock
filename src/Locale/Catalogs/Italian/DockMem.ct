@@ -2,7 +2,7 @@
 ## language italiano
 ## codeset 0
 ;
-## chunk AUTH Translated by Samir Hawamdeh (http://www.betatesting.it/backforthefuture)
+; Translated by Samir Hawamdeh (http://www.betatesting.it/backforthefuture)
 ;#language english
 ;#version 1
 ;
@@ -10,8 +10,8 @@
 ;
 ;
 MSG_Description
-Misuratore di memoria per DockBot
-; A memory meter for DockBot
+Misuratore di memoria per ToolDock
+; A memory meter for ToolDock
 ;
 MSG_LBL_Chip
 Chip %d%%

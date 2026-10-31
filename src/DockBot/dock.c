@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -161,13 +162,10 @@ struct DockWindow* create_dock(VOID)
                         
                     if( init_timer_notification(dock) ) {
 
-                        if( init_screennotify(dock) ) {
+                        if( get_prog_path(dock) ) {
 
-                             if( get_prog_path(dock) ) {
-    
-                                return dock;
-                            }
-                        }        
+                            return dock;
+                        }
                     }
                 }
             }
@@ -183,8 +181,6 @@ struct DockWindow* create_dock(VOID)
 VOID free_dock(struct DockWindow* dock)
 {
     DEBUG(printf("free_dock\n"));
-
-    free_screennotify(dock);
 
     free_cx_broker(dock);
 
@@ -294,7 +290,7 @@ VOID open_help(struct DockWindow *dock)
 
     COPY_STRING((STRPTR)dock->progPath, pos);
     pos--;
-    COPY_STRING("/doc/DockBot.guide", pos);
+    COPY_STRING("/doc/ToolDock.guide", pos);
     pos--;
     *pos = '\0';
 

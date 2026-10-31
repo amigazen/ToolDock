@@ -40,8 +40,8 @@ struct FC_String DockBot_Strings[23] = {
     { (STRPTR) "Z", 17 },
     { (STRPTR) "Open Preferences...", 18 },
     { (STRPTR) "S", 19 },
-    { (STRPTR) "About DockBot", 20 },
-    { (STRPTR) "DockBot Version %s\n\nA Dock For AmigaOS 3\n\n© Andrew Kennan\n\n%s", 21 },
+    { (STRPTR) "About ToolDock", 20 },
+    { (STRPTR) "ToolDock Version %s\n\nA Dock For AmigaOS 3\n\nCopyright 2026 amigazen project\nBased on DockBot by Andrew Kennan\n\n%s", 21 },
     { (STRPTR) "A Dock For AmigaOS 3", 22 }
 };
 
@@ -52,13 +52,13 @@ VOID open_catalog(VOID)
     struct FC_String *fc;
 	UWORD i;
 
-	DEBUG(printf(__FUNC__ ": DockBot.catalog\n"));
+	DEBUG(printf(__FUNC__ ": ToolDock.catalog\n"));
 	if( ! LocaleBase ) {
 		DEBUG(printf(__FUNC__ ": Locale library not found.\n"));
 		return;
 	}
 
-	if( !(DockBotCatalog = OpenCatalog(NULL, (STRPTR) "DockBot.catalog",
+	if( !(DockBotCatalog = OpenCatalog(NULL, (STRPTR) "ToolDock.catalog",
 			 			 		     OC_BuiltInLanguage, "english",
 								     OC_Version, 1,
 								     TAG_DONE))) {
@@ -74,7 +74,7 @@ VOID open_catalog(VOID)
 
 VOID close_catalog(VOID) 
 {
-	DEBUG(printf(__FUNC__ ": DockBot.catalog\n"));
+	DEBUG(printf(__FUNC__ ": ToolDock.catalog\n"));
 	if( ! DockBotCatalog ) {
 		DEBUG(printf(__FUNC__ ": Catalog not open.\n"));
 		return;

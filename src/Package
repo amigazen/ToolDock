@@ -1,17 +1,17 @@
 CD //
 
-SET FN DockBot.lha
+SET FN ToolDock.lha
 
 IF EXISTS $FN
   DELETE $FN
 ENDIF
 
-IF NOT EXISTS DockBot.info
-  COPY DockBot/src.Info DockBot.info
+IF NOT EXISTS ToolDock.info
+  COPY ToolDock/src.Info ToolDock.info
 ENDIF
 
-LHA a -r $FN @DockBot/filelist
+LHA a -r $FN @ToolDock/filelist
 
-COPY DockBot/DockBot.readme DockBot.readme
+COPY ToolDock/ToolDock.readme ToolDock.readme
 
-CD DockBot/src
+CD ToolDock/src

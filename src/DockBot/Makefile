@@ -3,14 +3,14 @@ INC=		INCLUDEDIRECTORY=//include INCLUDEDIRECTORY=/shared
 
 DIR=		/bin
 
-EXENAME=	DockBot
+EXENAME=	ToolDock
 EXEPATH=	/$(DIR)/
 
 C_OPTS=		cpu=$(CPU) $(SC_OPTS) $(INC) $(DEF_DS) $(DEF_BV)
 
-C_SOURCES=	main.c dock.c dockbot_cat.c /shared/dock_gadget.c dock_handle.c events.c gadgets.c layout.c settings.c debug.c screennotify.c window.c cx.c appicon.c timer.c
+C_SOURCES=	main.c dock.c dockbot_cat.c /shared/dock_gadget.c dock_handle.c events.c gadgets.c layout.c settings.c debug.c window.c cx.c appicon.c timer.c
 
-OBJECTS=	main.o dock.o dockbot_cat.o /shared/dock_gadget.o dock_handle.o events.o gadgets.o layout.o settings.o debug.o screennotify.o window.o cx.o appicon.o timer.o
+OBJECTS=	main.o dock.o dockbot_cat.o /shared/dock_gadget.o dock_handle.o events.o gadgets.o layout.o settings.o debug.o window.o cx.o appicon.o timer.o
 
 $(EXENAME): catalog $(OBJECTS)
    $(LINKER) WITH <<

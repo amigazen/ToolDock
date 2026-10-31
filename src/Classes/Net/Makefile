@@ -2,7 +2,7 @@ LIBNAME=	DockNet
 VERSION=	1
 REVISION=	0
 
-INC=		INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/
+INC=		INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/ INCLUDEDIRECTORY=////OpenTriton/SDK/Include_h
 DIR=		/bin
 
 LIBFILE=	$(LIBNAME).class
@@ -17,7 +17,7 @@ C_SOURCES=	lib.c net.c docknet_cat.c
 
 OBJECTS=	lib.o net.o docknet_cat.o
 
-LIBS=		LIB:sc.lib LIB:amiga.lib LIB:triton.lib
+LIBS=		LIB:sc.lib LIB:amiga.lib ////OpenTriton/Source/lib/triton.lib
 
 ################
 #

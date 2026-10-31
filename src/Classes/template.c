@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -24,6 +25,7 @@
 #include <proto/intuition.h>
 #include <proto/locale.h>
 #include <proto/utility.h>
+#include <proto/alib.h>
 
 #include "dockbot.h"
 #include "dockbot_protos.h"
@@ -35,7 +37,8 @@
 
 /**** Main Library Structure ****/
 
-struct ClassLibrary {
+/* NDK intuition/classes.h already has struct ClassLibrary. */
+struct DockClassLib {
     struct Library          cl_Lib;
     UWORD                   cl_Pad;
     BPTR                    cl_SegList;
@@ -58,41 +61,41 @@ struct InitDataTable;
 
 
 /**** Library Init ****/
-struct ClassLibrary * __saveds __asm InitLib(
+struct DockClassLib * __saveds __asm InitLib(
     register __a6 struct Library *sysBase,
     register __a0 BPTR segList,
-    register __d0 struct ClassLibrary *cb);
+    register __d0 struct DockClassLib *cb);
 
 
 /**** Library Functions ****/
-struct ClassLibrary * __saveds __asm _LibOpen(
-    register __a6 struct ClassLibrary *ClassLibraryBase);
+struct DockClassLib * __saveds __asm _LibOpen(
+    register __a6 struct DockClassLib *ClassLibraryBase);
     
 BPTR __saveds __asm _LibClose(
-    register __a6 struct ClassLibrary *ClassLibraryBase);
+    register __a6 struct DockClassLib *ClassLibraryBase);
 
 BPTR __saveds __asm _LibExpunge(
-    register __a6 struct ClassLibrary *ClassLibraryBase);
+    register __a6 struct DockClassLib *ClassLibraryBase);
 
 ULONG __saveds __asm ExtFuncLib(
-    register __a6 struct ClassLibrary *ClassLibraryBase);
+    register __a6 struct DockClassLib *ClassLibraryBase);
 
 Class * __saveds __asm GetEngine(
-    register __a6 struct ClassLibrary *ClassLibraryBase);
+    register __a6 struct DockClassLib *ClassLibraryBase);
 
 VOID __saveds __asm SetCatalog(
-    register __a6 struct ClassLibrary *ClassLibraryBase,
+    register __a6 struct DockClassLib *ClassLibraryBase,
     register __a0 struct Catalog *catalog);
 
 /**** Utility Functions ****/
 
 VOID __saveds CloseLibs(VOID);
 
-VOID __saveds FreeLib(struct ClassLibrary *cb);
+VOID __saveds FreeLib(struct DockClassLib *cb);
 
 Class* __saveds InitClass(VOID);
 
-VOID __saveds CleanUpClass(struct ClassLibrary *cb);
+VOID __saveds CleanUpClass(struct DockClassLib *cb);
 
 VOID InitCatalog(struct Catalog *catalog);
 
@@ -168,7 +171,7 @@ struct InitTable {
     struct  InitDataTable *DataTable;
     APTR    InitLibTable;
 } InitTab = {
-    sizeof(struct ClassLibrary),
+    sizeof(struct DockClassLib),
     (APTR*)&FuncTable[0],
     (struct InitDataTable *)&DataTable,
     (APTR)InitLib
@@ -190,14 +193,15 @@ struct ExecBase *SysBase;
 struct IntuitionBase *IntuitionBase;
 struct Library *DockBotBase;
 extern struct Library *TritonBase;
-struct ClassLibrary *DockGadgetBase;
-struct Library *LocaleBase;
+struct DockClassLib *DockGadgetBase;
+/* proto/locale.h declares LocaleBase as struct LocaleBase *. */
+struct LocaleBase *LocaleBase;
 struct Library *UtilityBase;
 
-struct ClassLibrary * __saveds __asm InitLib(
+struct DockClassLib * __saveds __asm InitLib(
     register __a6 struct Library *sysBase,
     register __a0 BPTR segList,
-    register __d0 struct ClassLibrary *cb)
+    register __d0 struct DockClassLib *cb)
 {
     SysBase = (struct ExecBase *)sysBase;
 
@@ -205,9 +209,9 @@ struct ClassLibrary * __saveds __asm InitLib(
     cb->cl_SegList = segList;
 
     if( IntuitionBase = (struct IntuitionBase *)OpenLibrary("intuition.library", 39) ) {
-        if( LocaleBase = OpenLibrary("locale.library", 37) ) {
+        if( LocaleBase = (struct LocaleBase *)OpenLibrary("locale.library", 37) ) {
             if( UtilityBase = OpenLibrary("utility.library", 37) ) { 
-                if( DockBotBase = OpenLibrary("dockbot.library", 1) ) {
+                if( DockBotBase = OpenLibrary("tooldock.library", 1) ) {
                     if( cb->cl_GadgetClass = InitClass() ) {
 
                         if( cb->cl_Catalog = OpenCatalog(NULL, CLASS_NAME ".catalog"
@@ -224,7 +228,7 @@ struct ClassLibrary * __saveds __asm InitLib(
                             cb->cl_IntuitionBase = (struct Library *)IntuitionBase;
                             cb->cl_DockBotBase = DockBotBase;
                             cb->cl_TritonBase = NULL;
-                            cb->cl_LocaleBase = LocaleBase;
+                            cb->cl_LocaleBase = (struct Library *)LocaleBase;
                             cb->cl_UtilityBase = UtilityBase;
                             TritonBase = NULL;
         
@@ -247,8 +251,8 @@ struct ClassLibrary * __saveds __asm InitLib(
     return NULL;
 }
 
-struct ClassLibrary * __saveds __asm _LibOpen(
-    register __a6 struct ClassLibrary *ClassLibraryBase)
+struct DockClassLib * __saveds __asm _LibOpen(
+    register __a6 struct DockClassLib *ClassLibraryBase)
 {
     ClassLibraryBase->cl_Lib.lib_OpenCnt++;
     ClassLibraryBase->cl_Lib.lib_Flags &= ~LIBF_DELEXP;
@@ -257,7 +261,7 @@ struct ClassLibrary * __saveds __asm _LibOpen(
 }
     
 BPTR __saveds __asm _LibClose(
-    register __a6 struct ClassLibrary *ClassLibraryBase)
+    register __a6 struct DockClassLib *ClassLibraryBase)
 {
     ClassLibraryBase->cl_Lib.lib_OpenCnt--;
     
@@ -270,7 +274,7 @@ BPTR __saveds __asm _LibClose(
 }
 
 BPTR __saveds __asm _LibExpunge(
-    register __a6 struct ClassLibrary *ClassLibraryBase)
+    register __a6 struct DockClassLib *ClassLibraryBase)
 {
     BPTR segList;
 
@@ -297,14 +301,14 @@ BPTR __saveds __asm _LibExpunge(
 }
 
 ULONG __saveds __asm ExtFuncLib(
-    register __a6 struct ClassLibrary *ClassLibraryBase)
+    register __a6 struct DockClassLib *ClassLibraryBase)
 {
     return NULL;
 }
 
 
 Class* __saveds __asm GetEngine(
-    register __a6 struct ClassLibrary *ClassLibraryBase) 
+    register __a6 struct DockClassLib *ClassLibraryBase) 
 {
     return ClassLibraryBase->cl_GadgetClass;
 }
@@ -609,7 +613,7 @@ Class __saveds *InitClass(VOID)
     return c;
 }
 
-VOID __saveds CleanUpClass(struct ClassLibrary *cb)
+VOID __saveds CleanUpClass(struct DockClassLib *cb)
 
 {
     if( cb->cl_GadgetClass ) {
@@ -638,7 +642,7 @@ VOID __saveds CloseLibs(VOID)
     }
 
     if( LocaleBase ) {
-        CloseLibrary(LocaleBase);
+        CloseLibrary((struct Library *)LocaleBase);
     }
 
     if( UtilityBase ) {
@@ -646,7 +650,7 @@ VOID __saveds CloseLibs(VOID)
     }
 }
 
-VOID __saveds FreeLib(struct ClassLibrary *cb)
+VOID __saveds FreeLib(struct DockClassLib *cb)
 {
     ULONG neg, pos, full;
     UBYTE* negPtr = (UBYTE*)cb;

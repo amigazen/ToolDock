@@ -9,8 +9,8 @@ IF <HELP$NOHELP> EQ HELP
   ECHO "  DIR/K        Set the output directory. Defaults to /bin/debug."
   ECHO "  ALL/S        Compile all components."
   ECHO "  RELEASE/S    Compile for release - optimize, no debug info."
-  ECHO "  EXE/S        Compile the DockBot executable."
-  ECHO "  LIB/S        Compile dockbot.library."
+  ECHO "  EXE/S        Compile the ToolDock executable."
+  ECHO "  LIB/S        Compile tooldock.library."
   ECHO "  PREFS/S      Compile the preferences application."
   ECHO "  BUTTON/S     Compile the button class."
   ECHO "  CLOCK/S      Compile the clock class."
@@ -160,7 +160,7 @@ IF <CLEAN$NOCLEAN> EQ NOCLEAN
 ENDIF
 
 IF "$COMPILELIB" EQ "Y"
-  ECHO Compiling dockbot.library
+  ECHO Compiling tooldock.library
   ECHO " "
   cd LibDockBot
   smake -b /$DEFFILE <CLEAN> <CLEANOBJ> DIR=$OUTDIR CPU=<CPU> DEF_DS=$DS DEF_BV=$BV
@@ -168,7 +168,7 @@ IF "$COMPILELIB" EQ "Y"
 ENDIF
 
 IF "$COMPILEEXE" EQ "Y"
-  echo Compiling DockBot
+  echo Compiling ToolDock
   echo " "
   cd DockBot
   smake -b /$DEFFILE <CLEAN> <CLEANOBJ> DIR=$OUTDIR CPU=<CPU> DEF_DS=$DS DEF_BV=$BV
@@ -176,7 +176,7 @@ IF "$COMPILEEXE" EQ "Y"
 ENDIF
 
 IF $COMPILEPREFS EQ Y
-  echo Compiling DockBotPrefs
+  echo Compiling ToolDockPrefs
   echo " "
   cd DockBotPrefs
   smake -b /$DEFFILE <CLEAN> <CLEANOBJ> DIR=$OUTDIR CPU=<CPU> DEF_DS=$DS DEF_BV=$BV

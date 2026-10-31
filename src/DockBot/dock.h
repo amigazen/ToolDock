@@ -1,15 +1,16 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
 #ifndef __DOCK_H__
 #define __DOCK_H__
 
-#define APP_NAME        "DockBot"
+#define APP_NAME        "ToolDock"
 
 #include <exec/types.h>
 #include <exec/lists.h>
@@ -61,8 +62,6 @@ typedef enum {
 	RS_UNICONIFYING = 5,
     RS_QUITTING = 6,
     RS_STOPPED = 7,
-    RS_HIDING = 8,
-    RS_SHOWING = 9,
 
     RS_START_EDIT = 10,
 	RS_EDITING = 11,
@@ -146,10 +145,6 @@ struct DockWindow
 	// Commodities
 	struct MsgPort *cxPort;
 	CxObj *cxBroker;
-
-    // Screen Notifications
-    APTR screenNotifyHandle;
-    struct MsgPort *screenNotifyMsgPort;
 
     // Gadget name tooltips
     Object *hoverGad;
@@ -319,15 +314,6 @@ BOOL init_cx_broker(struct DockWindow *dock);
 VOID free_cx_broker(struct DockWindow *dock);
 
 VOID handle_cx_message(struct DockWindow *dock);
-
-
-// screennotify.c - Handle screenmode changes
-
-BOOL init_screennotify(struct DockWindow *dock);
-
-BOOL free_screennotify(struct DockWindow *dock);
-
-VOID handle_screennotify(struct DockWindow *dock);
 
 #endif
 

@@ -1,21 +1,21 @@
-## version $VER: DockBotPrefs.catalog 1.0 (2019-11-26)
+## version $VER: ToolDockPrefs.catalog 1.0 (2019-11-26)
 ## language español
 ## codeset 0
 ;
 ;#language english
 ;#version 1
 ;
-; DockBot Preferences application
+; ToolDock Preferences application
 ;
 ; Application Info
 ;
 MSG_APP_Title
-Preferencias de DockBot
-; DockBot Preferences
+Preferencias de ToolDock
+; ToolDock Preferences
 ;
 MSG_APP_Info
-Editor de preferencias de DockBot
-; Preferences editor for DockBot
+Editor de preferencias de ToolDock
+; Preferences editor for ToolDock
 ;
 ; Generic
 ;
@@ -110,8 +110,8 @@ S_Salir
 ; Main Window
 ;
 MSG_MW_Title
-Preferencias de DockBot
-; DockBot Preferences
+Preferencias de ToolDock
+; ToolDock Preferences
 ;
 MSG_MW_DockSettings
 Configuraciones de Barra

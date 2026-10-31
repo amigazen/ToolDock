@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -19,13 +20,12 @@
 #define TIMER_SIG(dw) SIG(dw->timerPort)
 #define GADGET_SIG(dw) SIG(dw->gadgetPort)
 #define CX_SIG(dw) SIG(dw->cxPort)
-#define SCREENNOTIFY_SIG(dw) SIG(dw->screenNotifyMsgPort)
 
 
 VOID run_event_loop(struct DockWindow *dock)
 {
     ULONG signals, winsig, iconsig, docksig, notifysig, 
-          timersig, gadgetsig, cxsig, totsig, screensig,
+          timersig, gadgetsig, cxsig, totsig,
           customsig;
 
     while( dock->runState != RS_STOPPED ) {
@@ -94,24 +94,6 @@ VOID run_event_loop(struct DockWindow *dock)
                 dock->runState = RS_RUNNING;
                 break;
 
-            case RS_HIDING:
-                DEBUG(printf("runState = RS_HIDING\n"));
-                disable_layout(dock);
-                hide_dock_window(dock);
-                dock->runState = RS_HIDDEN;
-                break;
-
-            case RS_SHOWING:
-                DEBUG(printf("runState = RS_SHOWING\n"));
-                if( ! show_dock_window(dock) ) {
-                    return;
-                }
-                remap_gadgets(dock);
-                enable_layout(dock);
-                draw_gadgets(dock);
-                dock->runState = RS_RUNNING;
-                break;
-
             case RS_START_EDIT:
                 DEBUG(printf("runState = RS_START_EDIT\n"));    
                 disable_notification(dock);
@@ -144,9 +126,8 @@ VOID run_event_loop(struct DockWindow *dock)
                 timersig    = TIMER_SIG(dock);
                 gadgetsig   = GADGET_SIG(dock);
                 cxsig       = CX_SIG(dock);
-                screensig   = SCREENNOTIFY_SIG(dock);
 
-                totsig = winsig | docksig | iconsig | notifysig | timersig | gadgetsig | cxsig | screensig | SIGBREAKF_CTRL_C;
+                totsig = winsig | docksig | iconsig | notifysig | timersig | gadgetsig | cxsig | SIGBREAKF_CTRL_C;
 
                 customsig = get_custom_sigs(dock);
 
@@ -187,10 +168,6 @@ VOID run_event_loop(struct DockWindow *dock)
 
                     if( signals & cxsig ) {
                         handle_cx_message(dock);
-                    }
-
-                    if( signals & screensig ) {
-                        handle_screennotify(dock);
                     }
                 
                 break;

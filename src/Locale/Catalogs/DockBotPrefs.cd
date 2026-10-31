@@ -1,15 +1,13 @@
-#language english
-#version 1
 ;
-; DockBot Preferences application
+; ToolDock Preferences application
 ;
 ; Application Info
 ;
 MSG_APP_Title (//)
-DockBot Preferences
+ToolDock Preferences
 ;
 MSG_APP_Info (//)
-Preferences editor for DockBot
+Preferences editor for ToolDock
 ;
 ; Generic
 ;
@@ -83,7 +81,7 @@ Q_Quit
 ; Main Window
 ;
 MSG_MW_Title (//)
-DockBot Preferences
+ToolDock Preferences
 ;
 MSG_MW_DockSettings (//)
 Dock Settings

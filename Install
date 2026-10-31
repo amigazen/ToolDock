@@ -1,23 +1,23 @@
 ;
-; DockBot Installer
+; ToolDock Installer
 ;
 
 ;
 ; English text strings
 ;
-(set #welcome-msg "This is the installer for DockBot." )
+(set #welcome-msg "This is the installer for ToolDock." )
 
-(set #app-dir-prompt "Please select the location to install DockBot. A drawer named DockBot will be created there." )
-(set #app-dir-help "This is the directory DockBot will be placed in." )
+(set #app-dir-prompt "Please select the location to install ToolDock. A drawer named ToolDock will be created there." )
+(set #app-dir-help "This is the directory ToolDock will be placed in." )
 
-(set #run-on-start-prompt "Do you want DockBot to be run when Workbench starts?" )
+(set #run-on-start-prompt "Do you want ToolDock to be run when Workbench starts?" )
 (set #run-on-start-help "If you select No the WbStartup launcher will be placed in " )
 
 (set #cpu-type-prompt "Which CPU are you using?" )
-(set #cpu-type-help "A version of DockBot built for you specific CPU will be installed." )
+(set #cpu-type-help "A version of ToolDock built for you specific CPU will be installed." )
 
-(set #copy-prefs-prompt "Do you want to replace your existing DockBot configuration?" )
-(set #copy-prefs-help "An existing DockBot.prefs file was found. Choosing Yes will overwrite it. Choosing No will leave it alone." )
+(set #copy-prefs-prompt "Do you want to replace your existing ToolDock configuration?" )
+(set #copy-prefs-help "An existing ToolDock.prefs file was found. Choosing Yes will overwrite it. Choosing No will leave it alone." )
 
 ;
 ; Default values
@@ -28,7 +28,7 @@
 (set #copy-prefs 1)
 
 (set #launcher-dir "SYS:WbStartup")
-(set #launcher-name "DockBotStart")
+(set #launcher-name "ToolDockStart")
 
 ;
 ; Here we go
@@ -82,7 +82,7 @@
 		)
 
 
-		(if (exists "ENVARC:DockBot.prefs") 
+		(if (exists "ENVARC:ToolDock.prefs") 
 			(set #copy-prefs 
 				(askbool
 					(prompt #copy-prefs-prompt )
@@ -101,8 +101,8 @@
 (if (= #cpu-type "68030") (set #cpu-type "68020"))
 (if (= #cpu-type "68060") (set #cpu-type "68040"))
 
-(if (NOT (patmatch "?#DockBot" #app-dir)) 
-	(set #app-dir (tackon #app-dir "DockBot"))
+(if (NOT (patmatch "?#ToolDock" #app-dir)) 
+	(set #app-dir (tackon #app-dir "ToolDock"))
 )
 (set @default-dest #app-dir)
 (complete 25)
@@ -113,17 +113,17 @@
            (infos)
 )
 (complete 35)
-(copyfiles (source "src/Images/DockBot.info")
+(copyfiles (source "src/Images/ToolDock.info")
            (dest #app-dir)
  		   (help copyfiles-help)
            (infos)
 )
-(copyfiles (source "src/Images/DockBotPrefs.info")
+(copyfiles (source "src/Images/ToolDockPrefs.info")
            (dest #app-dir)
  		   (help copyfiles-help)
            (infos)
 )
-(copyfiles (source "src/Images/DockBotMin.info")
+(copyfiles (source "src/Images/ToolDockMin.info")
            (dest #app-dir)
  		   (help copyfiles-help)
            (infos)
@@ -146,12 +146,12 @@
 (if (= #copy-prefs 1 )
 	(
 		(copyfiles 
-			(source "DockBot.prefs")
+			(source "ToolDock.prefs")
 			(dest "ENVARC:")			
 			(help copyfiles-help)
 		)
 		(copyfiles 
-			(source "DockBot.prefs")
+			(source "ToolDock.prefs")
 			(dest "ENV:")
 			(help copyfiles-help)
 		)
@@ -223,7 +223,7 @@
 	(delete #launcher)
 )
 (copyfiles
-	(source "src/Images/DockBotStart.info")
+	(source "src/Images/ToolDockStart.info")
 	(dest #launcher-dir)
 	(help copyfiles-help)
 )
@@ -231,6 +231,6 @@
 (textfile 
 	(dest #launcher)
     (append (cat "CD " #app-dir "\n"))
-	(append "WBRUN DockBot")
+	(append "WBRUN ToolDock")
 )
 (complete 100)

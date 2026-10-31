@@ -6,12 +6,12 @@
 ;#language english
 ;#version 0
 ;
-; DockBot Window Switcher
+; ToolDock Window Switcher
 ;
 ;
 MSG_Description
-Window and screen switcher for DockBot
-; Window and screen switcher for DockBot
+Window and screen switcher for ToolDock
+; Window and screen switcher for ToolDock
 ;
 MSG_POS_Dock
 Dock Window

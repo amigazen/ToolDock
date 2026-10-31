@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -181,7 +182,7 @@ VOID open_settings(struct DockWindow *dock)
 
     COPY_STRING((STRPTR)dock->progPath, pos);
     pos--;
-    COPY_STRING("/DockBotPrefs", pos);
+    COPY_STRING("/ToolDockPrefs", pos);
     pos--;
     *pos = '\0';
 

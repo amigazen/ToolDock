@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -18,7 +19,8 @@
 #include <proto/dos.h>
 #include <proto/locale.h>
 #include <proto/graphics.h>
-#include <clib/utility_protos.h>
+#include <proto/utility.h>
+#include <proto/alib.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -30,6 +32,7 @@
 
 #include <libraries/triton.h>
 #include <proto/triton.h>
+#include "triton_support.h"
 
 #include "class_def.h"
 
@@ -122,12 +125,14 @@ VOID measure_text(struct ClockGadgetData *data, struct DrawInfo *drawInfo, UWORD
     *h = 0;
     *w = 0;
     FOR_EACH_LINE {
+        struct TextLine *next;
 
         line->text.ITextFont = &line->ta;
-        line->text.ITextFont->ta_Name = drawInfo->dri_Font->tf_Message.mn_Node.ln_Name;
-        line->text.ITextFont->ta_YSize = drawInfo->dri_Font->tf_YSize;
-        line->text.ITextFont->ta_Style = drawInfo->dri_Font->tf_Style;
-        line->text.ITextFont->ta_Flags = drawInfo->dri_Font->tf_Flags;
+        /* ITextFont is CONST TextAttr * in current NDK headers. */
+        line->ta.ta_Name = drawInfo->dri_Font->tf_Message.mn_Node.ln_Name;
+        line->ta.ta_YSize = drawInfo->dri_Font->tf_YSize;
+        line->ta.ta_Style = drawInfo->dri_Font->tf_Style;
+        line->ta.ta_Flags = drawInfo->dri_Font->tf_Flags;
         line->text.FrontPen = drawInfo->dri_Pens[TEXTPEN];
         line->text.BackPen = drawInfo->dri_Pens[BACKGROUNDPEN];
         line->text.DrawMode = JAM1;
@@ -136,8 +141,10 @@ VOID measure_text(struct ClockGadgetData *data, struct DrawInfo *drawInfo, UWORD
 
         line->width = IntuiTextLength(&line->text);
 
-        if( line->n.mln_Succ ) {
-            line->text.NextText = &((struct TextLine *)line->n.mln_Succ)->text;
+        /* mln_Succ is the list sentinel on the last real line, not NULL. */
+        next = (struct TextLine *)line->n.mln_Succ;
+        if( next != NULL && next->n.mln_Succ != NULL ) {
+            line->text.NextText = &next->text;
         }
 
         if( line->width > *w ) {

@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -26,7 +27,6 @@ struct Library *WorkbenchBase;
 struct Library *DockBotBase;
 struct Library *GadToolsBase;
 struct Library *CxBase;
-struct Library *ScreenNotifyBase;
 struct Library *LocaleBase;
 
 BOOL already_running(VOID)
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
 
 #endif
 
-    if( DockBotBase = OpenLibrary("PROGDIR:dockbot.library", 1) ) {
+    if( DockBotBase = OpenLibrary("PROGDIR:tooldock.library", 1) ) {
 
 #ifdef DEBUG_BUILD
 
@@ -112,8 +112,6 @@ int main(int argc, char** argv)
                                 if( CxBase = open_lib("commodities.library", 39, FALSE) ) {
 
                                     if( LocaleBase = open_lib("locale.library", 38, FALSE) ) {
-    
-                                        ScreenNotifyBase = open_lib("screennotify.library", 1, TRUE);
 
                                         open_catalog();
 
@@ -125,8 +123,7 @@ int main(int argc, char** argv)
                                         }
     
                                         close_catalog();
-                                            
-                                        close_lib("screennotify.library", ScreenNotifyBase);
+
                                         close_lib("locale.library", LocaleBase);
                                     }
                                     close_lib("commodities.library", CxBase);
@@ -143,6 +140,6 @@ int main(int argc, char** argv)
             }
             close_lib("dos.library", DosBase);
         }  
-        close_lib("dockbot.library", DockBotBase);
+        close_lib("tooldock.library", DockBotBase);
     }
 }

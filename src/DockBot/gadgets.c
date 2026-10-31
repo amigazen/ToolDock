@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan    
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -457,10 +458,11 @@ VOID show_gadget_label(struct DockWindow *dock, Object *gadget, STRPTR label)
     
         if( drawInfo = GetScreenDrawInfo(screen) ) {
 
-            text.ITextFont->ta_Name = drawInfo->dri_Font->tf_Message.mn_Node.ln_Name;
-            text.ITextFont->ta_YSize = drawInfo->dri_Font->tf_YSize;
-            text.ITextFont->ta_Style = drawInfo->dri_Font->tf_Style;
-            text.ITextFont->ta_Flags = drawInfo->dri_Font->tf_Flags;
+            /* ITextFont is CONST TextAttr * in current NDK headers. */
+            ta.ta_Name = drawInfo->dri_Font->tf_Message.mn_Node.ln_Name;
+            ta.ta_YSize = drawInfo->dri_Font->tf_YSize;
+            ta.ta_Style = drawInfo->dri_Font->tf_Style;
+            ta.ta_Flags = drawInfo->dri_Font->tf_Flags;
             text.FrontPen = drawInfo->dri_Pens[TEXTPEN];
             text.BackPen = drawInfo->dri_Pens[BACKGROUNDPEN];
             text.DrawMode = JAM2;

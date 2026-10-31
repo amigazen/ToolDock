@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -16,7 +17,7 @@
 
 #include "dockbot.h"
 
-/****** dockbot.library/DB_GetDockGadgetEnvironment ***********************
+/****** tooldock.library/DB_GetDockGadgetEnvironment ***********************
 *
 *   NAME
 *	DB_GetDockGadgetEnvironment -- Get the environment info for the gadget.
@@ -47,7 +48,7 @@ VOID __asm __saveds DB_GetDockGadgetEnvironment(
 	register __a0 Object *obj, 
 	register __a1 struct GadgetEnvironment *env);
 
-/****** dockbot.library/DB_DrawOutsetFrame *********************************
+/****** tooldock.library/DB_DrawOutsetFrame *********************************
 *
 *   NAME
 *	DB_DrawOutsetFrame -- Draws a raised 3d rectangle.
@@ -78,7 +79,7 @@ VOID __asm __saveds DB_DrawOutsetFrame(
 	register __a1 struct Rect *bounds);
 
 
-/****** dockbot.library/DB_DrawInsetFrame **********************************
+/****** tooldock.library/DB_DrawInsetFrame **********************************
 *
 *   NAME
 *	DB_DrawOutsetFrame -- Draws a lowered 3d rectangle.
@@ -110,7 +111,7 @@ VOID __asm __saveds DB_DrawInsetFrame(
 
 
 
-/****** dockbot.library/DB_OpenSettingsRead ********************************
+/****** tooldock.library/DB_OpenSettingsRead ********************************
 *
 *   NAME
 *	DB_OpenSettingsRead -- Open the settings file for reading.
@@ -132,7 +133,7 @@ VOID __asm __saveds DB_DrawInsetFrame(
 *
 *   EXAMPLE
 *	struct DockSettings *s;
-*	if( s = DB_OpenSettingsRead("ENV:DockBot.prefs") ) {
+*	if( s = DB_OpenSettingsRead("ENV:ToolDock.prefs") ) {
 *	  ...
 *	  DB_CloseSettings(s);
 *	}
@@ -146,7 +147,7 @@ struct DockSettings * __asm __saveds DB_OpenSettingsRead(
 
 
 
-/****** dockbot.library/DB_OpenSettingsWrite *****************************
+/****** tooldock.library/DB_OpenSettingsWrite *****************************
 *
 *   NAME
 *	DB_OpenSettingsWrite -- Open the settings file for writing.
@@ -169,7 +170,7 @@ struct DockSettings * __asm __saveds DB_OpenSettingsRead(
 *
 *   EXAMPLE
 *	struct DockSettings *s;
-*	if( s = DB_OpenSettingsWrite("ENV:DockBot.prefs") ) {
+*	if( s = DB_OpenSettingsWrite("ENV:ToolDock.prefs") ) {
 *	  ...
 *	  DB_CloseSettings(s);
 *	}
@@ -183,7 +184,7 @@ struct DockSettings * __asm __saveds DB_OpenSettingsWrite(
 
 
 
-/****** dockbot.library/DB_CloseSettings ***********************************
+/****** tooldock.library/DB_CloseSettings ***********************************
 *
 *   NAME
 *	DB_CloseSettings -- Closes a previously opened settings file.
@@ -206,7 +207,7 @@ struct DockSettings * __asm __saveds DB_OpenSettingsWrite(
 *
 *   EXAMPLE
 *	struct DockSettings *s;
-*	if( s = DB_OpenSettingsRead("ENV:DockBot.prefs") ) {
+*	if( s = DB_OpenSettingsRead("ENV:ToolDock.prefs") ) {
 *	  ...
 *	  DB_CloseSettings(s);
 *	}
@@ -219,7 +220,7 @@ VOID __asm __saveds DB_CloseSettings(
     register __a0 struct DockSettings *settings);
 
 
-/****** dockbot.library/DB_DisposeConfig ***********************************
+/****** tooldock.library/DB_DisposeConfig ***********************************
 *
 *   NAME
 *	DB_DisposeConfig - Cleans up the gadgets on a DockConfig structure.
@@ -247,7 +248,7 @@ VOID __asm __saveds DB_DisposeConfig(
     register __a0 struct DockConfig *cfg);
 
 
-/****** dockbot.library/DB_ReadBeginBlock *********************************
+/****** tooldock.library/DB_ReadBeginBlock *********************************
 *
 *   NAME
 *	DB_ReadBeginBlock -- Attempts to read a block start from the setings.
@@ -270,7 +271,7 @@ VOID __asm __saveds DB_DisposeConfig(
 *
 *   EXAMPLE
 *	struct DockSettings *s;
-*	if( s = DB_OpenSettingsRead("ENV:DockBot.prefs") ) {
+*	if( s = DB_OpenSettingsRead("ENV:ToolDock.prefs") ) {
 *	  if( DB_ReadBeginBlock(s) ) {
 *	    while(!DB_ReadEndBlock(s)) {
 *	      ...
@@ -287,7 +288,7 @@ BOOL __asm __saveds DB_ReadBeginBlock(
     register __a0 struct DockSettings *settings);
 
 
-/****** dockbot.library/DB_ReadEndBlock ************************************
+/****** tooldock.library/DB_ReadEndBlock ************************************
 *
 *   NAME
 *	DB_ReadEndBlock -- Attempts to read a block end from the setings.
@@ -309,7 +310,7 @@ BOOL __asm __saveds DB_ReadBeginBlock(
 *
 *   EXAMPLE
 *	struct DockSettings *s;
-*	if( s = DB_OpenSettingsRead("ENV:DockBot.prefs") ) {
+*	if( s = DB_OpenSettingsRead("ENV:ToolDock.prefs") ) {
 *	  if( DB_ReadBeginBlock(s) ) {
 *	    while(!DB_ReadEndBlock(s)) {
 *	      ...
@@ -326,7 +327,7 @@ BOOL __asm __saveds DB_ReadEndBlock(
     register __a0 struct DockSettings *settings);
 
 
-/****** dockbot.library/DB_ReadSetting *************************************
+/****** tooldock.library/DB_ReadSetting *************************************
 *
 *   NAME
 *	DB_ReadSetting -- Attempts to read a value from the settings file.
@@ -350,7 +351,7 @@ BOOL __asm __saveds DB_ReadEndBlock(
 *   EXAMPLE
 *	struct DockSettings *s;
 *	struct DockSettingValue val;
-*	if( s = DB_OpenSettingsRead("ENV:DockBot.prefs") ) {
+*	if( s = DB_OpenSettingsRead("ENV:ToolDock.prefs") ) {
 *	  if( DB_ReadBeginBlock(s) ) {
 *	    while(!DB_ReadEndBlock(s)) {
 *	      if( DB_ReadSetting(s, &val) ) {
@@ -370,7 +371,7 @@ BOOL __asm __saveds DB_ReadSetting(
     register __a1 struct DockSettingValue *value);
 
 
-/****** dockbot.library/DB_WriteBeginBlock *********************************
+/****** tooldock.library/DB_WriteBeginBlock *********************************
 *
 *   NAME
 *	DB_WriteBeginBlock -- Writes the start of a block to the settings file.
@@ -392,7 +393,7 @@ BOOL __asm __saveds DB_ReadSetting(
 *
 *   EXAMPLE
 *	struct DockSettings *s;
-*	if( s = DB_OpenSettingsWrite("ENV:DockBot.prefs") ) {
+*	if( s = DB_OpenSettingsWrite("ENV:ToolDock.prefs") ) {
 *	  if( DB_WriteBeginBlock(s) ) {
 *	    ...
 *	  }
@@ -407,7 +408,7 @@ BOOL __asm __saveds DB_WriteBeginBlock(
     register __a0 struct DockSettings *settings);
 
 
-/****** dockbot.library/DB_WriteEndBlock ***********************************
+/****** tooldock.library/DB_WriteEndBlock ***********************************
 *
 *   NAME
 *	DB_WriteEndBlock -- Writes the end of a block to the settings file.
@@ -429,7 +430,7 @@ BOOL __asm __saveds DB_WriteBeginBlock(
 *
 *   EXAMPLE
 *	struct DockSettings *s;
-*	if( s = DB_OpenSettingsWrite("ENV:DockBot.prefs") ) {
+*	if( s = DB_OpenSettingsWrite("ENV:ToolDock.prefs") ) {
 *	  if( DB_WriteBeginBlock(s) ) {
 *	    ...
 *	    if( DB_WriteEndBlock(s) ) {
@@ -447,7 +448,7 @@ BOOL __asm __saveds DB_WriteEndBlock(
     register __a0 struct DockSettings *settings);
 
 
-/****** dockbot.library/DB_WriteSetting ************************************
+/****** tooldock.library/DB_WriteSetting ************************************
 *
 *   NAME
 *	DB_WriteSetting -- Writes a key and value pair to the settings file.
@@ -471,7 +472,7 @@ BOOL __asm __saveds DB_WriteEndBlock(
 *
 *   EXAMPLE
 *	struct DockSettings *s;
-*	if( s = DB_OpenSettingsWrite("ENV:DockBot.prefs") ) {
+*	if( s = DB_OpenSettingsWrite("ENV:ToolDock.prefs") ) {
 *	  if( DB_WriteBeginBlock(s) ) {
 *	    if( DB_WriteSetting(s, "key", "value") ) {
 *	      ...
@@ -489,10 +490,10 @@ BOOL __asm __saveds DB_WriteSetting(
     register __a1 STRPTR key, 
     register __a2 STRPTR value);
 
-/****** dockbot.library/DB_ReadConfig ***********************************
+/****** tooldock.library/DB_ReadConfig ***********************************
 *
 *   NAME
-*	DB_ReadConfig - Read the DockBot configuration file.
+*	DB_ReadConfig - Read the ToolDock configuration file.
 *
 *   SYNOPSIS
 *	success = DB_ReadConfig(cfg,settings)
@@ -515,10 +516,10 @@ BOOL __asm __saveds DB_ReadConfig(
     register __a0 struct DockConfig *cfg,
     register __a1 struct DockSettings *settings);
 
-/****** dockbot.library/DB_WriteConfig ***********************************
+/****** tooldock.library/DB_WriteConfig ***********************************
 *
 *   NAME
-*	DB_WriteConfig - Write the DockBot configuration file.
+*	DB_WriteConfig - Write the ToolDock configuration file.
 *
 *   SYNOPSIS
 *	success = DB_WriteConfig(cfg,settings)
@@ -541,10 +542,10 @@ BOOL __asm __saveds DB_WriteConfig(
     register __a1 struct DockSettings *settings);
 
 
-/****** dockbot.library/DB_RequestDockQuit *********************************
+/****** tooldock.library/DB_RequestDockQuit *********************************
 *
 *   NAME
-*	DB_RequestDockQuit -- Asks the DockBot application to quit.
+*	DB_RequestDockQuit -- Asks the ToolDock application to quit.
 *
 *   SYNOPSIS
 *	DB_RequestDockQuit(obj)
@@ -552,7 +553,7 @@ BOOL __asm __saveds DB_WriteConfig(
 *	DB_RequestDockQuit(Object *);
 *
 *   FUNCTION
-*	Sends an asynchronous message from a gadget to the DockBot application 
+*	Sends an asynchronous message from a gadget to the ToolDock application 
 *	requesting that it quit.
 *
 *   INPUTS
@@ -571,7 +572,7 @@ VOID __asm __saveds DB_RequestDockQuit(
 	register __a0 Object *obj);
 
 
-/****** dockbot.library/DB_RequestDockGadgetDraw ****************************
+/****** tooldock.library/DB_RequestDockGadgetDraw ****************************
 *
 *   NAME
 *	DB_RequestDockGadgetDraw -- Requests the redraw of a dock gadget.
@@ -582,7 +583,7 @@ VOID __asm __saveds DB_RequestDockQuit(
 *	DB_RequestDockGadgetDraw(Object *);
 *
 *   FUNCTION
-*	Sends an asynchronous message from a gadget to the DockBot application 
+*	Sends an asynchronous message from a gadget to the ToolDock application 
 *	requesting that it be redrawn.
 *
 *   INPUTS
@@ -600,7 +601,7 @@ VOID __asm __saveds DB_RequestDockQuit(
 VOID __asm __saveds DB_RequestDockGadgetDraw(
 	register __a0 Object *obj);
 
-/****** dockbot.library/DB_RequestLaunch ****************************
+/****** tooldock.library/DB_RequestLaunch ****************************
 *
 *   NAME
 *	DB_RequestLaunch -- Requests the launch of an external program.
@@ -611,7 +612,7 @@ VOID __asm __saveds DB_RequestDockGadgetDraw(
 *	DB_RequestLaunch(Object *, STRPTR, STRPTR, STRPTR, BOOL);
 *
 *   FUNCTION
-*	Sends an asynchronous message from a gadget to the DockBot application 
+*	Sends an asynchronous message from a gadget to the ToolDock application 
 *	requesting that it launch an external program.
 *
 *   INPUTS
@@ -638,7 +639,7 @@ VOID __asm __saveds DB_RequestLaunch(
     register __d0 BOOL wb);
 
 
-/****** dockbot.library/DB_AllocMem ****************************************
+/****** tooldock.library/DB_AllocMem ****************************************
 *
 *   NAME
 *	DB_AllocMem -- Allocate memory from the pools maintained by the library.
@@ -650,7 +651,7 @@ VOID __asm __saveds DB_RequestLaunch(
 *
 *   FUNCTION
 *	Allocates a block of memory from the pools maintained internally by the
-*	DockBot library.
+*	ToolDock library.
 *
 *   INPUTS
 *	byteSize   - The size, in bytes, to allocate.
@@ -686,7 +687,7 @@ VOID* __asm __saveds DB_AllocMem(
     register __d1 ULONG attributes);
 
 
-/****** dockbot.library/DB_FreeMem *****************************************
+/****** tooldock.library/DB_FreeMem *****************************************
 *
 *   NAME
 *	DB_FreeMem - Free a block of memory allocated by DB_AllocMem.
@@ -725,7 +726,7 @@ VOID __asm __saveds DB_FreeGadget(
 struct DgNode * __asm __saveds DB_AllocGadget(
     register __a0 STRPTR name);
 
-/****** dockbot.library/DB_ListClasses *************************************
+/****** tooldock.library/DB_ListClasses *************************************
 *
 *   NAME
 *	DB_ListClasses - List the available gadget classes.
@@ -752,7 +753,7 @@ BOOL __asm __saveds DB_ListClasses(
     register __a0 struct List *list);
 
 
-/****** dockbot.library/DB_ShowError ***************************************
+/****** tooldock.library/DB_ShowError ***************************************
 *
 *   NAME
 *	DB_ShowError - Display an error message to the user.
@@ -778,7 +779,7 @@ STRPTR __asm __saveds DB_SelectFile(
     register __a2 STRPTR cancelText,
     register __a3 STRPTR path);
 
-/****** dockbot.library/DB_RegisterPort ************************************
+/****** tooldock.library/DB_RegisterPort ************************************
 *
 *   NAME
 *	DB_RegisterPort - Registers a message port with the Dock so that gadgets
@@ -808,7 +809,7 @@ VOID __asm __saveds DB_RegisterPort(
     register __a1 struct MsgPort *port);
 
 
-/****** dockbot.library/DB_UnregisterPort ************************************
+/****** tooldock.library/DB_UnregisterPort ************************************
 *
 *   NAME
 *	DB_UnregisterPort - Removes a previously registered port from the Dock.
@@ -834,10 +835,10 @@ VOID __asm __saveds DB_UnregisterPort(
     register __a0 Object *obj,
     register __a1 struct MsgPort *port);
 
-/****** dockbot.library/DB_RegisterDebugStream *****************************
+/****** tooldock.library/DB_RegisterDebugStream *****************************
 *
 *   NAME
-*	DB_RegisterDebugStream - Registers an output stream with dockbot.library.
+*	DB_RegisterDebugStream - Registers an output stream with tooldock.library.
 *
 *   SYNOPSIS
 *	DB_RegisterDebugStream(fh);
@@ -858,7 +859,7 @@ VOID __asm __saveds DB_UnregisterPort(
 VOID __asm __saveds DB_RegisterDebugStream(
 	register __a0 BPTR fh);
 
-/****** dockbot.library/DB_DebugLog ***************************************
+/****** tooldock.library/DB_DebugLog ***************************************
 *
 *   NAME
 *	DB_DebugLog - Writes a message to the debug logging stream.

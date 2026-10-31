@@ -1,11 +1,9 @@
-#language english
-#version 1
 ;
 ; DockButton
 ;
 ;
 MSG_Description (//)
-A button for DockBot
+A button for ToolDock
 ;
 ;
 ; Start Types

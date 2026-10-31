@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -82,8 +83,8 @@ struct Resident __aligned _LibRomTag = {
 APTR EndResident;
 
 
-char __aligned LibName[]   = "dockbot.library";
-char __aligned LibId[]     = "dockbot.library " VERSION_STR; 
+char __aligned LibName[]   = "tooldock.library";
+char __aligned LibId[]     = "tooldock.library " VERSION_STR; 
 
 
 struct InitDataTable {

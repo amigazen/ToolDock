@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2020 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -23,6 +24,7 @@
 
 #include <libraries/triton.h>
 #include <proto/triton.h>
+#include "triton_support.h"
 
 #define MIN_EYES 1
 #define MAX_EYES 4

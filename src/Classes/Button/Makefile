@@ -3,7 +3,7 @@ LIBNAME=	DockButton
 VERSION=	1
 REVISION=	0
 
-INC=		INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/
+INC=		INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/ INCLUDEDIRECTORY=////OpenTriton/SDK/Include_h
 DIR=		/bin
 
 LIBFILE=	$(LIBNAME).class
@@ -18,7 +18,7 @@ C_SOURCES=	lib.c button.c triton_icon.c dockbutton_cat.c
 
 OBJECTS=	lib.o button.o triton_icon.o dockbutton_cat.o
 
-LIBS=		LIB:sc.lib LIB:amiga.lib LIB:triton.lib
+LIBS=		LIB:sc.lib LIB:amiga.lib ////OpenTriton/Source/lib/triton.lib
 
 ################
 #

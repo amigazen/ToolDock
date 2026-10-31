@@ -16,7 +16,7 @@
 #include "DockButton_cat.h"
 
 struct FC_String DockButton_Strings[13] = {
-    { (STRPTR) "A button for DockBot", 0 },
+    { (STRPTR) "A button for ToolDock", 0 },
     { (STRPTR) "Workbench", 1 },
     { (STRPTR) "Shell", 2 },
     { (STRPTR) "Choose an application", 3 },

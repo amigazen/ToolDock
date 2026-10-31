@@ -1,8 +1,5 @@
-#basename TEMPLATE
-#language english
-#version 0
 ;
-; DockBot class template
+; ToolDock class template
 ;
 MSG_Description (//)
 Enter a description

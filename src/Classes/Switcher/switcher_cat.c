@@ -16,7 +16,7 @@
 #include "switcher_cat.h"
 
 struct FC_String switcher_Strings[5] = {
-    { (STRPTR) "Window and screen switcher for DockBot", 0 },
+    { (STRPTR) "Window and screen switcher for ToolDock", 0 },
     { (STRPTR) "Dock Window", 1 },
     { (STRPTR) "Screen Centre", 2 },
     { (STRPTR) "Position", 3 },

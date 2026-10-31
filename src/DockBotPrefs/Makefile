@@ -1,9 +1,9 @@
 
-INC=		INCLUDEDIRECTORY=//include INCLUDEDIRECTORY=/shared
+INC=		INCLUDEDIRECTORY=//include INCLUDEDIRECTORY=/shared INCLUDEDIRECTORY=///OpenTriton/SDK/Include_h
 
 DIR=		/bin
 
-EXENAME=	DockBotPrefs
+EXENAME=	ToolDockPrefs
 EXEPATH=	/$(DIR)/
 
 C_OPTS=		cpu=$(CPU) $(SC_OPTS) $(INC) $(DEF_DS) $(DEF_BV)
@@ -12,7 +12,7 @@ C_SOURCES=	main.c dockbotprefs_cat.c /shared/dock_gadget.c settings.c new_gadget
 
 OBJECTS=	main.o dockbotprefs_cat.o /shared/dock_gadget.o settings.o new_gadget.o gadget_list.o tags.o
 
-LIBS=		$(LIBS) LIB:triton.lib
+LIBS=		$(LIBS) ///OpenTriton/Source/lib/triton.lib
 
 $(EXENAME): catalog $(OBJECTS)
    $(LINKER) WITH <<

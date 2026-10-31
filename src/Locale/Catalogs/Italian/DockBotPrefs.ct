@@ -1,22 +1,22 @@
-## version $VER: DockBotPrefs.catalog 1.0 (24.03.2020)
+## version $VER: ToolDockPrefs.catalog 1.0 (24.03.2020)
 ## language italiano
 ## codeset 0
 ;
-## chunk AUTH Translated by Samir Hawamdeh (http://www.betatesting.it/backforthefuture)
+; Translated by Samir Hawamdeh (http://www.betatesting.it/backforthefuture)
 ;#language english
 ;#version 1
 ;
-; DockBot Preferences application
+; ToolDock Preferences application
 ;
 ; Application Info
 ;
 MSG_APP_Title
-Preferenze di DockBot
-; DockBot Preferences
+Preferenze di ToolDock
+; ToolDock Preferences
 ;
 MSG_APP_Info
-Editor delle preferenze di DockBot
-; Preferences editor for DockBot
+Editor delle preferenze di ToolDock
+; Preferences editor for ToolDock
 ;
 ; Generic
 ;
@@ -111,8 +111,8 @@ E_Esci
 ; Main Window
 ;
 MSG_MW_Title
-Preferenze di DockBot
-; DockBot Preferences
+Preferenze di ToolDock
+; ToolDock Preferences
 ;
 MSG_MW_DockSettings
 Configurazione Dock

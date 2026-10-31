@@ -16,7 +16,7 @@
 #include "DockClock_cat.h"
 
 struct FC_String DockClock_Strings[2] = {
-    { (STRPTR) "A clock gadget for DockBot", 0 },
+    { (STRPTR) "A clock gadget for ToolDock", 0 },
     { (STRPTR) "Format", 1 }
 };
 

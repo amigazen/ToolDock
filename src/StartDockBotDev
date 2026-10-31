@@ -3,10 +3,9 @@ assign lib:        sc:lib
 assign include:    sc:include
 assign cxxinclude: sc:cxxinclude
 
-assign lib:     DEV:Triton/lib     ADD
-assign include: DEV:Triton/include ADD
-
-assign include: DEV:ScreenNotify/include ADD
+assign OpenTriton: DOCKBOT:/OpenTriton
+assign lib:     OpenTriton:Source/lib ADD
+assign include: OpenTriton:SDK/Include_h ADD
 
 if exists DEV:RoadshowSDK 
 

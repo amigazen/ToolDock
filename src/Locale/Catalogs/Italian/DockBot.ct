@@ -1,12 +1,12 @@
-## version $VER: DockBot.catalog 1.9 (2020-04-17)
+## version $VER: ToolDock.catalog 1.9 (2020-04-17)
 ## language italiano
 ## codeset 0
 ;
-## chunk AUTH Translated by Samir Hawamdeh (http://www.betatesting.it/backforthefuture)
+; Translated by Samir Hawamdeh (http://www.betatesting.it/backforthefuture)
 ;#language english
 ;#version 1
 ;
-; DockBot application
+; ToolDock application
 ;
 ;
 ; Generic
@@ -91,12 +91,12 @@ A
 ;
 ; About Dialog
 MSG_ABOUT_Title
-Informazioni su DockBot
-; About DockBot
+Informazioni su ToolDock
+; About ToolDock
 ;
 MSG_ABOUT_Text
-DockBot versione %s\n\nBarra Dock per AmigaOS 3.x\n\n© 2019 - 2020 Andrew Kennan\n\nadkennan@gmail.com\n\n%s
-; DockBot Version %s\n\nA Dock For AmigaOS 3\n\n© Andrew Kennan\n\n%s
+ToolDock versione %s\n\nBarra Dock per AmigaOS 3.x\n\nCopyright 2026 amigazen project\nBased on DockBot by Andrew Kennan\n\nadkennan@gmail.com\n\n%s
+; ToolDock Version %s\n\nA Dock For AmigaOS 3\n\nCopyright 2026 amigazen project\nBased on DockBot by Andrew Kennan\n\n%s
 ;
 MSG_CX_Description
 Barra Dock per AmigaOS 3.x

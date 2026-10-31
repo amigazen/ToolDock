@@ -1,0 +1,182 @@
+#
+# SAS/C smakefile for gadget classes. Run from src/Classes: smake
+# Path-prefixed objects; no cd and no nested smake into Button/.
+#
+
+COMPILER = sc
+LINKER = slink
+FD_CONV = sc:c/fd2pragma
+
+CPU = 68030
+DIR = /bin/debug
+
+SC_OPTS = NOICONS NOCHKABORT DEFINE=DEBUG_BUILD NOSTANDARDIO
+LD_OPTS = NOICONS
+DEF_BV = DEFINE=BUILDVER="1.11"
+DEF_DS = DEFINE=DS="31.10.26"
+ROADSHOW = DEV:RoadshowSDK
+
+TRITON = ///OpenTriton
+TRITON_INC = $(TRITON)/SDK/Include_h
+TRITON_LIB = $(TRITON)/Source/lib/triton.lib
+
+INC = IDIR=//include IDIR=. IDIR=$(TRITON_INC)
+CLASS_LIBS = LIB:sc.lib LIB:amiga.lib $(TRITON_LIB)
+OUT = /$(DIR)/Gadgets
+
+BTN_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Button $(DEF_DS) $(DEF_BV)
+CLK_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Clock $(DEF_DS) $(DEF_BV)
+MEM_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Mem $(DEF_DS) $(DEF_BV)
+NET_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Net IDIR=$(ROADSHOW) $(DEF_DS) $(DEF_BV)
+SW_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Switcher $(DEF_DS) $(DEF_BV)
+EYES_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Eyes $(DEF_DS) $(DEF_BV)
+
+BTN_OBJS = Button/lib.o Button/button.o Button/triton_icon.o Button/dockbutton_cat.o
+CLK_OBJS = Clock/lib.o Clock/clock.o Clock/dockclock_cat.o
+MEM_OBJS = Mem/lib.o Mem/mem.o Mem/dockmem_cat.o
+NET_OBJS = Net/lib.o Net/net.o Net/docknet_cat.o
+SW_OBJS = Switcher/lib.o Switcher/switcher.o Switcher/prefs.o Switcher/window_list.o Switcher/switcher_cat.o
+EYES_OBJS = Eyes/lib.o Eyes/eyes.o Eyes/eyes_cat.o
+
+.c.o:
+	@echo "        Compiling $*.c..."
+	@sc $(SC_OPTS) $*.c to $*.o
+
+.h.h:
+
+all: button
+all: clock
+all: mem
+all: switcher
+all: eyes
+
+button: $(OUT)/DockButton.class
+clock: $(OUT)/DockClock.class
+mem: $(OUT)/DockMem.class
+net: $(OUT)/DockNet.class
+switcher: $(OUT)/Switcher.class
+eyes: $(OUT)/Eyes.class
+
+$(OUT)/DockButton.class: dirs Button/dockbutton_cat.c Button/pragmas.h $(BTN_OBJS)
+	$(LINKER) WITH <<
+TO $(OUT)/DockButton.class
+FROM $(BTN_OBJS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
+<
+
+$(OUT)/DockClock.class: dirs Clock/dockclock_cat.c Clock/pragmas.h $(CLK_OBJS)
+	$(LINKER) WITH <<
+TO $(OUT)/DockClock.class
+FROM $(CLK_OBJS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
+<
+
+$(OUT)/DockMem.class: dirs Mem/dockmem_cat.c Mem/pragmas.h $(MEM_OBJS)
+	$(LINKER) WITH <<
+TO $(OUT)/DockMem.class
+FROM $(MEM_OBJS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
+<
+
+$(OUT)/DockNet.class: dirs Net/docknet_cat.c Net/pragmas.h $(NET_OBJS)
+	$(LINKER) WITH <<
+TO $(OUT)/DockNet.class
+FROM $(NET_OBJS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
+<
+
+$(OUT)/Switcher.class: dirs Switcher/switcher_cat.c Switcher/pragmas.h $(SW_OBJS)
+	$(LINKER) WITH <<
+TO $(OUT)/Switcher.class
+FROM $(SW_OBJS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
+<
+
+$(OUT)/Eyes.class: dirs Eyes/eyes_cat.c Eyes/pragmas.h $(EYES_OBJS)
+	$(LINKER) WITH <<
+TO $(OUT)/Eyes.class
+FROM $(EYES_OBJS)
+LIB $(CLASS_LIBS) LIB:scm.lib $(LD_OPTS)
+<
+
+dirs:
+	-makedir $(DIR)
+	-makedir $(OUT)
+
+Button/pragmas.h: template.fd
+	$(FD_CONV) template.fd Button/pragmas.h
+
+Button/lib.o: Button/lib.c template.c
+Button/button.o: Button/button.c
+Button/triton_icon.o: Button/triton_icon.c
+Button/dockbutton_cat.o: Button/dockbutton_cat.c
+
+$(BTN_OBJS):
+	@echo "        Compiling $*.c..."
+	@$(COMPILER) $(BTN_OPTS) $*.c to $*.o
+
+Clock/pragmas.h: template.fd
+	$(FD_CONV) template.fd Clock/pragmas.h
+
+Clock/lib.o: Clock/lib.c template.c
+Clock/clock.o: Clock/clock.c
+Clock/dockclock_cat.o: Clock/dockclock_cat.c
+
+$(CLK_OBJS):
+	@echo "        Compiling $*.c..."
+	@$(COMPILER) $(CLK_OPTS) $*.c to $*.o
+
+Mem/pragmas.h: template.fd
+	$(FD_CONV) template.fd Mem/pragmas.h
+
+Mem/lib.o: Mem/lib.c template.c
+Mem/mem.o: Mem/mem.c
+Mem/dockmem_cat.o: Mem/dockmem_cat.c
+
+$(MEM_OBJS):
+	@echo "        Compiling $*.c..."
+	@$(COMPILER) $(MEM_OPTS) $*.c to $*.o
+
+Net/pragmas.h: template.fd
+	$(FD_CONV) template.fd Net/pragmas.h
+
+Net/lib.o: Net/lib.c template.c
+Net/net.o: Net/net.c
+Net/docknet_cat.o: Net/docknet_cat.c
+
+$(NET_OBJS):
+	@echo "        Compiling $*.c..."
+	@$(COMPILER) $(NET_OPTS) $*.c to $*.o
+
+Switcher/pragmas.h: template.fd
+	$(FD_CONV) template.fd Switcher/pragmas.h
+
+Switcher/lib.o: Switcher/lib.c template.c
+Switcher/switcher.o: Switcher/switcher.c
+Switcher/prefs.o: Switcher/prefs.c
+Switcher/window_list.o: Switcher/window_list.c
+Switcher/switcher_cat.o: Switcher/switcher_cat.c
+
+$(SW_OBJS):
+	@echo "        Compiling $*.c..."
+	@$(COMPILER) $(SW_OPTS) $*.c to $*.o
+
+Eyes/pragmas.h: template.fd
+	$(FD_CONV) template.fd Eyes/pragmas.h
+
+Eyes/lib.o: Eyes/lib.c template.c
+Eyes/eyes.o: Eyes/eyes.c
+Eyes/eyes_cat.o: Eyes/eyes_cat.c
+
+$(EYES_OBJS):
+	@echo "        Compiling $*.c..."
+	@$(COMPILER) $(EYES_OPTS) $*.c to $*.o
+
+clean:
+	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS)
+	-Delete $(OUT)/DockButton.class $(OUT)/DockClock.class
+	-Delete $(OUT)/DockMem.class $(OUT)/DockNet.class
+	-Delete $(OUT)/Switcher.class $(OUT)/Eyes.class
+
+cleanobj:
+	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS)

@@ -1,0 +1,49 @@
+#
+# SAS/C smake for DockNet.class (Roadshow)
+# From src/Classes/Net: smake
+# Needs DEV:RoadshowSDK (override ROADSHOW=).
+#
+include ../../debug.defs
+
+LIBNAME = DockNet
+LIBFILE = $(LIBNAME).class
+LIBDIR = //$(DIR)/Gadgets/
+FD_FILE = /template.fd
+PRAGMA_FILE = pragmas.h
+ROADSHOW = DEV:RoadshowSDK
+
+TRITON_INC = ////OpenTriton/SDK/Include_h
+TRITON_LIB = ////OpenTriton/Source/lib/triton.lib
+
+INC = INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/ INCLUDEDIRECTORY=$(ROADSHOW) INCLUDEDIRECTORY=$(TRITON_INC)
+C_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO $(INC) $(DEF_DS) $(DEF_BV)
+
+OBJECTS = lib.o net.o docknet_cat.o
+CLASS_LIBS = LIB:sc.lib LIB:amiga.lib $(TRITON_LIB)
+
+all: $(LIBFILE)
+
+$(LIBFILE): $(PRAGMA_FILE) $(OBJECTS)
+	$(LINKER) WITH <<
+TO $(LIBDIR)$(LIBFILE)
+FROM $(OBJECTS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
+<
+
+.c.o:
+	$(COMPILER) $(C_OPTS) $*.c
+
+lib.o: lib.c /template.c
+net.o: net.c
+docknet_cat.o: docknet_cat.c
+
+$(PRAGMA_FILE): $(FD_FILE)
+	$(FD_CONV) $(FD_FILE) $(PRAGMA_FILE)
+
+cleanobj:
+	-Delete $(OBJECTS)
+
+clean:
+	-Delete $(OBJECTS)
+	-Delete $(LIBDIR)$(LIBFILE)(|.info)
+	-Delete $(PRAGMA_FILE)

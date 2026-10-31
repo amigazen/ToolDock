@@ -1,8 +1,9 @@
 /************************************
 **
-**  DockBot - A Dock For AmigaOS 3
+**  ToolDock - A Dock For AmigaOS 3
 **
-**  © 2019 Andrew Kennan
+**  Copyright 2026 amigazen project
+**  Based on DockBot by Andrew Kennan
 **
 ************************************/
 
@@ -16,7 +17,7 @@
 #define CLASS_VERSION   1
 #define CLASS_REVISION  3
 #define CLASS_VER_STR   "1.3 (" DS ")"
-#define CLASS_COPYRIGHT "© 2020 Andrew Kennan"
+#define CLASS_COPYRIGHT "Copyright 2026 amigazen project. Based on DockBot by Andrew Kennan"
 
 #define PRIVATE_DATA    MemGadgetData
 

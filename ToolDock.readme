@@ -6,11 +6,13 @@ Version:      1.11
 Architecture: m68k-amigaos >= 3.0
 Requires:     util/libs/IconLib_46.4.lha
 
-DockBot is a program launcher for OS 3. It can display a list of icons in a 
+Copyright 2026 amigazen project. Based on DockBot by Andrew Kennan.
+
+ToolDock is a program launcher for OS 3. It can display a list of icons in a 
 window on your Workbench screen. Programs can be started by clicking the icons,
 dropping files on them or using a hotkey.
 
-DockBot is extensible and can display gadgets other than icons. Included with
+ToolDock is extensible and can display gadgets other than icons. Included with
 it are clock, memory meter, network monitor and window switcher gadgets.
 
 This archive includes source code and binaries compiled for 68000, 68020 and
@@ -71,7 +73,7 @@ Version 1.2:
 
 Version 1.1:
 
-* Fixed issues with the installer that prevented DockBot from running.
+* Fixed issues with the installer that prevented ToolDock from running.
 
 
 

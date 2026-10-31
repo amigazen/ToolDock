@@ -2,7 +2,7 @@
 ## language italiano
 ## codeset 0
 ;
-## chunk AUTH Translated by Samir Hawamdeh (http://www.betatesting.it/backforthefuture)
+; Translated by Samir Hawamdeh (http://www.betatesting.it/backforthefuture)
 ;#language english
 ;#version 1
 ;
@@ -10,8 +10,8 @@
 ;
 ;
 MSG_Description
-Bottone per DockBot
-; A button for DockBot
+Bottone per ToolDock
+; A button for ToolDock
 ;
 ;
 ; Start Types

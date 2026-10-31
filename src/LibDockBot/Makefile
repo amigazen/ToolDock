@@ -7,7 +7,7 @@ INCDIR=		//include
 INC=		IDIR=$(INCDIR)
 DIR=		/bin
 
-LIBFILE=	$(LIBNAME).library
+LIBFILE=	tooldock.library
 LIBDIR=		/$(DIR)/
 
 FD_FILE=	$(LIBNAME).fd

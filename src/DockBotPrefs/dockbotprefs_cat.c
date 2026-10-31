@@ -20,8 +20,8 @@
 #include <stdio.h>
 
 struct FC_String DockBotPrefs_Strings[44] = {
-    { (STRPTR) "DockBot Preferences", 0 },
-    { (STRPTR) "Preferences editor for DockBot", 1 },
+    { (STRPTR) "ToolDock Preferences", 0 },
+    { (STRPTR) "Preferences editor for ToolDock", 1 },
     { (STRPTR) "OK", 2 },
     { (STRPTR) "Cancel", 3 },
     { (STRPTR) "Couldn't load class list.", 4 },
@@ -43,7 +43,7 @@ struct FC_String DockBotPrefs_Strings[44] = {
     { (STRPTR) "Project", 20 },
     { (STRPTR) "?_About", 21 },
     { (STRPTR) "Q_Quit", 22 },
-    { (STRPTR) "DockBot Preferences", 23 },
+    { (STRPTR) "ToolDock Preferences", 23 },
     { (STRPTR) "Dock Settings", 24 },
     { (STRPTR) "Position", 25 },
     { (STRPTR) "Alignment", 26 },
@@ -73,13 +73,13 @@ VOID open_catalog(VOID)
     struct FC_String *fc;
 	UWORD i;
 
-	DEBUG(printf(__FUNC__ ": DockBotPrefs.catalog\n"));
+	DEBUG(printf(__FUNC__ ": ToolDockPrefs.catalog\n"));
 	if( ! LocaleBase ) {
 		DEBUG(printf(__FUNC__ ": Locale library not found.\n"));
 		return;
 	}
 
-	if( !(DockBotPrefsCatalog = OpenCatalog(NULL, (STRPTR) "DockBotPrefs.catalog",
+	if( !(DockBotPrefsCatalog = OpenCatalog(NULL, (STRPTR) "ToolDockPrefs.catalog",
 			 			 		     OC_BuiltInLanguage, "english",
 								     OC_Version, 1,
 								     TAG_DONE))) {
@@ -95,7 +95,7 @@ VOID open_catalog(VOID)
 
 VOID close_catalog(VOID) 
 {
-	DEBUG(printf(__FUNC__ ": DockBotPrefs.catalog\n"));
+	DEBUG(printf(__FUNC__ ": ToolDockPrefs.catalog\n"));
 	if( ! DockBotPrefsCatalog ) {
 		DEBUG(printf(__FUNC__ ": Catalog not open.\n"));
 		return;
