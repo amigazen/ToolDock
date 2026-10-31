@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -51,21 +53,21 @@ BOOL OpenNetworkLib(VOID)
     struct NetLibData *nld = (struct NetLibData *)GetLibData();
 
     if( nld->socketLib ) {
-        DEBUG(DB_Printf(__METHOD__ "Socket Lib Available\n"));
+        DEBUG(TD_Printf(__METHOD__ "Socket Lib Available\n"));
         return TRUE;
     }
 
-    DEBUG(DB_Printf(__METHOD__ "Opening Socket Lib..."));
+    DEBUG(TD_Printf(__METHOD__ "Opening Socket Lib..."));
 
     if( nld->socketLib = OpenLibrary("bsdsocket.library", 4) )
     {
-        DEBUG(DB_Printf(__METHOD__ "Connected\n"));
+        DEBUG(TD_Printf(__METHOD__ "Connected\n"));
 
         SocketBase = (struct Library *)nld->socketLib;
         return TRUE;
     }
 
-    DEBUG(DB_Printf(__METHOD__ "Failed\n"));
+    DEBUG(TD_Printf(__METHOD__ "Failed\n"));
 
     return FALSE;
 }
@@ -217,14 +219,14 @@ VOID draw_net(struct RastPort *rp, struct DrawInfo *di, struct Rect *bounds, UWO
     SetAPen(rp, di->dri_Pens[BACKGROUNDPEN]);
     RectFill(rp, frame.x, frame.y, frame.x + frame.w - 1, frame.y + frame.h - 1);
 
-    DB_DrawOutsetFrame(rp, &frame);
+    TD_DrawOutsetFrame(rp, &frame);
     
     frame.x += 1;
     frame.y += 1;
     frame.w -= 2;
     frame.h -= 2;
 
-    DB_DrawInsetFrame(rp, &frame);
+    TD_DrawInsetFrame(rp, &frame);
 
     if( hasValue ) {    
         PrintSize(value, svalue);
@@ -297,7 +299,7 @@ DB_METHOD_DM(DRAW,DockMessageDraw)
     {
         if( drawInfo = GetScreenDrawInfo(screen) )
         {
-            DB_GetDockGadgetEnvironment(o, &env);
+            TD_GetDockGadgetEnvironment(o, &env);
               
             draw_net(msg->rp, drawInfo, &env.gadgetBounds, 0, (STRPTR)MSG_LBL_RECV, byteRecv.sbq_Low, hasValue);
             draw_net(msg->rp, drawInfo, &env.gadgetBounds, 1, (STRPTR)MSG_LBL_SENT, byteSent.sbq_Low, hasValue);
@@ -318,13 +320,13 @@ DB_METHOD_DM(DRAW,DockMessageDraw)
 
 DB_METHOD_D(CLICK)
 
-    DB_RequestDockGadgetDraw(o);
+    TD_RequestDockGadgetDraw(o);
 
-    DEBUG(DB_Printf(__METHOD__));
+    DEBUG(TD_Printf(__METHOD__));
     
     data->clicked = TRUE;
 
-    DB_RequestLaunch(o, NET_TOOL, NULL, NULL, TRUE);   
+    TD_RequestLaunch(o, NET_TOOL, NULL, NULL, TRUE);   
 
     return 1;
 }
@@ -337,11 +339,11 @@ DB_METHOD_D(CLICK)
 
 DB_METHOD_D(LAUNCHED)
 
-    DEBUG(DB_Printf(__METHOD__));
+    DEBUG(TD_Printf(__METHOD__));
     
     data->clicked = FALSE;
 
-    DB_RequestDockGadgetDraw(o);
+    TD_RequestDockGadgetDraw(o);
 
     return 1;
 }
@@ -354,7 +356,7 @@ DB_METHOD_D(LAUNCHED)
 
 DB_METHOD_D(TICK)
 
-    DEBUG(DB_Printf(__METHOD__));
+    DEBUG(TD_Printf(__METHOD__));
     
     if( data->counter > 0 )
     {
@@ -364,7 +366,7 @@ DB_METHOD_D(TICK)
 
     data->counter = COUNTER_LIB_OK;
 
-    DB_RequestDockGadgetDraw(o);
+    TD_RequestDockGadgetDraw(o);
 
     return 1;
 }

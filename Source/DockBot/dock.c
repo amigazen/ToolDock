@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -11,7 +13,9 @@
 
 #include <exec/memory.h>
 #include <exec/ports.h>
+#include <exec/libraries.h>
 #include <dos/dostags.h>
+#include <utility/tagitem.h>
 #include <clib/exec_protos.h>
 #include <clib/dos_protos.h>
 #include <clib/alib_protos.h>
@@ -19,8 +23,185 @@
 #include <clib/layers_protos.h>
 #include <clib/graphics_protos.h>
 #include <devices/timer.h>
+#include <string.h>
 
 #include "dock_handle.h"
+
+#ifndef WBOPENA_ArgLock
+#define WBOPENA_ArgLock  (TAG_USER + 0x1B01)
+#endif
+#ifndef WBOPENA_ArgName
+#define WBOPENA_ArgName  (TAG_USER + 0x1B02)
+#endif
+
+#define MAX_WB_ARGS 32
+#define WB_ARG_NAME_LEN 256
+
+extern struct Library *WorkbenchBase;
+
+BOOL OpenWorkbenchObjectA(STRPTR name, struct TagItem *tags);
+#pragma libcall WorkbenchBase OpenWorkbenchObjectA 8a 9802
+
+struct WBLaunchArg {
+    BPTR lock;
+    UBYTE name[WB_ARG_NAME_LEN];
+};
+
+STATIC BOOL next_arg(STRPTR *pp, STRPTR out, UWORD outLen)
+{
+    STRPTR p;
+    UWORD i;
+    BOOL quote;
+
+    p = *pp;
+    i = 0;
+    quote = FALSE;
+
+    if( p == NULL ) {
+        return FALSE;
+    }
+
+    while( *p == ' ' ) {
+        p++;
+    }
+
+    if( *p == '\0' ) {
+        *pp = p;
+        return FALSE;
+    }
+
+    if( *p == '"' ) {
+        quote = TRUE;
+        p++;
+    }
+
+    while( *p ) {
+        if( quote ) {
+            if( *p == '"' ) {
+                p++;
+                break;
+            }
+        } else if( *p == ' ' ) {
+            break;
+        }
+
+        if( i + 1 < outLen ) {
+            out[i] = *p;
+            i++;
+        }
+        p++;
+    }
+
+    out[i] = '\0';
+    *pp = p;
+    return (BOOL)(i > 0);
+}
+
+STATIC BOOL path_to_wbarg(STRPTR path, struct WBLaunchArg *arg)
+{
+    BPTR lock;
+    BPTR parent;
+    STRPTR file;
+
+    arg->lock = NULL;
+    arg->name[0] = '\0';
+
+    if( path == NULL || *path == '\0' ) {
+        return FALSE;
+    }
+
+    lock = Lock(path, ACCESS_READ);
+    if( lock == NULL ) {
+        return FALSE;
+    }
+
+    file = FilePart(path);
+    parent = ParentDir(lock);
+
+    if( parent && file && *file ) {
+        UnLock(lock);
+        arg->lock = parent;
+        strncpy(arg->name, file, WB_ARG_NAME_LEN - 1);
+        arg->name[WB_ARG_NAME_LEN - 1] = '\0';
+        return TRUE;
+    }
+
+    if( parent ) {
+        UnLock(parent);
+    }
+
+    arg->lock = lock;
+    return TRUE;
+}
+
+STATIC VOID free_wbargs(struct WBLaunchArg *args, UWORD count)
+{
+    UWORD i;
+
+    for( i = 0; i < count; i++ ) {
+        if( args[i].lock ) {
+            UnLock(args[i].lock);
+            args[i].lock = NULL;
+        }
+    }
+}
+
+/* Official Workbench launch: OpenWorkbenchObjectA (workbench.library 44+). */
+STATIC BOOL execute_workbench(STRPTR path, STRPTR args)
+{
+    struct WBLaunchArg wbArgs[MAX_WB_ARGS];
+    struct TagItem *tags;
+    STRPTR scan;
+    UBYTE token[WB_ARG_NAME_LEN];
+    UWORD count;
+    UWORD i;
+    BOOL ok;
+
+    count = 0;
+    tags = NULL;
+    ok = FALSE;
+
+    if( path == NULL || *path == '\0' ) {
+        return FALSE;
+    }
+
+    if( WorkbenchBase == NULL || WorkbenchBase->lib_Version < 44 ) {
+        return FALSE;
+    }
+
+    if( args ) {
+        scan = args;
+        while( count < MAX_WB_ARGS && next_arg(&scan, token, WB_ARG_NAME_LEN) ) {
+            if( path_to_wbarg(token, &wbArgs[count]) ) {
+                count++;
+            }
+        }
+    }
+
+    if( count > 0 ) {
+        tags = (struct TagItem *)TD_AllocMem((count * 2 + 1) * sizeof(struct TagItem), MEMF_CLEAR);
+        if( tags == NULL ) {
+            free_wbargs(wbArgs, count);
+            return FALSE;
+        }
+        for( i = 0; i < count; i++ ) {
+            tags[i * 2].ti_Tag = WBOPENA_ArgLock;
+            tags[i * 2].ti_Data = (ULONG)wbArgs[i].lock;
+            tags[i * 2 + 1].ti_Tag = WBOPENA_ArgName;
+            tags[i * 2 + 1].ti_Data = (ULONG)wbArgs[i].name;
+        }
+        tags[count * 2].ti_Tag = TAG_DONE;
+    }
+
+    ok = OpenWorkbenchObjectA(path, tags);
+
+    if( tags ) {
+        TD_FreeMem(tags, (count * 2 + 1) * sizeof(struct TagItem));
+    }
+    free_wbargs(wbArgs, count);
+
+    return ok;
+}
 
 VOID show_about(struct DockWindow *dock)
 {
@@ -62,7 +243,7 @@ VOID show_about(struct DockWindow *dock)
         }
     } 
 
-    if( msg = (STRPTR)DB_AllocMem(msgLen, MEMF_CLEAR) ) {
+    if( msg = (STRPTR)TD_AllocMem(msgLen, MEMF_CLEAR) ) {
 
         p = msg;
         lastClass = 0;
@@ -104,7 +285,7 @@ VOID show_about(struct DockWindow *dock)
         EasyRequest(NULL, &es, NULL, VERSION_STR, msg);
 
 
-        DB_FreeMem(msg, msgLen);
+        TD_FreeMem(msg, msgLen);
     }
 }
 
@@ -147,7 +328,7 @@ struct DockWindow* create_dock(VOID)
 
     DEBUG(printf("create_dock\n"));
 
-    if( dock = (struct DockWindow *)DB_AllocMem(sizeof(struct DockWindow), MEMF_CLEAR) ) {
+    if( dock = (struct DockWindow *)TD_AllocMem(sizeof(struct DockWindow), MEMF_CLEAR) ) {
 
         dock->runState = RS_STARTING;
         dock->disableLayout = TRUE;
@@ -204,7 +385,7 @@ VOID free_dock(struct DockWindow* dock)
 
     free_render_bitmap(dock);
 
-	DB_FreeMem(dock, sizeof(struct DockWindow));
+	TD_FreeMem(dock, sizeof(struct DockWindow));
 
     DEBUG(printf("Done\n"));
 }
@@ -227,26 +408,18 @@ VOID execute_external(struct DockWindow* dock, STRPTR path, STRPTR args, STRPTR 
         { TAG_DONE, 0 }
     };
 
-
-    if( wb ) {
-        len = strlen((STRPTR)&dock->progPath) + 7;
-    }   
+    if( wb && execute_workbench(path, args) ) {
+        return;
+    }
     
     len += strlen(path) + 1;
     if( args ) {
         len += strlen(args) + 1;
     }
 
-    if( cmd = (STRPTR)DB_AllocMem(len + 1, MEMF_CLEAR) ) {
+    if( cmd = (STRPTR)TD_AllocMem(len + 1, MEMF_CLEAR) ) {
         
         pos = cmd;
-        if( wb ) {
-            COPY_STRING((STRPTR)&dock->progPath, pos);
-            pos--;
-            COPY_STRING("/WBRUN ", pos);
-            pos--;
-        }
-        
         COPY_STRING(path, pos);
                 
         if( args ) {
@@ -278,7 +451,7 @@ VOID execute_external(struct DockWindow* dock, STRPTR path, STRPTR args, STRPTR 
                 Close(fhOut);
             }
         }
-        DB_FreeMem(cmd, len + 1);
+        TD_FreeMem(cmd, len + 1);
     }
 }
 

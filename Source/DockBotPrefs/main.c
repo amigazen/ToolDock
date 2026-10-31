@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -20,7 +22,7 @@
 
 const char __ver[40] = "$VER:" APP_NAME " " VERSION_STR;
 
-struct Library *DockBotBase;
+struct Library *ToolDockBase;
 struct Library *UtilityBase;
 
 STRPTR positions[] = { 0/*"Left"*/, 0/*"Right"*/, 0/*"Top"*/, 0/*"Bottom"*/, NULL };
@@ -61,7 +63,7 @@ VOID update_background_path(struct DockPrefs *prefs, struct TR_Project *window, 
     FREE_STRING(prefs->cfg.bgBrushPath);
 
     l = strlen(newPath) + 1;
-    if( prefs->cfg.bgBrushPath = (STRPTR)DB_AllocMem(l, MEMF_CLEAR) ) {
+    if( prefs->cfg.bgBrushPath = (STRPTR)TD_AllocMem(l, MEMF_CLEAR) ) {
         CopyMem(newPath, prefs->cfg.bgBrushPath, l);
     }
 }
@@ -70,7 +72,7 @@ VOID select_background(struct DockPrefs *prefs, struct TR_Project *window)
 {
     STRPTR newPath;
 
-    if( newPath = DB_SelectFile((STRPTR)MSG_FR_ChooseBackground
+    if( newPath = TD_SelectFile((STRPTR)MSG_FR_ChooseBackground
                                 , (STRPTR)MSG_OK
                                 , (STRPTR)MSG_Cancel
                                 , prefs->cfg.bgBrushPath) ) {
@@ -427,11 +429,11 @@ VOID show_open_lib_err(STRPTR name, UWORD version) {
     UWORD l;
   
     l = strlen(name) + strlen(MSG_ERR_OpenLibrary);
-    if( msg = DB_AllocMem(l, MEMF_ANY) ) {
+    if( msg = TD_AllocMem(l, MEMF_ANY) ) {
         sprintf(msg, MSG_ERR_OpenLibrary, version, name);
         DEBUG(printf(msg));
-        DB_ShowError(msg);
-        DB_FreeMem(msg, l);
+        TD_ShowError(msg);
+        TD_FreeMem(msg, l);
     }
 }
 
@@ -468,9 +470,9 @@ int main(char **argv, int argc)
 
     open_catalog();
 
-    if( DockBotBase = OpenLibrary("PROGDIR:tooldock.library", 1) ) {
+    if( ToolDockBase = OpenLibrary("PROGDIR:tooldock.library", 1) ) {
 
-        DEBUG(DB_RegisterDebugStream(Output()));
+        DEBUG(TD_RegisterDebugStream(Output()));
 
         if( TR_OpenTriton(TRITON11VERSION,
             TRCA_Name,      "ToolDockPrefs",
@@ -486,7 +488,7 @@ int main(char **argv, int argc)
     
                     load_config(&prefs);
     
-                    if( DB_ListClasses(&prefs.classes) ) {
+                    if( TD_ListClasses(&prefs.classes) ) {
 
                         TR_SetAttribute(prefs.mainWindow, OBJ_POSITION, TRAT_Value, (ULONG)prefs.cfg.pos);
                         TR_SetAttribute(prefs.mainWindow, OBJ_ALIGNMENT, TRAT_Value, (ULONG)prefs.cfg.align);
@@ -504,13 +506,13 @@ int main(char **argv, int argc)
                         free_config(&prefs);
 
                     } else {
-                        DB_ShowError((STRPTR)MSG_ERR_ClassList);
+                        TD_ShowError((STRPTR)MSG_ERR_ClassList);
                     }
 
                     TR_CloseProject(prefs.mainWindow);            
 
                 } else { 
-                    DB_ShowError((STRPTR)MSG_ERR_OpenWindow);
+                    TD_ShowError((STRPTR)MSG_ERR_OpenWindow);
                 }
 
                 close_lib("utility.library", UtilityBase);
@@ -520,7 +522,7 @@ int main(char **argv, int argc)
             show_open_lib_err("triton.library", TRITON11VERSION);
         }
             
-        close_lib("PROGDIR:tooldock.library", DockBotBase);
+        close_lib("PROGDIR:tooldock.library", ToolDockBase);
     }
 
     close_catalog();

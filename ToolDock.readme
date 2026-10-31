@@ -1,12 +1,13 @@
 Short:        A program launcher for OS 3.
-Uploader:     adkennan@gmail.com (Andrew Kennan)
-Author:       Andrew Kennan
+Uploader:     toolkit@amigazen.com (amigazen project)
+Author:       amigazen project
 Type:         util/wb
-Version:      1.11
+Version:      2.0
 Architecture: m68k-amigaos >= 3.0
 Requires:     util/libs/IconLib_46.4.lha
 
-Copyright 2026 amigazen project. Based on DockBot by Andrew Kennan.
+Changes for ToolDock Copyright (c) 2026 amigazen project
+Based on DockBot Copyright (c) 2019 Andrew Kennan
 
 ToolDock is a program launcher for OS 3. It can display a list of icons in a 
 window on your Workbench screen. Programs can be started by clicking the icons,
@@ -18,14 +19,19 @@ it are clock, memory meter, network monitor and window switcher gadgets.
 This archive includes source code and binaries compiled for 68000, 68020 and
 68040 CPUs.
 
-The source repository can be found at https://github.com/adkennan/DockBot.
+The source repository can be found at https://github.com/amigazen/ToolDock
 
 Changes:
+
+Version 2.0:
+
+* Forked from DockBot
+* Rebranded as ToolDock from amigazen project PowerTools collection
 
 Version 1.11:
 
 * A Network Monitor for Roadshow contributed by flype. Awesome!
-* Requested locale.library version is now 38 as shipped with OS 3.0. Thanks Åsmund Nordel!
+* Requested locale.library version is now 38 as shipped with OS 3.0. Thanks ï¿½smund Nordel!
 * You can now control the amount of padding around gadgets.
 
 Version 1.10:

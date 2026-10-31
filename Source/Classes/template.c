@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -45,7 +47,7 @@ struct DockClassLib {
     Class                   *cl_GadgetClass;
     struct Library          *cl_ExecBase;
     struct Library          *cl_IntuitionBase;
-    struct Library          *cl_DockBotBase;
+    struct Library          *cl_ToolDockBase;
     struct Library          *cl_TritonBase;
     struct Library          *cl_LocaleBase;
     struct Library          *cl_UtilityBase;
@@ -191,7 +193,7 @@ APTR FuncTable[] = {
 
 struct ExecBase *SysBase;
 struct IntuitionBase *IntuitionBase;
-struct Library *DockBotBase;
+struct Library *ToolDockBase;
 extern struct Library *TritonBase;
 struct DockClassLib *DockGadgetBase;
 /* proto/locale.h declares LocaleBase as struct LocaleBase *. */
@@ -211,7 +213,7 @@ struct DockClassLib * __saveds __asm InitLib(
     if( IntuitionBase = (struct IntuitionBase *)OpenLibrary("intuition.library", 39) ) {
         if( LocaleBase = (struct LocaleBase *)OpenLibrary("locale.library", 37) ) {
             if( UtilityBase = OpenLibrary("utility.library", 37) ) { 
-                if( DockBotBase = OpenLibrary("tooldock.library", 1) ) {
+                if( ToolDockBase = OpenLibrary("tooldock.library", 1) ) {
                     if( cb->cl_GadgetClass = InitClass() ) {
 
                         if( cb->cl_Catalog = OpenCatalog(NULL, CLASS_NAME ".catalog"
@@ -226,7 +228,7 @@ struct DockClassLib * __saveds __asm InitLib(
                         if( GADGET_LIB_INIT(&cb->cl_Data) ) {
 #endif
                             cb->cl_IntuitionBase = (struct Library *)IntuitionBase;
-                            cb->cl_DockBotBase = DockBotBase;
+                            cb->cl_ToolDockBase = ToolDockBase;
                             cb->cl_TritonBase = NULL;
                             cb->cl_LocaleBase = (struct Library *)LocaleBase;
                             cb->cl_UtilityBase = UtilityBase;
@@ -633,8 +635,8 @@ VOID __saveds CloseLibs(VOID)
         CloseLibrary(TritonBase);
     }
 
-    if( DockBotBase ) {
-        CloseLibrary(DockBotBase);
+    if( ToolDockBase ) {
+        CloseLibrary(ToolDockBase);
     }
 
     if( IntuitionBase ) {
@@ -663,7 +665,7 @@ VOID __saveds FreeLib(struct DockClassLib *cb)
     FreeMem(negPtr, full);
 }
 
-struct TagItem *DB_MakeTagList(ULONG data, ...)
+struct TagItem *TD_MakeTagList(ULONG data, ...)
 {
     struct TagItem *tags = (struct TagItem *)&data;
 
@@ -674,9 +676,9 @@ struct TagItem *DB_MakeTagList(ULONG data, ...)
 
 BOOL __DebugEnabled = TRUE;
 
-VOID DB_Printf(STRPTR fmt, ...)
+VOID TD_Printf(STRPTR fmt, ...)
 {
-    DB_DebugLog(fmt, (LONG *)(&fmt + 1));
+    TD_DebugLog(fmt, (LONG *)(&fmt + 1));
 }
 
 #endif

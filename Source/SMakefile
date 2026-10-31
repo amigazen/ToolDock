@@ -1,7 +1,6 @@
 #
-# SAS/C smakefile for ToolDock. Run from src: smake
+# SAS/C smakefile for ToolDock. Run from Source directory: smake
 #
-# One directory, like AWeb. Products are path-prefixed files.
 # Nested smake stays here and only changes macros (see release).
 # Per-module SMakefiles are for a shell cd into that directory.
 #
@@ -19,9 +18,8 @@ LD_OPTS = NOICONS
 DEF_BV = DEFINE=BUILDVER="1.11"
 DEF_DS = DEFINE=DS="31.10.26"
 
-ROADSHOW = DEV:RoadshowSDK
+ROADSHOW = netinclude:
 
-# Sibling OpenTriton tree (github/OpenTriton). From src, // is github/.
 TRITON = //OpenTriton
 TRITON_INC = $(TRITON)/SDK/Include_h
 TRITON_LIB = $(TRITON)/SDK/lib/triton.lib
@@ -100,7 +98,6 @@ net: $(DIR)/Gadgets/DockNet.class
 switcher: $(DIR)/Gadgets/Switcher.class
 eyes: $(DIR)/Gadgets/Eyes.class
 
-# Nested smake in this directory only, like AWeb's "smake AWEB4FLAGS= aweb_link".
 release:
 	@echo "        Building release..."
 	@smake CPU=68000 DIR=/bin/68000 all

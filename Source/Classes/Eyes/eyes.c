@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -68,9 +70,9 @@ VOID init_eyes(struct EyesGadgetData *data)
     UWORD ry = ys - 1;
     struct Eye *eye;
 
-    DEBUG(DB_Printf(__METHOD__ "\n"));
+    DEBUG(TD_Printf(__METHOD__ "\n"));
 
-    if( data->eyes = (struct Eye *)DB_AllocMem(data->eyeCount * sizeof(struct Eye), MEMF_CLEAR) ) {
+    if( data->eyes = (struct Eye *)TD_AllocMem(data->eyeCount * sizeof(struct Eye), MEMF_CLEAR) ) {
 
         for( i = 0; i < data->eyeCount; i++ ) {
 
@@ -90,10 +92,10 @@ VOID init_eyes(struct EyesGadgetData *data)
 
 VOID free_eyes(struct EyesGadgetData *data)
 {
-    DEBUG(DB_Printf(__METHOD__ "\n"));
+    DEBUG(TD_Printf(__METHOD__ "\n"));
 
     if( data->eyes ) {
-        DB_FreeMem(data->eyes, data->eyeCount * sizeof(struct Eye));
+        TD_FreeMem(data->eyes, data->eyeCount * sizeof(struct Eye));
         data->eyes = NULL;
     }
 }
@@ -125,7 +127,7 @@ VOID measure_eyes(struct EyesGadgetData *data)
     UWORD i;
     struct Screen *screen;
 
-//    DEBUG(DB_Printf(__METHOD__ "\n"));
+//    DEBUG(TD_Printf(__METHOD__ "\n"));
 
     if( screen = LockPubScreen(NULL) ) {
 
@@ -160,7 +162,7 @@ VOID draw_eyes(struct EyesGadgetData *data, struct RastPort *rp)
 
         for( i = 0; i < data->eyeCount; i++ ) {
 
-            DEBUG(DB_Printf(__METHOD__ " Fill Eye %ld\n", (ULONG)i));
+            DEBUG(TD_Printf(__METHOD__ " Fill Eye %ld\n", (ULONG)i));
 
             eye = &data->eyes[i];
 
@@ -193,12 +195,12 @@ VOID draw_eyes(struct EyesGadgetData *data, struct RastPort *rp)
 
 VOID free_drawing_buffers(struct EyesGadgetData *data)
 {
-    DEBUG(DB_Printf(__METHOD__ "\n"));
+    DEBUG(TD_Printf(__METHOD__ "\n"));
 
     data->initialized = FALSE; 
 
     if( data->aiBuf ) {
-        DB_FreeMem(data->aiBuf, data->aiBufSize);
+        TD_FreeMem(data->aiBuf, data->aiBufSize);
         data->aiBuf = NULL;
     }
 
@@ -217,7 +219,7 @@ VOID init_drawing_data(Object *o, struct EyesGadgetData *data)
         free_drawing_buffers(data);
     }  
 
-    DB_GetDockGadgetEnvironment(o, &env);
+    TD_GetDockGadgetEnvironment(o, &env);
 
     data->aiBufSize = 20 * data->eyeCount;
 
@@ -225,7 +227,7 @@ VOID init_drawing_data(Object *o, struct EyesGadgetData *data)
 
         if( data->trBuf = AllocRaster(env.gadgetBounds.w * 2, env.gadgetBounds.h * 2) ) {
 
-            if( data->aiBuf = DB_AllocMem(data->aiBufSize, MEMF_CLEAR) ) {
+            if( data->aiBuf = TD_AllocMem(data->aiBufSize, MEMF_CLEAR) ) {
 
                 InitArea(&data->ai, data->aiBuf, data->eyeCount * 2);
 
@@ -275,7 +277,7 @@ DB_METHOD_DM(DRAW,DockMessageDraw)
 
     struct GadgetEnvironment env;
 
-    DB_GetDockGadgetEnvironment(o, &env);
+    TD_GetDockGadgetEnvironment(o, &env);
 
     if( env.gadgetBounds.x != data->cx || 
         env.gadgetBounds.y != data->cy || 
@@ -297,7 +299,7 @@ DB_METHOD_DM(DRAW,DockMessageDraw)
         draw_eyes(data, msg->rp);
 
         if( env.showBorders ) {
-            DB_DrawOutsetFrame(msg->rp, &env.gadgetBounds);
+            TD_DrawOutsetFrame(msg->rp, &env.gadgetBounds);
         }
     }
 
@@ -309,7 +311,7 @@ DB_METHOD_D(TICK)
     measure_eyes(data);
 
     if( data->needsRedraw ) {
-        DB_RequestDockGadgetDraw(o);
+        TD_RequestDockGadgetDraw(o);
     }
 
     return 1;
@@ -330,7 +332,7 @@ DB_METHOD_M(GETSIZE,DockMessageGetSize)
             xAspect = dispInfo.Resolution.x;
             yAspect = dispInfo.Resolution.y;
 
-            DEBUG(DB_Printf(__METHOD__ "xAspect = %ld, yAspect = %ld\n", (LONG)xAspect, (LONG)yAspect));
+            DEBUG(TD_Printf(__METHOD__ "xAspect = %ld, yAspect = %ld\n", (LONG)xAspect, (LONG)yAspect));
         }
 
         UnlockPubScreen(NULL, screen);
@@ -339,14 +341,14 @@ DB_METHOD_M(GETSIZE,DockMessageGetSize)
     msg->w = DEFAULT_SIZE;
     msg->h = ((DEFAULT_SIZE * 2 / 3) * xAspect) / yAspect;
 
-    DEBUG(DB_Printf(__METHOD__ "w = %ld, h = %ld\n", (LONG)msg->w, (LONG)msg->h));
+    DEBUG(TD_Printf(__METHOD__ "w = %ld, h = %ld\n", (LONG)msg->w, (LONG)msg->h));
 
     return 1;
 }
 
 DB_METHOD_DM(GETEDITOR,DockMessageGetEditor)
 
-    msg->uiTags = DB_MakeTagList(   
+    msg->uiTags = TD_MakeTagList(   
         VertGroupA,
             Space,
             LineArray,
@@ -388,7 +390,7 @@ DB_METHOD_DM(READCONFIG,DockMessageConfig)
 
     struct DockSettingValue v;
 
-    while( DB_ReadSetting(msg->settings, &v) ) {
+    while( TD_ReadSetting(msg->settings, &v) ) {
         
         if( IS_KEY(S_NUMEYES, v) ) {
             GET_INTEGER(v, data->eyeCount)
@@ -411,7 +413,7 @@ DB_METHOD_DM(WRITECONFIG,DockMessageConfig)
 
     eyeCount[0] = '0' + (UBYTE)data->eyeCount;
 
-    DB_WriteSetting(s, S_NUMEYES, (STRPTR)&eyeCount);
+    TD_WriteSetting(s, S_NUMEYES, (STRPTR)&eyeCount);
 
     return 1;
 }

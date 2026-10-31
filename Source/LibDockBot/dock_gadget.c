@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -36,7 +38,7 @@ struct DockGadgetData {
 
 VOID draw_default_image(Class *c, Object *o, struct RastPort *rp, struct DockGadgetData *dgd)
 {
-    DB_DrawOutsetFrame(rp, &dgd->env.gadgetBounds);
+    TD_DrawOutsetFrame(rp, &dgd->env.gadgetBounds);
 }
 
 VOID read_settings(Msg msg)
@@ -44,7 +46,7 @@ VOID read_settings(Msg msg)
     struct DockMessageConfig *m = (struct DockMessageConfig *)msg;
     struct DockSettingValue v;
 
-    while( DB_ReadSetting(m->settings, &v) ) {
+    while( TD_ReadSetting(m->settings, &v) ) {
         // Do nothing
     }    
 }
@@ -67,7 +69,7 @@ VOID send_message_no_params(Class *c, Object *o, GadgetMessageType gm)
     struct GadgetMessage *msg;
 
     if( dgd->dockPort ) {
-        if( msg = DB_AllocMem(sizeof(struct GadgetMessage), MEMF_CLEAR) ) {
+        if( msg = TD_AllocMem(sizeof(struct GadgetMessage), MEMF_CLEAR) ) {
 
             msg->m.mn_Length = sizeof(struct GadgetMessage);
 
@@ -82,7 +84,7 @@ VOID send_launch_msg_to_dock(Class *c, Object *o, struct DockMessageLaunch *dml)
     struct GadgetMessageLaunch *msg;
 
     if( dgd->dockPort ) {
-        if( msg = DB_AllocMem(sizeof(struct GadgetMessageLaunch), MEMF_CLEAR) ) {
+        if( msg = TD_AllocMem(sizeof(struct GadgetMessageLaunch), MEMF_CLEAR) ) {
 
             msg->m.m.mn_Length = sizeof(struct GadgetMessageLaunch);
 
@@ -102,7 +104,7 @@ VOID send_port_msg_to_dock(Class *c, Object *o, struct DockMessagePort *dmp, ULO
     struct GadgetMessagePort *msg;
 
     if( dgd->dockPort ) {
-        if( msg = DB_AllocMem(sizeof(struct GadgetMessagePort), MEMF_CLEAR) ) {
+        if( msg = TD_AllocMem(sizeof(struct GadgetMessagePort), MEMF_CLEAR) ) {
 
             msg->m.m.mn_Length = sizeof(struct GadgetMessagePort);
 

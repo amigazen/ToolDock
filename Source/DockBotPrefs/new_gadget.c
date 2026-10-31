@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -64,20 +66,20 @@ VOID class_selected(struct DockPrefs *prefs)
     for( curr = prefs->classes.lh_Head; curr->ln_Succ; curr = curr->ln_Succ ) {
         if( gadCount == index ) {
 
-            if( g = DB_CreateDockGadget(curr->ln_Name) ) {
+            if( g = TD_CreateDockGadget(curr->ln_Name) ) {
 
                 dock_gadget_get_info(g, &name, &vers, &desc, &copy);
 
                 DEBUG(printf(" -> %s %s\n", name, vers));
 
                 len = strlen(name) + strlen(vers) + strlen(desc) + strlen(copy) + 8;
-                if( text = DB_AllocMem(len, MEMF_CLEAR) ) {
+                if( text = TD_AllocMem(len, MEMF_CLEAR) ) {
 
                     sprintf(text, "%s %s\n\n%s\n\n%s\n", name, vers, desc, copy);    
 
                     TR_SetAttribute(prefs->newGadgetDialog, OBJ_NEW_STR_DESC, TRAT_Text, (ULONG)text);
 
-                    DB_FreeMem(text, len);
+                    TD_FreeMem(text, len);
                 }
                 DisposeObject(g);
             } else {
@@ -163,7 +165,7 @@ VOID add_dropped_icon(struct DockPrefs *prefs, struct AppMessage *msg)
 
     DEBUG(printf("add_dropped_icon\n"));
 
-    if( path = (STRPTR)DB_AllocMem(MAX_PATH_LENGTH, MEMF_ANY) ) {
+    if( path = (STRPTR)TD_AllocMem(MAX_PATH_LENGTH, MEMF_ANY) ) {
 
         path[0] = 0;
         NameFromLock(msg->am_ArgList->wa_Lock, path, MAX_PATH_LENGTH);
@@ -207,6 +209,6 @@ VOID add_dropped_icon(struct DockPrefs *prefs, struct AppMessage *msg)
             UnLock(lock);
         }
 
-        DB_FreeMem(path, MAX_PATH_LENGTH);
+        TD_FreeMem(path, MAX_PATH_LENGTH);
     }
 }

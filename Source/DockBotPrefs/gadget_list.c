@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -51,7 +53,7 @@ VOID free_gadget_list(struct DockPrefs *prefs)
     while( ! IsListEmpty(&prefs->gadLabels) ) {
         if( ln = RemTail(&prefs->gadLabels) ) {
             DEBUG(printf("  %s\n", ln->ln_Name));
-            DB_FreeMem(ln, sizeof(struct Node) + strlen(ln->ln_Name) + 1);
+            TD_FreeMem(ln, sizeof(struct Node) + strlen(ln->ln_Name) + 1);
         }        
     }
 }
@@ -74,7 +76,7 @@ VOID update_gadget_list(struct DockPrefs *prefs)
         }
         len = strlen(label) + 1;
 
-        if( ln = (struct Node *)DB_AllocMem(sizeof(struct Node) + len, MEMF_ANY) ) {
+        if( ln = (struct Node *)TD_AllocMem(sizeof(struct Node) + len, MEMF_ANY) ) {
             ln->ln_Name = (STRPTR)(ln + 1);
             CopyMem(label, (VOID *)(ln + 1), len);
             AddTail(&prefs->gadLabels, ln);
@@ -227,7 +229,7 @@ VOID edit_gadget(struct DockPrefs *prefs, struct DgNode *dg)
 
                         if( !(prefs->editDialog = TR_OpenProject(Application, windowTags) ) ) {
     
-                            DB_ShowError((STRPTR)MSG_ERR_EditorFailure);
+                            TD_ShowError((STRPTR)MSG_ERR_EditorFailure);
                             TR_UnlockProject(prefs->mainWindow);
                         }
 

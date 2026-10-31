@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -126,54 +128,54 @@ APTR FuncTable[] = {
     _LibExpunge,
     _ExtFuncLib,
 
-    DB_GetDockGadgetEnvironment,
-    DB_RequestDockQuit,
-    DB_RequestDockGadgetDraw,
-    DB_RequestLaunch,
+    TD_GetDockGadgetEnvironment,
+    TD_RequestDockQuit,
+    TD_RequestDockGadgetDraw,
+    TD_RequestLaunch,
 
-    DB_DrawOutsetFrame,
-    DB_DrawInsetFrame,
+    TD_DrawOutsetFrame,
+    TD_DrawInsetFrame,
 
-    DB_OpenSettingsRead,
-    DB_OpenSettingsWrite,
-    DB_CloseSettings,
-    DB_ReadBeginBlock,
-    DB_ReadEndBlock,
-    DB_ReadSetting,
-    DB_WriteBeginBlock,
-    DB_WriteEndBlock,
-    DB_WriteSetting,
-    DB_ReadConfig,
-    DB_WriteConfig,
+    TD_OpenSettingsRead,
+    TD_OpenSettingsWrite,
+    TD_CloseSettings,
+    TD_ReadBeginBlock,
+    TD_ReadEndBlock,
+    TD_ReadSetting,
+    TD_WriteBeginBlock,
+    TD_WriteEndBlock,
+    TD_WriteSetting,
+    TD_ReadConfig,
+    TD_WriteConfig,
 
-    DB_AllocMem,
-    DB_FreeMem,
-    DB_GetMemInfo,
+    TD_AllocMem,
+    TD_FreeMem,
+    TD_GetMemInfo,
     
-    DB_CreateDockGadget,
-    DB_ListClasses,
+    TD_CreateDockGadget,
+    TD_ListClasses,
 
-    DB_ShowError,
+    TD_ShowError,
 
-    DB_RegisterPort,
-    DB_UnregisterPort,
+    TD_RegisterPort,
+    TD_UnregisterPort,
 
-    DB_DisposeConfig,
+    TD_DisposeConfig,
 
-    DB_DisposeDockGadget,
+    TD_DisposeDockGadget,
 
-    DB_FreeGadget,
-    DB_AllocGadget,
+    TD_FreeGadget,
+    TD_AllocGadget,
 
-    DB_RegisterDebugStream,
-    DB_DebugLog,
+    TD_RegisterDebugStream,
+    TD_DebugLog,
 
-    DB_LoadBrush,
-    DB_FreeBrush,
-    DB_DrawBrush,
-    DB_GetBrushSize,
+    TD_LoadBrush,
+    TD_FreeBrush,
+    TD_DrawBrush,
+    TD_GetBrushSize,
 
-    DB_SelectFile,
+    TD_SelectFile,
 
     (APTR)-1
 };
@@ -184,8 +186,8 @@ struct Library *GfxBase = NULL;
 struct Library *IntuitionBase = NULL;
 struct Library *DataTypesBase = NULL;
 struct Library *AslBase = NULL;
-struct Library *DockBotBase = NULL;
-struct DockBotLibrary *DockBotBaseFull = NULL;
+struct Library *ToolDockBase = NULL;
+struct DockBotLibrary *ToolDockBaseFull = NULL;
 
 struct DockBotLibrary * __saveds __asm InitLib(
     register __a6 struct Library *sysBase,
@@ -194,8 +196,8 @@ struct DockBotLibrary * __saveds __asm InitLib(
 {
     SysBase = sysBase;
 
-    DockBotBaseFull = dockBotBase;
-    DockBotBase = (struct Library *)dockBotBase;
+    ToolDockBaseFull = dockBotBase;
+    ToolDockBase = (struct Library *)dockBotBase;
     dockBotBase->l_ExecBase = sysBase;
     dockBotBase->l_SegList = segList;
 

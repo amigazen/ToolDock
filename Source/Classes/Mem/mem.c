@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -94,14 +96,14 @@ VOID draw_mem(struct RastPort *rp, struct DrawInfo *di, struct Rect *bounds, UWO
     SetAPen(rp, di->dri_Pens[BACKGROUNDPEN]);
     RectFill(rp, frame.x, frame.y, frame.x + frame.w - 1, frame.y + frame.h - 1);
 
-    DB_DrawOutsetFrame(rp, &frame);
+    TD_DrawOutsetFrame(rp, &frame);
     
     frame.x += 1;
     frame.y += 1;
     frame.w -= 2;
     frame.h -= 2;
 
-    DB_DrawInsetFrame(rp, &frame);
+    TD_DrawInsetFrame(rp, &frame);
 
     frame.x += 1;
     frame.y += 1;
@@ -111,7 +113,7 @@ VOID draw_mem(struct RastPort *rp, struct DrawInfo *di, struct Rect *bounds, UWO
     SetAPen(rp, di->dri_Pens[FILLPEN]);
     RectFill(rp, frame.x, frame.y, frame.x + frame.w - 2, frame.y + frame.h - 2);
 
-    DB_DrawOutsetFrame(rp, &frame);
+    TD_DrawOutsetFrame(rp, &frame);
 
 
     sprintf((STRPTR)&buf, label, (free * 100L) / total);
@@ -144,7 +146,7 @@ DB_METHOD_M(DRAW,DockMessageDraw)
     totalFast = AvailMem(MEMF_FAST | MEMF_TOTAL);
     freeFast = AvailMem(MEMF_FAST);
 
-    DB_GetDockGadgetEnvironment(o, &env);
+    TD_GetDockGadgetEnvironment(o, &env);
 
     if( screen = LockPubScreen(NULL) ) {
     
@@ -174,7 +176,7 @@ DB_METHOD_D(TICK)
 
     data->counter = 50;
 
-    DB_RequestDockGadgetDraw(o);
+    TD_RequestDockGadgetDraw(o);
 
     return 1;
 }

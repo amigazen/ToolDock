@@ -58,8 +58,6 @@ icon.library v46.4 - PeterK's amazing library provides icon manipulation functio
 
 Triton - An object oriented GUI creation system by Stefan Zeiger. A redistributable copy is included with ToolDock.
 
-WBRun - Runs programs as if executed by Workbench by Sylvain Rougier and Pierre Carrette. A copy is included with ToolDock.
-
 Roadshow - (Optional) The DockNet gadget uses a feature not found in older network stacks.
 
 @endnode
@@ -341,13 +339,13 @@ These macros are used to provide implementations of the above methods:
 
 When DEBUG_BUILD is defined the gadget can generate console output using the following functions and macros:
 
-- DB_Printf(fmt, ...) - A printf like function that will write to the output stream of the ToolDock or ToolDockPrefs applications.
+- TD_Printf(fmt, ...) - A printf like function that will write to the output stream of the ToolDock or ToolDockPrefs applications.
 - __METHOD__ - A macro that combines the gadget name with the current function name.
 - DEBUG() - A macro that used to wrap an operation that is only present in debug builds.
 
 Use these together like this:
 
-DEBUG(DB_Printf(__METHOD__ "Some debug message: %ld\n", aNumber));
+DEBUG(TD_Printf(__METHOD__ "Some debug message: %ld\n", aNumber));
 
 See the DOS function VFPrintf for info on the format string.
 
@@ -360,7 +358,6 @@ Here is an incomplete list of things that could be done to improve ToolDock:
 - More translations.
 - Support multiple dock windows.
 - Docks on different public screens.
-- Detect new versions of workbench.library and use that to launch programs or open drawers.
 - New gadgets such as a sub-dock.
 - Maybe an AREXX port...
 

@@ -14,8 +14,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -29,15 +31,15 @@
 
 #include "@{"dockbot.h" LINK "dockbot.h/File"}"
 
-/****** @{"tooldock.library/DB_GetDockGadgetEnvironment" LINK "dockbot/DB_GetDockGadgetEnvironment"} ***********************
+/****** @{"tooldock.library/TD_GetDockGadgetEnvironment" LINK "dockbot/TD_GetDockGadgetEnvironment"} ***********************
 *
 *   NAME
-*       @{"DB_GetDockGadgetEnvironment" LINK "dockbot/DB_GetDockGadgetEnvironment"} -- Get the environment info for the gadget.
+*       @{"TD_GetDockGadgetEnvironment" LINK "dockbot/TD_GetDockGadgetEnvironment"} -- Get the environment info for the gadget.
 *
 *   SYNOPSIS
-*       @{"DB_GetDockGadgetEnvironment" LINK "dockbot/DB_GetDockGadgetEnvironment"}(obj, env)
+*       @{"TD_GetDockGadgetEnvironment" LINK "dockbot/TD_GetDockGadgetEnvironment"}(obj, env)
 *                                   A0    A1
-*       VOID @{"DB_GetDockGadgetEnvironment" LINK "dockbot/DB_GetDockGadgetEnvironment"}(Object *, @{"struct GadgetEnvironment" LINK "dockbot.h/File" 159} *)
+*       VOID @{"TD_GetDockGadgetEnvironment" LINK "dockbot/TD_GetDockGadgetEnvironment"}(Object *, @{"struct GadgetEnvironment" LINK "dockbot.h/File" 159} *)
 *
 *   FUNCTION
 *       Queries a dock gadget for it's position, size and information about
@@ -53,22 +55,22 @@
 *
 *   EXAMPLE
 *       struct DockGadgetEnvironment env;
-*       @{"DB_GetDockGadgetEnvironment" LINK "dockbot/DB_GetDockGadgetEnvironment"}(obj, &env);
+*       @{"TD_GetDockGadgetEnvironment" LINK "dockbot/TD_GetDockGadgetEnvironment"}(obj, &env);
 *
 ***************************************************************************/
-VOID __asm __saveds DB_GetDockGadgetEnvironment(
+VOID __asm __saveds TD_GetDockGadgetEnvironment(
         register __a0 Object *obj,
         register __a1 @{"struct GadgetEnvironment" LINK "dockbot.h/File" 159} *env);
 
-/****** @{"tooldock.library/DB_DrawOutsetFrame" LINK "dockbot/DB_DrawOutsetFrame"} *********************************
+/****** @{"tooldock.library/TD_DrawOutsetFrame" LINK "dockbot/TD_DrawOutsetFrame"} *********************************
 *
 *   NAME
-*       @{"DB_DrawOutsetFrame" LINK "dockbot/DB_DrawOutsetFrame"} -- Draws a raised 3d rectangle.
+*       @{"TD_DrawOutsetFrame" LINK "dockbot/TD_DrawOutsetFrame"} -- Draws a raised 3d rectangle.
 *
 *   SYNOPSIS
-*       @{"DB_DrawOutsetFrame" LINK "dockbot/DB_DrawOutsetFrame"}(rp, bounds)
+*       @{"TD_DrawOutsetFrame" LINK "dockbot/TD_DrawOutsetFrame"}(rp, bounds)
 *                          A0    A1
-*       VOID @{"DB_DrawOutsetFrame" LINK "dockbot/DB_DrawOutsetFrame"}(struct RastPort *, @{"struct Rect" LINK "dockbot.h/File" 96} *);
+*       VOID @{"TD_DrawOutsetFrame" LINK "dockbot/TD_DrawOutsetFrame"}(struct RastPort *, @{"struct Rect" LINK "dockbot.h/File" 96} *);
 *
 *   FUNCTION
 *       Draws a raised 3d frame with the supplied RastPort.
@@ -82,24 +84,24 @@ VOID __asm __saveds DB_GetDockGadgetEnvironment(
 *
 *   EXAMPLE
 *       @{"struct Rect" LINK "dockbot.h/File" 96} bounds;
-*       DB_GetDockGadgetBounds(obj, &bounds);
-*       @{"DB_DrawOutsetFrame" LINK "dockbot/DB_DrawOutsetFrame"}(rp, &bounds);
+*       TD_GetDockGadgetBounds(obj, &bounds);
+*       @{"TD_DrawOutsetFrame" LINK "dockbot/TD_DrawOutsetFrame"}(rp, &bounds);
 *
 ***************************************************************************/
-VOID __asm __saveds DB_DrawOutsetFrame(
+VOID __asm __saveds TD_DrawOutsetFrame(
         register __a0 struct RastPort *rp,
         register __a1 struct Rect *bounds);
 
 
-/****** @{"tooldock.library/DB_DrawInsetFrame" LINK "dockbot/DB_DrawInsetFrame"} **********************************
+/****** @{"tooldock.library/TD_DrawInsetFrame" LINK "dockbot/TD_DrawInsetFrame"} **********************************
 *
 *   NAME
-*       @{"DB_DrawOutsetFrame" LINK "dockbot/DB_DrawOutsetFrame"} -- Draws a lowered 3d rectangle.
+*       @{"TD_DrawOutsetFrame" LINK "dockbot/TD_DrawOutsetFrame"} -- Draws a lowered 3d rectangle.
 *
 *   SYNOPSIS
-*       @{"DB_DrawInsetFrame" LINK "dockbot/DB_DrawInsetFrame"}(rp, bounds)
+*       @{"TD_DrawInsetFrame" LINK "dockbot/TD_DrawInsetFrame"}(rp, bounds)
 *                         A0    A1
-*       VOID @{"DB_DrawInsetFrame" LINK "dockbot/DB_DrawInsetFrame"}(struct RastPort *, @{"struct Rect" LINK "dockbot.h/File" 96} *);
+*       VOID @{"TD_DrawInsetFrame" LINK "dockbot/TD_DrawInsetFrame"}(struct RastPort *, @{"struct Rect" LINK "dockbot.h/File" 96} *);
 *
 *   FUNCTION
 *       Draws a lowered 3d frame with the supplied RastPort.
@@ -113,25 +115,25 @@ VOID __asm __saveds DB_DrawOutsetFrame(
 *
 *   EXAMPLE
 *       @{"struct Rect" LINK "dockbot.h/File" 96} bounds;
-*       DB_GetDockGadgetBounds(obj, &bounds);
-*       @{"DB_DrawInsetFrame" LINK "dockbot/DB_DrawInsetFrame"}(rp, &bounds);
+*       TD_GetDockGadgetBounds(obj, &bounds);
+*       @{"TD_DrawInsetFrame" LINK "dockbot/TD_DrawInsetFrame"}(rp, &bounds);
 *
 ***************************************************************************/
-VOID __asm __saveds DB_DrawInsetFrame(
+VOID __asm __saveds TD_DrawInsetFrame(
         register __a0 struct RastPort *rp,
         register __a1 struct Rect *bounds);
 
 
 
-/****** @{"tooldock.library/DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"} ********************************
+/****** @{"tooldock.library/TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"} ********************************
 *
 *   NAME
-*       @{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"} -- Open the settings file for reading.
+*       @{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"} -- Open the settings file for reading.
 *
 *   SYNOPSIS
-*       Settings = @{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"}(filename)
+*       Settings = @{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"}(filename)
 *         D0                              A0
-*       struct DockSettings *@{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"}(STRPTR);
+*       struct DockSettings *@{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"}(STRPTR);
 *
 *   FUNCTION
 *       Opens the settings file for reading.
@@ -145,29 +147,29 @@ VOID __asm __saveds DB_DrawInsetFrame(
 *
 *   EXAMPLE
 *       struct DockSettings *s;
-*       if( s = @{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
+*       if( s = @{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
 *         ...
-*         @{"DB_CloseSettings" LINK "dockbot/DB_CloseSettings"}(s);
+*         @{"TD_CloseSettings" LINK "dockbot/TD_CloseSettings"}(s);
 *       }
 *
 *   SEE ALSO
-*       @{"DB_OpenSettingsWrite()" LINK "dockbot/DB_OpenSettingsWrite"},@{"DB_CloseSettings()" LINK "dockbot/DB_CloseSettings"}
+*       @{"TD_OpenSettingsWrite()" LINK "dockbot/TD_OpenSettingsWrite"},@{"TD_CloseSettings()" LINK "dockbot/TD_CloseSettings"}
 *
 ***************************************************************************/
-struct DockSettings * __asm __saveds DB_OpenSettingsRead(
+struct DockSettings * __asm __saveds TD_OpenSettingsRead(
     register __a0 STRPTR filename);
 
 
 
-/****** @{"tooldock.library/DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"} *****************************
+/****** @{"tooldock.library/TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"} *****************************
 *
 *   NAME
-*       @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"} -- Open the settings file for writing.
+*       @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"} -- Open the settings file for writing.
 *
 *   SYNOPSIS
-*       Settings = @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}(filename)
+*       Settings = @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}(filename)
 *         D0                              A0
-*       struct DockSettings *@{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}(STRPTR);
+*       struct DockSettings *@{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}(STRPTR);
 *
 *   FUNCTION
 *       Opens the settings file for writing. If the file doesn't exist it will
@@ -182,33 +184,33 @@ struct DockSettings * __asm __saveds DB_OpenSettingsRead(
 *
 *   EXAMPLE
 *       struct DockSettings *s;
-*       if( s = @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
+*       if( s = @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
 *         ...
-*         @{"DB_CloseSettings" LINK "dockbot/DB_CloseSettings"}(s);
+*         @{"TD_CloseSettings" LINK "dockbot/TD_CloseSettings"}(s);
 *       }
 *
 *   SEE ALSO
-*       @{"DB_OpenSettingsRead()" LINK "dockbot/DB_OpenSettingsRead"},@{"DB_CloseSettings()" LINK "dockbot/DB_CloseSettings"}
+*       @{"TD_OpenSettingsRead()" LINK "dockbot/TD_OpenSettingsRead"},@{"TD_CloseSettings()" LINK "dockbot/TD_CloseSettings"}
 *
 ***************************************************************************/
-struct DockSettings * __asm __saveds DB_OpenSettingsWrite(
+struct DockSettings * __asm __saveds TD_OpenSettingsWrite(
     register __a0 STRPTR filename);
 
 
 
-/****** @{"tooldock.library/DB_CloseSettings" LINK "dockbot/DB_CloseSettings"} ***********************************
+/****** @{"tooldock.library/TD_CloseSettings" LINK "dockbot/TD_CloseSettings"} ***********************************
 *
 *   NAME
-*       @{"DB_CloseSettings" LINK "dockbot/DB_CloseSettings"} -- Closes a previously opened settings file.
+*       @{"TD_CloseSettings" LINK "dockbot/TD_CloseSettings"} -- Closes a previously opened settings file.
 *
 *   SYNOPSIS
-*       @{"DB_CloseSettings" LINK "dockbot/DB_CloseSettings"}(settings)
+*       @{"TD_CloseSettings" LINK "dockbot/TD_CloseSettings"}(settings)
 *                          A0
-*       VOID @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}(struct DockSettings *);
+*       VOID @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}(struct DockSettings *);
 *
 *   FUNCTION
 *       Closes and deallocates a DockSettings structure previously allocated by
-*       @{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"} or @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}.
+*       @{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"} or @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}.
 *       Do not use the settings object after calling this function.
 *
 *   INPUTS
@@ -219,28 +221,28 @@ struct DockSettings * __asm __saveds DB_OpenSettingsWrite(
 *
 *   EXAMPLE
 *       struct DockSettings *s;
-*       if( s = @{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
+*       if( s = @{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
 *         ...
-*         @{"DB_CloseSettings" LINK "dockbot/DB_CloseSettings"}(s);
+*         @{"TD_CloseSettings" LINK "dockbot/TD_CloseSettings"}(s);
 *       }
 *
 *   SEE ALSO
-*       @{"DB_OpenSettingsRead()" LINK "dockbot/DB_OpenSettingsRead"},@{"DB_OpenSettingsWrite()" LINK "dockbot/DB_OpenSettingsWrite"}
+*       @{"TD_OpenSettingsRead()" LINK "dockbot/TD_OpenSettingsRead"},@{"TD_OpenSettingsWrite()" LINK "dockbot/TD_OpenSettingsWrite"}
 *
 ***************************************************************************/
-VOID __asm __saveds DB_CloseSettings(
+VOID __asm __saveds TD_CloseSettings(
     register __a0 struct DockSettings *settings);
 
 
-/****** @{"tooldock.library/DB_DisposeConfig" LINK "dockbot/DB_DisposeConfig"} ***********************************
+/****** @{"tooldock.library/TD_DisposeConfig" LINK "dockbot/TD_DisposeConfig"} ***********************************
 *
 *   NAME
-*       @{"DB_DisposeConfig" LINK "dockbot/DB_DisposeConfig"} - Cleans up the gadgets on a DockConfig structure.
+*       @{"TD_DisposeConfig" LINK "dockbot/TD_DisposeConfig"} - Cleans up the gadgets on a DockConfig structure.
 *
 *   SYNOPSIS
-*       @{"DB_DisposeConfig" LINK "dockbot/DB_DisposeConfig"}(cfg)
+*       @{"TD_DisposeConfig" LINK "dockbot/TD_DisposeConfig"}(cfg)
 *                        A0
-*       VOID @{"DB_DisposeConfig" LINK "dockbot/DB_DisposeConfig"}(@{"struct DockConfig" LINK "dockbot.h/File" 65} *);
+*       VOID @{"TD_DisposeConfig" LINK "dockbot/TD_DisposeConfig"}(@{"struct DockConfig" LINK "dockbot.h/File" 65} *);
 *
 *   FUNCTION
 *   Disposes of gadget objects and cleans up associated memory allocated
@@ -250,25 +252,25 @@ VOID __asm __saveds DB_CloseSettings(
 *       cfg - The DockConfig structure containing references to gadgets.
 *
 *   RESULT
-*       The gadgets allocated by @{"DB_ReadConfig" LINK "dockbot/DB_ReadConfig"} will be cleaned up.
+*       The gadgets allocated by @{"TD_ReadConfig" LINK "dockbot/TD_ReadConfig"} will be cleaned up.
 *
 *   SEE ALSO
-*       @{"DB_ReadConfig()" LINK "dockbot/DB_ReadConfig"}
+*       @{"TD_ReadConfig()" LINK "dockbot/TD_ReadConfig"}
 *
 ***************************************************************************/
-VOID __asm __saveds DB_DisposeConfig(
+VOID __asm __saveds TD_DisposeConfig(
     register __a0 @{"struct DockConfig" LINK "dockbot.h/File" 65} *cfg);
 
 
-/****** @{"tooldock.library/DB_ReadBeginBlock" LINK "dockbot/DB_ReadBeginBlock"} *********************************
+/****** @{"tooldock.library/TD_ReadBeginBlock" LINK "dockbot/TD_ReadBeginBlock"} *********************************
 *
 *   NAME
-*       @{"DB_ReadBeginBlock" LINK "dockbot/DB_ReadBeginBlock"} -- Attempts to read a block start from the setings.
+*       @{"TD_ReadBeginBlock" LINK "dockbot/TD_ReadBeginBlock"} -- Attempts to read a block start from the setings.
 *
 *   SYNOPSIS
-*       success = @{"DB_ReadBeginBlock" LINK "dockbot/DB_ReadBeginBlock"}(settings)
+*       success = @{"TD_ReadBeginBlock" LINK "dockbot/TD_ReadBeginBlock"}(settings)
 *         D0                          A0
-*       BOOL @{"DB_ReadBeginBlock" LINK "dockbot/DB_ReadBeginBlock"}(struct DockSettings *);
+*       BOOL @{"TD_ReadBeginBlock" LINK "dockbot/TD_ReadBeginBlock"}(struct DockSettings *);
 *
 *   FUNCTION
 *       Looks for the word "begin" on the current line of the settings file.
@@ -276,78 +278,78 @@ VOID __asm __saveds DB_DisposeConfig(
 *       block.
 *
 *   INPUTS
-*       settings - The DockSettings structure allocated by @{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"}.
+*       settings - The DockSettings structure allocated by @{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"}.
 *
 *   RESULT
 *       TRUE if a block start was found, FALSE if it was not.
 *
 *   EXAMPLE
 *       struct DockSettings *s;
-*       if( s = @{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
-*         if( @{"DB_ReadBeginBlock" LINK "dockbot/DB_ReadBeginBlock"}(s) ) {
-*           while(!@{"DB_ReadEndBlock" LINK "dockbot/DB_ReadEndBlock"}(s)) {
+*       if( s = @{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
+*         if( @{"TD_ReadBeginBlock" LINK "dockbot/TD_ReadBeginBlock"}(s) ) {
+*           while(!@{"TD_ReadEndBlock" LINK "dockbot/TD_ReadEndBlock"}(s)) {
 *             ...
 *           }
 *         }
-*         @{"DB_CloseSettings" LINK "dockbot/DB_CloseSettings"}(s);
+*         @{"TD_CloseSettings" LINK "dockbot/TD_CloseSettings"}(s);
 *       }
 *
 *   SEE ALSO
-*       @{"DB_OpenSettingsRead()" LINK "dockbot/DB_OpenSettingsRead"},@{"DB_ReadEndBlock()" LINK "dockbot/DB_ReadEndBlock"}
+*       @{"TD_OpenSettingsRead()" LINK "dockbot/TD_OpenSettingsRead"},@{"TD_ReadEndBlock()" LINK "dockbot/TD_ReadEndBlock"}
 *
 ***************************************************************************/
-BOOL __asm __saveds DB_ReadBeginBlock(
+BOOL __asm __saveds TD_ReadBeginBlock(
     register __a0 struct DockSettings *settings);
 
 
-/****** @{"tooldock.library/DB_ReadEndBlock" LINK "dockbot/DB_ReadEndBlock"} ************************************
+/****** @{"tooldock.library/TD_ReadEndBlock" LINK "dockbot/TD_ReadEndBlock"} ************************************
 *
 *   NAME
-*       @{"DB_ReadEndBlock" LINK "dockbot/DB_ReadEndBlock"} -- Attempts to read a block end from the setings.
+*       @{"TD_ReadEndBlock" LINK "dockbot/TD_ReadEndBlock"} -- Attempts to read a block end from the setings.
 *
 *   SYNOPSIS
-*       success = @{"DB_ReadEndBlock" LINK "dockbot/DB_ReadEndBlock"}(settings)
+*       success = @{"TD_ReadEndBlock" LINK "dockbot/TD_ReadEndBlock"}(settings)
 *         D0                        A0
-*       BOOL @{"DB_ReadEndBlock" LINK "dockbot/DB_ReadEndBlock"}(struct DockSettings *);
+*       BOOL @{"TD_ReadEndBlock" LINK "dockbot/TD_ReadEndBlock"}(struct DockSettings *);
 *
 *   FUNCTION
 *       Looks for the word "end" on the current line of the settings file.
 *       If found the DockSettings struct records the end of an indented block.
 *
 *   INPUTS
-*       settings - The DockSettings structure allocated by @{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"}.
+*       settings - The DockSettings structure allocated by @{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"}.
 *
 *   RESULT
 *       TRUE if a block end was found, FALSE if it was not.
 *
 *   EXAMPLE
 *       struct DockSettings *s;
-*       if( s = @{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
-*         if( @{"DB_ReadBeginBlock" LINK "dockbot/DB_ReadBeginBlock"}(s) ) {
-*           while(!@{"DB_ReadEndBlock" LINK "dockbot/DB_ReadEndBlock"}(s)) {
+*       if( s = @{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
+*         if( @{"TD_ReadBeginBlock" LINK "dockbot/TD_ReadBeginBlock"}(s) ) {
+*           while(!@{"TD_ReadEndBlock" LINK "dockbot/TD_ReadEndBlock"}(s)) {
 *             ...
 *           }
 *         }
-*         @{"DB_CloseSettings" LINK "dockbot/DB_CloseSettings"}(s);
+*         @{"TD_CloseSettings" LINK "dockbot/TD_CloseSettings"}(s);
 *       }
 *
 *   SEE ALSO
-*       @{"DB_OpenSettingsRead()" LINK "dockbot/DB_OpenSettingsRead"},@{"DB_ReadBeginBlock()" LINK "dockbot/DB_ReadBeginBlock"}
+*       @{"TD_OpenSettingsRead()" LINK "dockbot/TD_OpenSettingsRead"},@{"TD_ReadBeginBlock()" LINK "dockbot/TD_ReadBeginBlock"}
 *
 ***************************************************************************/
-BOOL __asm __saveds DB_ReadEndBlock(
+BOOL __asm __saveds TD_ReadEndBlock(
     register __a0 struct DockSettings *settings);
 
 
-/****** @{"tooldock.library/DB_ReadSetting" LINK "dockbot/DB_ReadSetting"} *************************************
+/****** @{"tooldock.library/TD_ReadSetting" LINK "dockbot/TD_ReadSetting"} *************************************
 *
 *   NAME
-*       @{"DB_ReadSetting" LINK "dockbot/DB_ReadSetting"} -- Attempts to read a value from the settings file.
+*       @{"TD_ReadSetting" LINK "dockbot/TD_ReadSetting"} -- Attempts to read a value from the settings file.
 *
 *   SYNOPSIS
-*       success = @{"DB_ReadSetting" LINK "dockbot/DB_ReadSetting"}(settings, value)
+*       success = @{"TD_ReadSetting" LINK "dockbot/TD_ReadSetting"}(settings, value)
 *         D0                       A0        A1
-*       BOOL @{"DB_ReadSetting" LINK "dockbot/DB_ReadSetting"}(struct DockSettings *, @{"struct DockSettingValue" LINK "dockbot.h/File" 369} *);
+*       BOOL @{"TD_ReadSetting" LINK "dockbot/TD_ReadSetting"}(struct DockSettings *, @{"struct DockSettingValue" LINK "dockbot.h/File" 369} *);
 *
 *   FUNCTION
 *       Looks for the key and value separated by an equals sign on the current
@@ -355,7 +357,7 @@ BOOL __asm __saveds DB_ReadEndBlock(
 *       If found the value struct will be filled in with key and value.
 *
 *   INPUTS
-*       settings - The DockSettings structure allocated by @{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"}.
+*       settings - The DockSettings structure allocated by @{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"}.
 *
 *   RESULT
 *       TRUE if a block end was found, FALSE if it was not.
@@ -363,119 +365,119 @@ BOOL __asm __saveds DB_ReadEndBlock(
 *   EXAMPLE
 *       struct DockSettings *s;
 *       @{"struct DockSettingValue" LINK "dockbot.h/File" 369} val;
-*       if( s = @{"DB_OpenSettingsRead" LINK "dockbot/DB_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
-*         if( @{"DB_ReadBeginBlock" LINK "dockbot/DB_ReadBeginBlock"}(s) ) {
-*           while(!@{"DB_ReadEndBlock" LINK "dockbot/DB_ReadEndBlock"}(s)) {
-*             if( @{"DB_ReadSetting" LINK "dockbot/DB_ReadSetting"}(s, &val) ) {
+*       if( s = @{"TD_OpenSettingsRead" LINK "dockbot/TD_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
+*         if( @{"TD_ReadBeginBlock" LINK "dockbot/TD_ReadBeginBlock"}(s) ) {
+*           while(!@{"TD_ReadEndBlock" LINK "dockbot/TD_ReadEndBlock"}(s)) {
+*             if( @{"TD_ReadSetting" LINK "dockbot/TD_ReadSetting"}(s, &val) ) {
 *               ...
 *             }
 *           }
 *         }
-*         @{"DB_CloseSettings" LINK "dockbot/DB_CloseSettings"}(s);
+*         @{"TD_CloseSettings" LINK "dockbot/TD_CloseSettings"}(s);
 *       }
 *
 *   SEE ALSO
-*       @{"DB_OpenSettingsRead()" LINK "dockbot/DB_OpenSettingsRead"}
+*       @{"TD_OpenSettingsRead()" LINK "dockbot/TD_OpenSettingsRead"}
 *
 ***************************************************************************/
-BOOL __asm __saveds DB_ReadSetting(
+BOOL __asm __saveds TD_ReadSetting(
     register __a0 struct DockSettings *settings,
     register __a1 struct DockSettingValue *value);
 
 
-/****** @{"tooldock.library/DB_WriteBeginBlock" LINK "dockbot/DB_WriteBeginBlock"} *********************************
+/****** @{"tooldock.library/TD_WriteBeginBlock" LINK "dockbot/TD_WriteBeginBlock"} *********************************
 *
 *   NAME
-*       @{"DB_WriteBeginBlock" LINK "dockbot/DB_WriteBeginBlock"} -- Writes the start of a block to the settings file.
+*       @{"TD_WriteBeginBlock" LINK "dockbot/TD_WriteBeginBlock"} -- Writes the start of a block to the settings file.
 *
 *   SYNOPSIS
-*       success = @{"DB_WriteBeginBlock" LINK "dockbot/DB_WriteBeginBlock"}(settings)
+*       success = @{"TD_WriteBeginBlock" LINK "dockbot/TD_WriteBeginBlock"}(settings)
 *         D0                            A0
-*       BOOL @{"DB_WriteBeginBlock" LINK "dockbot/DB_WriteBeginBlock"}(struct DockSettings *);
+*       BOOL @{"TD_WriteBeginBlock" LINK "dockbot/TD_WriteBeginBlock"}(struct DockSettings *);
 *
 *   FUNCTION
 *       Writes the word "begin" to the settings file previously opened with
-*       @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}. Subsequent writes to the file will be indented.
+*       @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}. Subsequent writes to the file will be indented.
 *
 *   INPUTS
-*       settings - The DockSettings structure allocated by @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}.
+*       settings - The DockSettings structure allocated by @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}.
 *
 *   RESULT
 *       TRUE if a block begin was written or FALSE if it was not.
 *
 *   EXAMPLE
 *       struct DockSettings *s;
-*       if( s = @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
-*         if( @{"DB_WriteBeginBlock" LINK "dockbot/DB_WriteBeginBlock"}(s) ) {
+*       if( s = @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
+*         if( @{"TD_WriteBeginBlock" LINK "dockbot/TD_WriteBeginBlock"}(s) ) {
 *           ...
 *         }
-*         @{"DB_CloseSettings" LINK "dockbot/DB_CloseSettings"}(s);
+*         @{"TD_CloseSettings" LINK "dockbot/TD_CloseSettings"}(s);
 *       }
 *
 *   SEE ALSO
-*       @{"DB_OpenSettingsWrite()" LINK "dockbot/DB_OpenSettingsWrite"}, @{"DB_WriteEndBlock()" LINK "dockbot/DB_WriteEndBlock"}
+*       @{"TD_OpenSettingsWrite()" LINK "dockbot/TD_OpenSettingsWrite"}, @{"TD_WriteEndBlock()" LINK "dockbot/TD_WriteEndBlock"}
 *
 ***************************************************************************/
-BOOL __asm __saveds DB_WriteBeginBlock(
+BOOL __asm __saveds TD_WriteBeginBlock(
     register __a0 struct DockSettings *settings);
 
 
-/****** @{"tooldock.library/DB_WriteEndBlock" LINK "dockbot/DB_WriteEndBlock"} ***********************************
+/****** @{"tooldock.library/TD_WriteEndBlock" LINK "dockbot/TD_WriteEndBlock"} ***********************************
 *
 *   NAME
-*       @{"DB_WriteEndBlock" LINK "dockbot/DB_WriteEndBlock"} -- Writes the end of a block to the settings file.
+*       @{"TD_WriteEndBlock" LINK "dockbot/TD_WriteEndBlock"} -- Writes the end of a block to the settings file.
 *
 *   SYNOPSIS
-*       success = @{"DB_WriteBeginEnd" LINK "dockbot/DB_WriteEndBlock"}(settings)
+*       success = @{"TD_WriteBeginEnd" LINK "dockbot/TD_WriteEndBlock"}(settings)
 *         D0                         A0
-*       BOOL @{"DB_WriteBeginEnd" LINK "dockbot/DB_WriteEndBlock"}(struct DockSettings *);
+*       BOOL @{"TD_WriteBeginEnd" LINK "dockbot/TD_WriteEndBlock"}(struct DockSettings *);
 *
 *   FUNCTION
 *       Writes the word "end" to the settings file previously opened with
-*       @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}.
+*       @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}.
 *
 *   INPUTS
-*       settings - The DockSettings structure allocated by @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}.
+*       settings - The DockSettings structure allocated by @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}.
 *
 *   RESULT
 *       TRUE if a block end was written or FALSE if it was not.
 *
 *   EXAMPLE
 *       struct DockSettings *s;
-*       if( s = @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
-*         if( @{"DB_WriteBeginBlock" LINK "dockbot/DB_WriteBeginBlock"}(s) ) {
+*       if( s = @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
+*         if( @{"TD_WriteBeginBlock" LINK "dockbot/TD_WriteBeginBlock"}(s) ) {
 *           ...
-*           if( @{"DB_WriteEndBlock" LINK "dockbot/DB_WriteEndBlock"}(s) ) {
+*           if( @{"TD_WriteEndBlock" LINK "dockbot/TD_WriteEndBlock"}(s) ) {
 *             ...
 *           }
 *         }
-*         @{"DB_CloseSettings" LINK "dockbot/DB_CloseSettings"}(s);
+*         @{"TD_CloseSettings" LINK "dockbot/TD_CloseSettings"}(s);
 *       }
 *
 *   SEE ALSO
-*       @{"DB_OpenSettingsWrite()" LINK "dockbot/DB_OpenSettingsWrite"}, @{"DB_WriteBeginBlock()" LINK "dockbot/DB_WriteBeginBlock"}
+*       @{"TD_OpenSettingsWrite()" LINK "dockbot/TD_OpenSettingsWrite"}, @{"TD_WriteBeginBlock()" LINK "dockbot/TD_WriteBeginBlock"}
 *
 ***************************************************************************/
-BOOL __asm __saveds DB_WriteEndBlock(
+BOOL __asm __saveds TD_WriteEndBlock(
     register __a0 struct DockSettings *settings);
 
 
-/****** @{"tooldock.library/DB_WriteSetting" LINK "dockbot/DB_WriteSetting"} ************************************
+/****** @{"tooldock.library/TD_WriteSetting" LINK "dockbot/TD_WriteSetting"} ************************************
 *
 *   NAME
-*       @{"DB_WriteSetting" LINK "dockbot/DB_WriteSetting"} -- Writes a key and value pair to the settings file.
+*       @{"TD_WriteSetting" LINK "dockbot/TD_WriteSetting"} -- Writes a key and value pair to the settings file.
 *
 *   SYNOPSIS
-*       success = @{"DB_WriteSetting" LINK "dockbot/DB_WriteSetting"}(settings,key,value)
+*       success = @{"TD_WriteSetting" LINK "dockbot/TD_WriteSetting"}(settings,key,value)
 *         D0                        A0     A1  A2
-*       BOOL @{"DB_WriteBeginEnd" LINK "dockbot/DB_WriteEndBlock"}(struct DockSettings *,STRPTR,STRPTR);
+*       BOOL @{"TD_WriteBeginEnd" LINK "dockbot/TD_WriteEndBlock"}(struct DockSettings *,STRPTR,STRPTR);
 *
 *   FUNCTION
 *       Writes a key and value to a settings file previously opened with
-*       @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}. An equals sign, =, will separate the two.
+*       @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}. An equals sign, =, will separate the two.
 *
 *   INPUTS
-*       settings - The DockSettings structure allocated by @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}.
+*       settings - The DockSettings structure allocated by @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}.
 *       key      - A pointer to a NULL terminated string containing the key.
 *       value    - A pointer to a NULL terminated string containing the value.
 *
@@ -484,33 +486,33 @@ BOOL __asm __saveds DB_WriteEndBlock(
 *
 *   EXAMPLE
 *       struct DockSettings *s;
-*       if( s = @{"DB_OpenSettingsWrite" LINK "dockbot/DB_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
-*         if( @{"DB_WriteBeginBlock" LINK "dockbot/DB_WriteBeginBlock"}(s) ) {
-*           if( @{"DB_WriteSetting" LINK "dockbot/DB_WriteSetting"}(s, "key", "value") ) {
+*       if( s = @{"TD_OpenSettingsWrite" LINK "dockbot/TD_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
+*         if( @{"TD_WriteBeginBlock" LINK "dockbot/TD_WriteBeginBlock"}(s) ) {
+*           if( @{"TD_WriteSetting" LINK "dockbot/TD_WriteSetting"}(s, "key", "value") ) {
 *             ...
 *           }
 *         }
-*         @{"DB_CloseSettings" LINK "dockbot/DB_CloseSettings"}(s);
+*         @{"TD_CloseSettings" LINK "dockbot/TD_CloseSettings"}(s);
 *       }
 *
 *   SEE ALSO
-*       @{"DB_OpenSettingsWrite()" LINK "dockbot/DB_OpenSettingsWrite"}, @{"DB_WriteBeginBlock()" LINK "dockbot/DB_WriteBeginBlock"}
+*       @{"TD_OpenSettingsWrite()" LINK "dockbot/TD_OpenSettingsWrite"}, @{"TD_WriteBeginBlock()" LINK "dockbot/TD_WriteBeginBlock"}
 *
 ***************************************************************************/
-BOOL __asm __saveds DB_WriteSetting(
+BOOL __asm __saveds TD_WriteSetting(
     register __a0 struct DockSettings *settings,
     register __a1 STRPTR key,
     register __a2 STRPTR value);
 
-/****** @{"tooldock.library/DB_ReadConfig" LINK "dockbot/DB_ReadConfig"} ***********************************
+/****** @{"tooldock.library/TD_ReadConfig" LINK "dockbot/TD_ReadConfig"} ***********************************
 *
 *   NAME
-*       @{"DB_ReadConfig" LINK "dockbot/DB_ReadConfig"} - Read the ToolDock configuration file.
+*       @{"TD_ReadConfig" LINK "dockbot/TD_ReadConfig"} - Read the ToolDock configuration file.
 *
 *   SYNOPSIS
-*       success = @{"DB_ReadConfig" LINK "dockbot/DB_ReadConfig"}(cfg,settings)
+*       success = @{"TD_ReadConfig" LINK "dockbot/TD_ReadConfig"}(cfg,settings)
 *         D0                                    A0  A1
-*   BOOL @{"DB_ReadConfig" LINK "dockbot/DB_ReadConfig"}(@{"struct DockConfig" LINK "dockbot.h/File" 65} *, struct DockSettings *)
+*   BOOL @{"TD_ReadConfig" LINK "dockbot/TD_ReadConfig"}(@{"struct DockConfig" LINK "dockbot.h/File" 65} *, struct DockSettings *)
 *
 *   FUNCTION
 *       Reads the configuration data from the settings object and populates
@@ -524,19 +526,19 @@ BOOL __asm __saveds DB_WriteSetting(
 *       TRUE if the configuration was read.
 *
 ***************************************************************************/
-BOOL __asm __saveds DB_ReadConfig(
+BOOL __asm __saveds TD_ReadConfig(
     register __a0 @{"struct DockConfig" LINK "dockbot.h/File" 65} *cfg,
     register __a1 struct DockSettings *settings);
 
-/****** @{"tooldock.library/DB_WriteConfig" LINK "dockbot/DB_WriteConfig"} ***********************************
+/****** @{"tooldock.library/TD_WriteConfig" LINK "dockbot/TD_WriteConfig"} ***********************************
 *
 *   NAME
-*       @{"DB_WriteConfig" LINK "dockbot/DB_WriteConfig"} - Write the ToolDock configuration file.
+*       @{"TD_WriteConfig" LINK "dockbot/TD_WriteConfig"} - Write the ToolDock configuration file.
 *
 *   SYNOPSIS
-*       success = @{"DB_WriteConfig" LINK "dockbot/DB_WriteConfig"}(cfg,settings)
+*       success = @{"TD_WriteConfig" LINK "dockbot/TD_WriteConfig"}(cfg,settings)
 *         D0                                     A0  A1
-*   BOOL @{"DB_WriteConfig" LINK "dockbot/DB_WriteConfig"}(@{"struct DockConfig" LINK "dockbot.h/File" 65} *, struct DockSettings *)
+*   BOOL @{"TD_WriteConfig" LINK "dockbot/TD_WriteConfig"}(@{"struct DockConfig" LINK "dockbot.h/File" 65} *, struct DockSettings *)
 *
 *   FUNCTION
 *       Writes the configuration data in cfg to the settings object.
@@ -549,20 +551,20 @@ BOOL __asm __saveds DB_ReadConfig(
 *       TRUE if the configuration was written.
 *
 ***************************************************************************/
-BOOL __asm __saveds DB_WriteConfig(
+BOOL __asm __saveds TD_WriteConfig(
     register __a0 @{"struct DockConfig" LINK "dockbot.h/File" 65} *cfg,
     register __a1 struct DockSettings *settings);
 
 
-/****** @{"tooldock.library/DB_RequestDockQuit" LINK "dockbot/DB_RequestDockQuit"} *********************************
+/****** @{"tooldock.library/TD_RequestDockQuit" LINK "dockbot/TD_RequestDockQuit"} *********************************
 *
 *   NAME
-*       @{"DB_RequestDockQuit" LINK "dockbot/DB_RequestDockQuit"} -- Asks the ToolDock application to quit.
+*       @{"TD_RequestDockQuit" LINK "dockbot/TD_RequestDockQuit"} -- Asks the ToolDock application to quit.
 *
 *   SYNOPSIS
-*       @{"DB_RequestDockQuit" LINK "dockbot/DB_RequestDockQuit"}(obj)
+*       @{"TD_RequestDockQuit" LINK "dockbot/TD_RequestDockQuit"}(obj)
 *                          A0
-*       @{"DB_RequestDockQuit" LINK "dockbot/DB_RequestDockQuit"}(Object *);
+*       @{"TD_RequestDockQuit" LINK "dockbot/TD_RequestDockQuit"}(Object *);
 *
 *   FUNCTION
 *       Sends an asynchronous message from a gadget to the ToolDock application
@@ -573,26 +575,26 @@ BOOL __asm __saveds DB_WriteConfig(
 *
 *   EXAMPLE
 *       void request_quit(Object *obj) {
-*         @{"DB_RequestDockQuit" LINK "dockbot/DB_RequestDockQuit"}(obj);
+*         @{"TD_RequestDockQuit" LINK "dockbot/TD_RequestDockQuit"}(obj);
 *       }
 *
 *   SEE ALSO
 *       dockbot.h
 *
 ***************************************************************************/
-VOID __asm __saveds DB_RequestDockQuit(
+VOID __asm __saveds TD_RequestDockQuit(
         register __a0 Object *obj);
 
 
-/****** @{"tooldock.library/DB_RequestDockGadgetDraw" LINK "dockbot/DB_RequestDockGadgetDraw"} ****************************
+/****** @{"tooldock.library/TD_RequestDockGadgetDraw" LINK "dockbot/TD_RequestDockGadgetDraw"} ****************************
 *
 *   NAME
-*       @{"DB_RequestDockGadgetDraw" LINK "dockbot/DB_RequestDockGadgetDraw"} -- Requests the redraw of a dock gadget.
+*       @{"TD_RequestDockGadgetDraw" LINK "dockbot/TD_RequestDockGadgetDraw"} -- Requests the redraw of a dock gadget.
 *
 *   SYNOPSIS
-*       @{"DB_RequestDockGadgetDraw" LINK "dockbot/DB_RequestDockGadgetDraw"}(obj)
+*       @{"TD_RequestDockGadgetDraw" LINK "dockbot/TD_RequestDockGadgetDraw"}(obj)
 *                                A0
-*       @{"DB_RequestDockGadgetDraw" LINK "dockbot/DB_RequestDockGadgetDraw"}(Object *);
+*       @{"TD_RequestDockGadgetDraw" LINK "dockbot/TD_RequestDockGadgetDraw"}(Object *);
 *
 *   FUNCTION
 *       Sends an asynchronous message from a gadget to the ToolDock application
@@ -603,25 +605,25 @@ VOID __asm __saveds DB_RequestDockQuit(
 *
 *   EXAMPLE
 *       void request_draw(Object *obj) {
-*         @{"DB_RequestDockGadgetDraw" LINK "dockbot/DB_RequestDockGadgetDraw"}(obj);
+*         @{"TD_RequestDockGadgetDraw" LINK "dockbot/TD_RequestDockGadgetDraw"}(obj);
 *       }
 *
 *   SEE ALSO
 *       dockbot.h
 *
 ***************************************************************************/
-VOID __asm __saveds DB_RequestDockGadgetDraw(
+VOID __asm __saveds TD_RequestDockGadgetDraw(
         register __a0 Object *obj);
 
-/****** @{"tooldock.library/DB_RequestLaunch" LINK "dockbot/DB_RequestLaunch"} ****************************
+/****** @{"tooldock.library/TD_RequestLaunch" LINK "dockbot/TD_RequestLaunch"} ****************************
 *
 *   NAME
-*       @{"DB_RequestLaunch" LINK "dockbot/DB_RequestLaunch"} -- Requests the launch of an external program.
+*       @{"TD_RequestLaunch" LINK "dockbot/TD_RequestLaunch"} -- Requests the launch of an external program.
 *
 *   SYNOPSIS
-*       @{"DB_RequestLaunch" LINK "dockbot/DB_RequestLaunch"}(obj, path, args, console, wb)
+*       @{"TD_RequestLaunch" LINK "dockbot/TD_RequestLaunch"}(obj, path, args, console, wb)
 *                        A0   A1    A2    A3       D0
-*       @{"DB_RequestLaunch" LINK "dockbot/DB_RequestLaunch"}(Object *, STRPTR, STRPTR, STRPTR, BOOL);
+*       @{"TD_RequestLaunch" LINK "dockbot/TD_RequestLaunch"}(Object *, STRPTR, STRPTR, STRPTR, BOOL);
 *
 *   FUNCTION
 *       Sends an asynchronous message from a gadget to the ToolDock application
@@ -637,13 +639,13 @@ VOID __asm __saveds DB_RequestDockGadgetDraw(
 *
 *   EXAMPLE
 *
-*   @{"DB_RequestLaunch" LINK "dockbot/DB_RequestLaunch"}(obj, "SYS:Utilities/MultiView", "T:image.iff", NULL, TRUE);
+*   @{"TD_RequestLaunch" LINK "dockbot/TD_RequestLaunch"}(obj, "SYS:Utilities/MultiView", "T:image.iff", NULL, TRUE);
 *
 *   SEE ALSO
 *       dockbot.h
 *
 ***************************************************************************/
-VOID __asm __saveds DB_RequestLaunch(
+VOID __asm __saveds TD_RequestLaunch(
         register __a0 Object *obj,
     register __a1 STRPTR path,
     register __a2 STRPTR args,
@@ -651,15 +653,15 @@ VOID __asm __saveds DB_RequestLaunch(
     register __d0 BOOL wb);
 
 
-/****** @{"tooldock.library/DB_AllocMem" LINK "dockbot/DB_AllocMem"} ****************************************
+/****** @{"tooldock.library/TD_AllocMem" LINK "dockbot/TD_AllocMem"} ****************************************
 *
 *   NAME
-*       @{"DB_AllocMem" LINK "dockbot/DB_AllocMem"} -- Allocate memory from the pools maintained by the library.
+*       @{"TD_AllocMem" LINK "dockbot/TD_AllocMem"} -- Allocate memory from the pools maintained by the library.
 *
 *   SYNOPSIS
-*       BLOCK = @{"DB_AllocMem" LINK "dockbot/DB_AllocMem"}(byteSize, attributes)
+*       BLOCK = @{"TD_AllocMem" LINK "dockbot/TD_AllocMem"}(byteSize, attributes)
 *         D0                  D0         D1
-*       VOID* @{"DB_AllocMem" LINK "dockbot/DB_AllocMem"}(ULONG, ULONG);
+*       VOID* @{"TD_AllocMem" LINK "dockbot/TD_AllocMem"}(ULONG, ULONG);
 *
 *   FUNCTION
 *       Allocates a block of memory from the pools maintained internally by the
@@ -685,68 +687,68 @@ VOID __asm __saveds DB_RequestLaunch(
 *       could not be satisfied 0 will be returned.
 *
 *   EXAMPLE
-*       @{"DB_AllocMem" LINK "dockbot/DB_AllocMem"}(64,0) - Allocate the best memory available.
-*       @{"DB_AllocMem" LINK "dockbot/DB_AllocMem"}(64, MEMF_CLEAR) - Allocate the best memory available and
+*       @{"TD_AllocMem" LINK "dockbot/TD_AllocMem"}(64,0) - Allocate the best memory available.
+*       @{"TD_AllocMem" LINK "dockbot/TD_AllocMem"}(64, MEMF_CLEAR) - Allocate the best memory available and
 *                                     clear it.
-*       @{"DB_AllocMem" LINK "dockbot/DB_AllocMem"}(64, MEMF_CHIP|MEMF_CLEAR) - Allocate cleared chip memory.
+*       @{"TD_AllocMem" LINK "dockbot/TD_AllocMem"}(64, MEMF_CHIP|MEMF_CLEAR) - Allocate cleared chip memory.
 *
 *   SEE ALSO
-*       @{"DB_FreeMem()" LINK "dockbot/DB_FreeMem"}, AllocMem()
+*       @{"TD_FreeMem()" LINK "dockbot/TD_FreeMem"}, AllocMem()
 *
 ***************************************************************************/
-VOID* __asm __saveds DB_AllocMem(
+VOID* __asm __saveds TD_AllocMem(
     register __d0 ULONG byteSize,
     register __d1 ULONG attributes);
 
 
-/****** @{"tooldock.library/DB_FreeMem" LINK "dockbot/DB_FreeMem"} *****************************************
+/****** @{"tooldock.library/TD_FreeMem" LINK "dockbot/TD_FreeMem"} *****************************************
 *
 *   NAME
-*       @{"DB_FreeMem" LINK "dockbot/DB_FreeMem"} - Free a block of memory allocated by @{"DB_AllocMem" LINK "dockbot/DB_AllocMem"}.
+*       @{"TD_FreeMem" LINK "dockbot/TD_FreeMem"} - Free a block of memory allocated by @{"TD_AllocMem" LINK "dockbot/TD_AllocMem"}.
 *
 *   SYNOPSIS
-*       @{"DB_FreeMem" LINK "dockbot/DB_FreeMem"}(memoryBlock,byteSize)
+*       @{"TD_FreeMem" LINK "dockbot/TD_FreeMem"}(memoryBlock,byteSize)
 *                     A0         D0
-*       @{"DB_FreeMem" LINK "dockbot/DB_FreeMem"}(VOID *,ULONG);
+*       @{"TD_FreeMem" LINK "dockbot/TD_FreeMem"}(VOID *,ULONG);
 *
 *   FUNCTION
-*       Frees a block of memory previously allocated with @{"DB_AllocMem" LINK "dockbot/DB_AllocMem"}.
+*       Frees a block of memory previously allocated with @{"TD_AllocMem" LINK "dockbot/TD_AllocMem"}.
 *
 *   INPUTS
-*       memoryBlock - The block of memory allocated by @{"DB_AllocMem" LINK "dockbot/DB_AllocMem"}.
+*       memoryBlock - The block of memory allocated by @{"TD_AllocMem" LINK "dockbot/TD_AllocMem"}.
 *       byteSize    - The size of the block.
 *
 *   SEE ALSO
-*       @{"DB_AllocMem()" LINK "dockbot/DB_AllocMem"}, FreeMem()
+*       @{"TD_AllocMem()" LINK "dockbot/TD_AllocMem"}, FreeMem()
 *
 ***************************************************************************/
-VOID __asm __saveds DB_FreeMem(
+VOID __asm __saveds TD_FreeMem(
     register __a0 VOID *memoryBlock,
     register __d0 ULONG byteSize);
 
-VOID* __asm __saveds DB_GetMemInfo(VOID);
+VOID* __asm __saveds TD_GetMemInfo(VOID);
 
-Object * __asm __saveds DB_CreateDockGadget(
+Object * __asm __saveds TD_CreateDockGadget(
     register __a0 STRPTR name);
 
-VOID __asm __saveds DB_DisposeDockGadget(
+VOID __asm __saveds TD_DisposeDockGadget(
     register __a0 Object *o);
 
-VOID __asm __saveds DB_FreeGadget(
+VOID __asm __saveds TD_FreeGadget(
     register __a0 @{"struct DgNode" LINK "dockbot.h/File" 75} *dg);
 
-@{"struct DgNode" LINK "dockbot.h/File" 75} * __asm __saveds DB_AllocGadget(
+@{"struct DgNode" LINK "dockbot.h/File" 75} * __asm __saveds TD_AllocGadget(
     register __a0 STRPTR name);
 
-/****** @{"tooldock.library/DB_ListClasses" LINK "dockbot/DB_ListClasses"} *************************************
+/****** @{"tooldock.library/TD_ListClasses" LINK "dockbot/TD_ListClasses"} *************************************
 *
 *   NAME
-*       @{"DB_ListClasses" LINK "dockbot/DB_ListClasses"} - List the available gadget classes.
+*       @{"TD_ListClasses" LINK "dockbot/TD_ListClasses"} - List the available gadget classes.
 *
 *   SYNOPSIS
-*       @{"DB_ListClasses" LINK "dockbot/DB_ListClasses"}(list)
+*       @{"TD_ListClasses" LINK "dockbot/TD_ListClasses"}(list)
 *                      A0
-*   @{"DB_ListClasses" LINK "dockbot/DB_ListClasses"}(struct List *)
+*   @{"TD_ListClasses" LINK "dockbot/TD_ListClasses"}(struct List *)
 *
 *   FUNCTION
 *       Populates the supplied list object with nodes containing the names of
@@ -761,19 +763,19 @@ VOID __asm __saveds DB_FreeGadget(
 *   SEE ALSO
 *
 ***************************************************************************/
-BOOL __asm __saveds DB_ListClasses(
+BOOL __asm __saveds TD_ListClasses(
     register __a0 struct List *list);
 
 
-/****** @{"tooldock.library/DB_ShowError" LINK "dockbot/DB_ShowError"} ***************************************
+/****** @{"tooldock.library/TD_ShowError" LINK "dockbot/TD_ShowError"} ***************************************
 *
 *   NAME
-*       @{"DB_ShowError" LINK "dockbot/DB_ShowError"} - Display an error message to the user.
+*       @{"TD_ShowError" LINK "dockbot/TD_ShowError"} - Display an error message to the user.
 *
 *   SYNOPSIS
-*       @{"DB_ShowError" LINK "dockbot/DB_ShowError"}(message)
+*       @{"TD_ShowError" LINK "dockbot/TD_ShowError"}(message)
 *                     A0
-*       @{"DB_ShowError" LINK "dockbot/DB_ShowError"}(STRPTR);
+*       @{"TD_ShowError" LINK "dockbot/TD_ShowError"}(STRPTR);
 *
 *   FUNCTION
 *   Displays the message to the user in a requester.
@@ -782,25 +784,25 @@ BOOL __asm __saveds DB_ListClasses(
 *   message - The error message to display to the user.
 *
 ***************************************************************************/
-VOID __asm __saveds DB_ShowError(
+VOID __asm __saveds TD_ShowError(
     register __a0 STRPTR message);
 
-STRPTR __asm __saveds DB_SelectFile(
+STRPTR __asm __saveds TD_SelectFile(
     register __a0 STRPTR title,
     register __a1 STRPTR okText,
     register __a2 STRPTR cancelText,
     register __a3 STRPTR path);
 
-/****** @{"tooldock.library/DB_RegisterPort" LINK "dockbot/DB_RegisterPort"} ************************************
+/****** @{"tooldock.library/TD_RegisterPort" LINK "dockbot/TD_RegisterPort"} ************************************
 *
 *   NAME
-*       @{"DB_RegisterPort" LINK "dockbot/DB_RegisterPort"} - Registers a message port with the Dock so that gadgets
+*       @{"TD_RegisterPort" LINK "dockbot/TD_RegisterPort"} - Registers a message port with the Dock so that gadgets
 *                     can receive messages.
 *
 *   SYNOPSIS
-*       @{"DB_RegisterPort" LINK "dockbot/DB_RegisterPort"}(obj, port);
+*       @{"TD_RegisterPort" LINK "dockbot/TD_RegisterPort"}(obj, port);
 *                        A0   A1
-*       @{"DB_RegisterPort" LINK "dockbot/DB_RegisterPort"}(Object *, struct MsgPort *);
+*       @{"TD_RegisterPort" LINK "dockbot/TD_RegisterPort"}(Object *, struct MsgPort *);
 *
 *   FUNCTION
 *   Registers a gadget-owned port with the Dock so that the gadget can receive
@@ -813,23 +815,23 @@ STRPTR __asm __saveds DB_SelectFile(
 *   port - The port to be registered.
 *
 *   SEE ALSO
-*   @{"DB_UnregisterPort" LINK "dockbot/DB_UnregisterPort"}
+*   @{"TD_UnregisterPort" LINK "dockbot/TD_UnregisterPort"}
 *
 ***************************************************************************/
-VOID __asm __saveds DB_RegisterPort(
+VOID __asm __saveds TD_RegisterPort(
     register __a0 Object *obj,
     register __a1 struct MsgPort *port);
 
 
-/****** @{"tooldock.library/DB_UnregisterPort" LINK "dockbot/DB_UnregisterPort"} ************************************
+/****** @{"tooldock.library/TD_UnregisterPort" LINK "dockbot/TD_UnregisterPort"} ************************************
 *
 *   NAME
-*       @{"DB_UnregisterPort" LINK "dockbot/DB_UnregisterPort"} - Removes a previously registered port from the Dock.
+*       @{"TD_UnregisterPort" LINK "dockbot/TD_UnregisterPort"} - Removes a previously registered port from the Dock.
 *
 *   SYNOPSIS
-*       @{"DB_UnregisterPort" LINK "dockbot/DB_UnregisterPort"}(obj, port);
+*       @{"TD_UnregisterPort" LINK "dockbot/TD_UnregisterPort"}(obj, port);
 *                          A0   A1
-*       @{"DB_UnregisterPort" LINK "dockbot/DB_UnregisterPort"}(Object *, struct MsgPort *);
+*       @{"TD_UnregisterPort" LINK "dockbot/TD_UnregisterPort"}(Object *, struct MsgPort *);
 *
 *   FUNCTION
 *   Removes a port registration from the Dock when the gadget is finished with
@@ -840,22 +842,22 @@ VOID __asm __saveds DB_RegisterPort(
 *   port - The port to be un-registered.
 *
 *   SEE ALSO
-*   @{"DB_RegisterPort" LINK "dockbot/DB_RegisterPort"}
+*   @{"TD_RegisterPort" LINK "dockbot/TD_RegisterPort"}
 *
 ***************************************************************************/
-VOID __asm __saveds DB_UnregisterPort(
+VOID __asm __saveds TD_UnregisterPort(
     register __a0 Object *obj,
     register __a1 struct MsgPort *port);
 
-/****** @{"tooldock.library/DB_RegisterDebugStream" LINK "dockbot/DB_RegisterDebugStream"} *****************************
+/****** @{"tooldock.library/TD_RegisterDebugStream" LINK "dockbot/TD_RegisterDebugStream"} *****************************
 *
 *   NAME
-*       @{"DB_RegisterDebugStream" LINK "dockbot/DB_RegisterDebugStream"} - Registers an output stream with @{"tooldock.library" LINK "dockbot/MAIN"}.
+*       @{"TD_RegisterDebugStream" LINK "dockbot/TD_RegisterDebugStream"} - Registers an output stream with @{"tooldock.library" LINK "dockbot/MAIN"}.
 *
 *   SYNOPSIS
-*       @{"DB_RegisterDebugStream" LINK "dockbot/DB_RegisterDebugStream"}(fh);
+*       @{"TD_RegisterDebugStream" LINK "dockbot/TD_RegisterDebugStream"}(fh);
 *                              A0
-*       @{"DB_RegisterDebugStream" LINK "dockbot/DB_RegisterDebugStream"}(BPTR);
+*       @{"TD_RegisterDebugStream" LINK "dockbot/TD_RegisterDebugStream"}(BPTR);
 *
 *   FUNCTION
 *   Used for debug builds only. Registers an output stream for the library
@@ -865,21 +867,21 @@ VOID __asm __saveds DB_UnregisterPort(
 *   fh - The output stream.
 *
 *   SEE ALSO
-*   @{"DB_DebugLog" LINK "dockbot/DB_DebugLog"}
+*   @{"TD_DebugLog" LINK "dockbot/TD_DebugLog"}
 *
 ***************************************************************************/
-VOID __asm __saveds DB_RegisterDebugStream(
+VOID __asm __saveds TD_RegisterDebugStream(
         register __a0 BPTR fh);
 
-/****** @{"tooldock.library/DB_DebugLog" LINK "dockbot/DB_DebugLog"} ***************************************
+/****** @{"tooldock.library/TD_DebugLog" LINK "dockbot/TD_DebugLog"} ***************************************
 *
 *   NAME
-*       @{"DB_DebugLog" LINK "dockbot/DB_DebugLog"} - Writes a message to the debug logging stream.
+*       @{"TD_DebugLog" LINK "dockbot/TD_DebugLog"} - Writes a message to the debug logging stream.
 *
 *   SYNOPSIS
-*       @{"DB_DebugLog" LINK "dockbot/DB_DebugLog"}(fmt,    argv);
+*       @{"TD_DebugLog" LINK "dockbot/TD_DebugLog"}(fmt,    argv);
 *                   A0      A1
-*       @{"DB_DebugLog" LINK "dockbot/DB_DebugLog"}(STRPTR, LONG *);
+*       @{"TD_DebugLog" LINK "dockbot/TD_DebugLog"}(STRPTR, LONG *);
 *
 *   FUNCTION
 *   Used for debug builds only. Writes a log message to the debug output
@@ -890,21 +892,21 @@ VOID __asm __saveds DB_RegisterDebugStream(
 *   argv - Pointer to the first arg value.
 *
 *   SEE ALSO
-*   @{"DB_RegisterDebugStream" LINK "dockbot/DB_RegisterDebugStream"}, VFPrintf
+*   @{"TD_RegisterDebugStream" LINK "dockbot/TD_RegisterDebugStream"}, VFPrintf
 *
 ***************************************************************************/
-VOID __asm __saveds DB_DebugLog(
+VOID __asm __saveds TD_DebugLog(
         register __a0 STRPTR fmt,
         register __a1 LONG *argv);
 
-APTR __asm __saveds DB_LoadBrush(
+APTR __asm __saveds TD_LoadBrush(
     register __a0 STRPTR fileName,
     register __d0 UWORD flags);
 
-VOID __asm __saveds DB_FreeBrush(
+VOID __asm __saveds TD_FreeBrush(
     register __a0 APTR brush);
 
-VOID __asm __saveds DB_DrawBrush(
+VOID __asm __saveds TD_DrawBrush(
     register __a0 APTR brush,
     register __a1 struct RastPort *rp,
     register __d0 UWORD srcX,
@@ -914,7 +916,7 @@ VOID __asm __saveds DB_DrawBrush(
     register __d4 UWORD w,
     register __d5 UWORD h);
 
-VOID __asm __saveds DB_GetBrushSize(
+VOID __asm __saveds TD_GetBrushSize(
     register __a0 APTR brush,
     register __a1 UWORD *w,
     register __a2 UWORD *h);

@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -75,12 +77,12 @@ VOID create_lines(struct ClockGadgetData *data)
 
     if( data->splitFormat && data->formatLen != len ) {
 
-        DB_FreeMem(data->splitFormat, data->formatLen);
+        TD_FreeMem(data->splitFormat, data->formatLen);
         data->splitFormat = NULL;
     }
     
     if( ! data->splitFormat ) {
-        if( !(data->splitFormat = (STRPTR)DB_AllocMem(len, MEMF_ANY) ) ) {
+        if( !(data->splitFormat = (STRPTR)TD_AllocMem(len, MEMF_ANY) ) ) {
             return;
         }
     }
@@ -96,7 +98,7 @@ VOID create_lines(struct ClockGadgetData *data)
             *pos = '\0';
             pos++;
 
-            if( line = (struct TextLine *)DB_AllocMem(sizeof(struct TextLine), MEMF_CLEAR) ) {
+            if( line = (struct TextLine *)TD_AllocMem(sizeof(struct TextLine), MEMF_CLEAR) ) {
 
                 line->format = start;
                 start = pos + 1;             
@@ -109,7 +111,7 @@ VOID create_lines(struct ClockGadgetData *data)
 
     if( pos != start ) {
         
-        if( line = (struct TextLine *)DB_AllocMem(sizeof(struct TextLine), MEMF_CLEAR) ) {
+        if( line = (struct TextLine *)TD_AllocMem(sizeof(struct TextLine), MEMF_CLEAR) ) {
 
             line->format = start;
 
@@ -233,13 +235,13 @@ ULONG __saveds clock_lib_expunge(struct ClockLibData *cld)
 
 DB_METHOD_D(NEW)
 
-    DEBUG(DB_Printf(__METHOD__ "\n"));
+    DEBUG(TD_Printf(__METHOD__ "\n"));
 
     NewList((struct List *)&data->lines);
 
     if( data->locale = OpenLocale(NULL) ) {
 
-        DEBUG(DB_Printf(__METHOD__ " Got Locale\n"));
+        DEBUG(TD_Printf(__METHOD__ " Got Locale\n"));
 
         return 1;
     }
@@ -248,32 +250,32 @@ DB_METHOD_D(NEW)
 
 DB_METHOD_D(DISPOSE)
 
-    DEBUG(DB_Printf(__METHOD__ "\n"));
+    DEBUG(TD_Printf(__METHOD__ "\n"));
 
     if( data->locale ) {
-        DEBUG(DB_Printf(__METHOD__ " CloseLocale\n"));
+        DEBUG(TD_Printf(__METHOD__ " CloseLocale\n"));
         CloseLocale(data->locale);
     }
     
     while( ! IsListEmpty((struct List *)&data->lines) ) {
 
-        DEBUG(DB_Printf(__METHOD__ " Free Line\n"));
+        DEBUG(TD_Printf(__METHOD__ " Free Line\n"));
 
-        DB_FreeMem(RemTail((struct List *)&data->lines), sizeof(struct TextLine));
+        TD_FreeMem(RemTail((struct List *)&data->lines), sizeof(struct TextLine));
     }
 
     if( data->splitFormat ) {
 
-        DEBUG(DB_Printf(__METHOD__ " Free splitFormat\n"));
+        DEBUG(TD_Printf(__METHOD__ " Free splitFormat\n"));
 
-        DB_FreeMem(data->splitFormat, data->formatLen);
+        TD_FreeMem(data->splitFormat, data->formatLen);
     }
 
-    DEBUG(DB_Printf(__METHOD__ " Free format\n"));
+    DEBUG(TD_Printf(__METHOD__ " Free format\n"));
 
     FREE_STRING(data->format);
 
-    DEBUG(DB_Printf(__METHOD__ " Done\n"));
+    DEBUG(TD_Printf(__METHOD__ " Done\n"));
 
     return 1;
 }
@@ -286,9 +288,9 @@ DB_METHOD_DM(DRAW,DockMessageDraw)
     struct Screen *screen;
     struct DrawInfo *drawInfo;
 
-    DB_GetDockGadgetEnvironment(o, &env);
+    TD_GetDockGadgetEnvironment(o, &env);
 
-    DEBUG(DB_Printf(__METHOD__ " %ld, %ld, %ld, %ld\n",
+    DEBUG(TD_Printf(__METHOD__ " %ld, %ld, %ld, %ld\n",
         (LONG)env.gadgetBounds.x, (LONG)env.gadgetBounds.y, (LONG)env.gadgetBounds.w, (LONG)env.gadgetBounds.h));
 
     if( screen = LockPubScreen(NULL) ) {
@@ -303,9 +305,9 @@ DB_METHOD_DM(DRAW,DockMessageDraw)
                                 env.gadgetBounds.y + env.gadgetBounds.h - 1);
 
             if( data->clicked ) {
-                DB_DrawInsetFrame(msg->rp, &env.gadgetBounds);
+                TD_DrawInsetFrame(msg->rp, &env.gadgetBounds);
             } else {
-                DB_DrawOutsetFrame(msg->rp, &env.gadgetBounds);
+                TD_DrawOutsetFrame(msg->rp, &env.gadgetBounds);
             }
 
             yPos = env.gadgetBounds.y + (env.gadgetBounds.h - textH) / 2;
@@ -332,11 +334,11 @@ DB_METHOD_DM(DRAW,DockMessageDraw)
 
 DB_METHOD_D(CLICK)
 
-    DB_RequestDockGadgetDraw(o);
+    TD_RequestDockGadgetDraw(o);
 
     data->clicked = TRUE;
 
-    DB_RequestLaunch(o, DATE_PREFS, NULL, NULL, TRUE);   
+    TD_RequestLaunch(o, DATE_PREFS, NULL, NULL, TRUE);   
 
     return 1;
 }
@@ -356,7 +358,7 @@ DB_METHOD_D(TICK)
     
     if( format_time(data, &ds)) {
    
-        DB_RequestDockGadgetDraw(o);
+        TD_RequestDockGadgetDraw(o);
     }
 
     return 1;
@@ -366,7 +368,7 @@ DB_METHOD_D(LAUNCHED)
 
     data->clicked = FALSE;
 
-    DB_RequestDockGadgetDraw(o);
+    TD_RequestDockGadgetDraw(o);
 
     return 1;
 }
@@ -389,7 +391,7 @@ DB_METHOD_DM(GETSIZE,DockMessageGetSize)
             msg->w = w + 4;
             msg->h = h + 4;
 
-            DEBUG(DB_Printf(__METHOD__ " w: %ld, h: %ld\n", msg->w, msg->h));
+            DEBUG(TD_Printf(__METHOD__ " w: %ld, h: %ld\n", msg->w, msg->h));
 
             FreeScreenDrawInfo(screen, drawInfo);
         }
@@ -404,14 +406,14 @@ DB_METHOD_DM(READCONFIG,DockMessageConfig)
 
     struct DockSettingValue v;
 
-    while( DB_ReadSetting(msg->settings, &v) ) {
+    while( TD_ReadSetting(msg->settings, &v) ) {
         if( IS_KEY(S_FORMAT, v) ) {
             GET_STRING(v, data->format)
         }
     }
 
     if( ! data->format ) {
-        if( data->format = (STRPTR)DB_AllocMem(strlen(DEFAULT_FORMAT) + 1, MEMF_ANY) ) {
+        if( data->format = (STRPTR)TD_AllocMem(strlen(DEFAULT_FORMAT) + 1, MEMF_ANY) ) {
             CopyMem(DEFAULT_FORMAT, data->format, strlen(DEFAULT_FORMAT) + 1);
         }
     }
@@ -425,7 +427,7 @@ DB_METHOD_DM(WRITECONFIG,DockMessageConfig)
 
     struct DockSettings *s = msg->settings;
 
-    DB_WriteSetting(s, S_FORMAT, data->format);
+    TD_WriteSetting(s, S_FORMAT, data->format);
 
     return 1;
 }
@@ -433,12 +435,12 @@ DB_METHOD_DM(WRITECONFIG,DockMessageConfig)
 DB_METHOD_DM(GETEDITOR,DockMessageGetEditor)
 
     if( ! data->format ) {
-        if( data->format = (STRPTR)DB_AllocMem(strlen(DEFAULT_FORMAT) + 1, MEMF_CLEAR) ) {
+        if( data->format = (STRPTR)TD_AllocMem(strlen(DEFAULT_FORMAT) + 1, MEMF_CLEAR) ) {
             CopyMem(DEFAULT_FORMAT, data->format, strlen(DEFAULT_FORMAT) + 1);
         }
     }
 
-    msg->uiTags = DB_MakeTagList(   
+    msg->uiTags = TD_MakeTagList(   
         VertGroupA,
             Space,
             LineArray,
@@ -468,7 +470,7 @@ DB_METHOD_DM(EDITORUPDATE,DockMessageEditorUpdate)
 
     str = (STRPTR)TR_GetAttribute(proj, OBJ_STR_FORMAT, 0);
     if( str && (len = strlen(str)) ) {        
-        data->format = (STRPTR)DB_AllocMem(len + 1, MEMF_ANY);
+        data->format = (STRPTR)TD_AllocMem(len + 1, MEMF_ANY);
         CopyMem(str, data->format, len + 1);
     }
 

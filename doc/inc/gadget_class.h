@@ -31,8 +31,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -121,13 +123,13 @@ VOID geta4(VOID);
 
 #ifdef DEBUG_BUILD
 
-VOID DB_Printf(STRPTR fmt, ...);
+VOID TD_Printf(STRPTR fmt, ...);
 
 #define __METHOD__ @{"CLASS_NAME" LINK File 18} "::" __FUNC__ ": "
 
 #endif
 
-struct TagItem *DB_MakeTagList(ULONG data, ...);
+struct TagItem *TD_MakeTagList(ULONG data, ...);
 
 #endif
 @ENDNODE

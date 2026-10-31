@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -44,7 +46,7 @@ extern struct Library *IconBase;
 #define TRAT_Icon_DiskObj TRTG_PRVOAT(1)
 #define TRAT_Icon_Brush   TRTG_PRVOAT(2)
 
-extern struct Library *DockBotBase;
+extern struct Library *ToolDockBase;
 
 BOOL init_icon_class(TR_App *app);
 

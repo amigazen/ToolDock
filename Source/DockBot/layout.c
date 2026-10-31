@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -168,7 +170,7 @@ VOID layout_gadgets(struct DockWindow *dock)
             gadgetCount++;
         }
 
-        if( sizes = (UWORD*)DB_AllocMem(sizeof(UWORD) * gadgetCount, MEMF_CLEAR) ) {
+        if( sizes = (UWORD*)TD_AllocMem(sizeof(UWORD) * gadgetCount, MEMF_CLEAR) ) {
 
             max = 0;
 
@@ -282,7 +284,7 @@ VOID layout_gadgets(struct DockWindow *dock)
 
             update_render_bitmap(dock, x, y);
             
-            DB_FreeMem(sizes, sizeof(UWORD) * gadgetCount);
+            TD_FreeMem(sizes, sizeof(UWORD) * gadgetCount);
         }
 
         UnlockPubScreen(NULL, screen);

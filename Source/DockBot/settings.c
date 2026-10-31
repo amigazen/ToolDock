@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -27,7 +29,7 @@ VOID free_config(struct DockWindow *dock)
     NewList(&dock->cfg.gadgets);
 
     if( dock->bgBrush ) {
-        DB_FreeBrush(dock->bgBrush);
+        TD_FreeBrush(dock->bgBrush);
         dock->bgBrush = NULL;
     }
 
@@ -46,18 +48,18 @@ BOOL load_config(struct DockWindow *dock)
 
     create_dock_handle(dock);
 
-    if( s = DB_OpenSettingsRead(CONFIG_FILE) ) {
+    if( s = TD_OpenSettingsRead(CONFIG_FILE) ) {
 
         DEBUG(printf(__FUNC__ ":  settings opened\n"));
 
-        if( DB_ReadConfig(&dock->cfg, s) ) {
+        if( TD_ReadConfig(&dock->cfg, s) ) {
 
             DEBUG(printf(__FUNC__ ":  config read\n"));
 
             if( dock->cfg.bgBrushPath ) {
 
                 DEBUG(printf(__FUNC__ ":  load background %s...", dock->cfg.bgBrushPath));
-                if( dock->bgBrush = DB_LoadBrush(dock->cfg.bgBrushPath, BF_NONE) ) {
+                if( dock->bgBrush = TD_LoadBrush(dock->cfg.bgBrushPath, BF_NONE) ) {
                     DEBUG(printf("OK\n"));
                 } else {
                     DEBUG(printf("FAILED\n"));
@@ -75,7 +77,7 @@ BOOL load_config(struct DockWindow *dock)
 
         }
 
-        DB_CloseSettings(s);
+        TD_CloseSettings(s);
     }
     return r;    
 }
@@ -84,11 +86,11 @@ VOID write_config(struct DockWindow *dock, STRPTR path)
 {
     struct DockSettings *s;
 
-    if( s = DB_OpenSettingsWrite(path) ) {
+    if( s = TD_OpenSettingsWrite(path) ) {
 
-        DB_WriteConfig(&dock->cfg, s);
+        TD_WriteConfig(&dock->cfg, s);
 
-        DB_CloseSettings(s);
+        TD_CloseSettings(s);
     }
 }
 
@@ -226,9 +228,9 @@ VOID load_icon_brushes(struct DockWindow *dock)
     }    
 
     DEBUG(printf(__FUNC__ ": Loading %s\n", path));
-    dock->iconBrush = DB_LoadBrush(path, BF_CREATE_MASK);
+    dock->iconBrush = TD_LoadBrush(path, BF_CREATE_MASK);
 
-    DB_GetBrushSize(dock->iconBrush, &w, &h);
+    TD_GetBrushSize(dock->iconBrush, &w, &h);
 
     dock->iconW = w / ICON_COUNT;
     dock->iconH = h;
@@ -239,7 +241,7 @@ VOID free_icon_brushes(struct DockWindow *dock)
     DEBUG(printf(__FUNC__ "\n"));
 
     if( dock->iconBrush ) {
-        DB_FreeBrush(dock->iconBrush);
+        TD_FreeBrush(dock->iconBrush);
     }
 }
 
@@ -278,7 +280,7 @@ VOID handle_change_config(struct DockWindow *dock)
                 Remove((struct Node *)dock->editNode);
 
                 DEBUG(printf(__FUNC__ ": Removed\n"));                
-                DB_FreeGadget(dock->editNode);
+                TD_FreeGadget(dock->editNode);
                 DEBUG(printf(__FUNC__ ": Deleted\n"));                
             
                 break;                
@@ -310,7 +312,7 @@ VOID add_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name)
 
     DEBUG(printf(__FUNC__ "\n"));
 
-    if( path = (STRPTR)DB_AllocMem(MAX_PATH_LENGTH, MEMF_ANY) ) {
+    if( path = (STRPTR)TD_AllocMem(MAX_PATH_LENGTH, MEMF_ANY) ) {
 
         path[0] = 0;
         NameFromLock(dir, path, MAX_PATH_LENGTH);
@@ -328,7 +330,7 @@ VOID add_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name)
     
                         // A file was dropped. Create a new DockButton.
 
-                        if( dg = DB_AllocGadget(DB_BUTTON_CLASS) ) {
+                        if( dg = TD_AllocGadget(DB_BUTTON_CLASS) ) {
                 
                             dock_gadget_init_button(dg->dg, name, path);
 
@@ -340,7 +342,7 @@ VOID add_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name)
                         }
                         
                     } else {
-                        DB_ShowError((STRPTR)MSG_ERR_CantAddDirectory);
+                        TD_ShowError((STRPTR)MSG_ERR_CantAddDirectory);
                     }
                 }
 
@@ -349,6 +351,6 @@ VOID add_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name)
             UnLock(lock);
         }
 
-        DB_FreeMem(path, MAX_PATH_LENGTH);
+        TD_FreeMem(path, MAX_PATH_LENGTH);
     }
 }

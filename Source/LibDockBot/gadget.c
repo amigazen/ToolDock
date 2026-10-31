@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -14,7 +16,7 @@
 #include "dockbot_protos.h"
 
 
-VOID __asm __saveds DB_GetDockGadgetEnvironment(
+VOID __asm __saveds TD_GetDockGadgetEnvironment(
 	register __a0 Object *obj, 
 	register __a1 struct GadgetEnvironment *env)
 {
@@ -29,20 +31,20 @@ VOID __asm __saveds DB_GetDockGadgetEnvironment(
 }
 
 
-VOID __asm __saveds DB_RequestDockQuit(
+VOID __asm __saveds TD_RequestDockQuit(
 	register __a0 Object *obj)
 {
     DoMethod(obj, DM_REQ_QUIT);
 }
 
 
-VOID __asm __saveds DB_RequestDockGadgetDraw(
+VOID __asm __saveds TD_RequestDockGadgetDraw(
 	register __a0 Object *obj) 
 {
     DoMethod(obj, DM_REQ_DRAW);
 }
 
-VOID __asm __saveds DB_RequestLaunch(
+VOID __asm __saveds TD_RequestLaunch(
     register __a0 Object *obj,
     register __a1 STRPTR path,
     register __a2 STRPTR args,
@@ -61,7 +63,7 @@ VOID __asm __saveds DB_RequestLaunch(
     DoMethodA(obj, (Msg)&msg);    
 }
 
-VOID __asm __saveds DB_RegisterPort(
+VOID __asm __saveds TD_RegisterPort(
     register __a0 Object *obj,
     register __a1 struct MsgPort *port)
 {
@@ -74,7 +76,7 @@ VOID __asm __saveds DB_RegisterPort(
     DoMethodA(obj, (Msg)&msg);
 }
 
-VOID __asm __saveds DB_UnregisterPort(
+VOID __asm __saveds TD_UnregisterPort(
     register __a0 Object *obj,
     register __a1 struct MsgPort *port)
 {

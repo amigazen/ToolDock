@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -45,12 +47,12 @@ STRPTR get_pos_type(struct Values *values, UWORD val) {
 
 DB_METHOD_DM(GETEDITOR,DockMessageGetEditor)
 
-    DEBUG(DB_Printf(__METHOD__ "\n"));
+    DEBUG(TD_Printf(__METHOD__ "\n"));
 
     positions[0] = (STRPTR)MSG_POS_Dock;
     positions[1] = (STRPTR)MSG_POS_Screen;
 
-    msg->uiTags = DB_MakeTagList(   
+    msg->uiTags = TD_MakeTagList(   
         VertGroupA,
             Space,
             LineArray,
@@ -84,13 +86,13 @@ DB_METHOD_DM(EDITORUPDATE, DockMessageEditorUpdate)
     UWORD len;
     struct TR_Project *proj = msg->window;
 
-    DEBUG(DB_Printf(__METHOD__ "\n"));
+    DEBUG(TD_Printf(__METHOD__ "\n"));
 
     FREE_STRING(data->hotkey)
 
     str = (STRPTR)TR_GetAttribute(proj, OBJ_STR_HOTKEY, 0);
     if( str && (len = strlen(str)) ) {        
-        data->hotkey = (STRPTR)DB_AllocMem(len + 1, MEMF_ANY);
+        data->hotkey = (STRPTR)TD_AllocMem(len + 1, MEMF_ANY);
         CopyMem(str, data->hotkey, len + 1);
     }
 
@@ -101,7 +103,7 @@ DB_METHOD_DM(EDITORUPDATE, DockMessageEditorUpdate)
 
 DB_METHOD_M(CANEDIT, DockMessageCanEdit)
 
-    DEBUG(DB_Printf(__METHOD__ "\n"));
+    DEBUG(TD_Printf(__METHOD__ "\n"));
 
     msg->canEdit = TRUE;
 
@@ -114,7 +116,7 @@ DB_METHOD_DM(READCONFIG,DockMessageConfig)
     struct Values *vals;
     UWORD len;
 
-    while( DB_ReadSetting(msg->settings, &v) ) {
+    while( TD_ReadSetting(msg->settings, &v) ) {
         
         if( IS_KEY(S_POS, v) ) {
             GET_VALUE(v, PosValues, vals, len, data->position)
@@ -124,7 +126,7 @@ DB_METHOD_DM(READCONFIG,DockMessageConfig)
         }
     }
 
-    DEBUG(DB_Printf(__METHOD__ "pos = %ld, hotkey = %s\n", data->position, data->hotkey));
+    DEBUG(TD_Printf(__METHOD__ "pos = %ld, hotkey = %s\n", data->position, data->hotkey));
 
     return 1;
 }
@@ -134,10 +136,10 @@ DB_METHOD_DM(WRITECONFIG,DockMessageConfig)
     struct DockSettings *s = msg->settings;
 
     if( data->hotkey ) {
-        DB_WriteSetting(s, S_HOTKEY, data->hotkey);
+        TD_WriteSetting(s, S_HOTKEY, data->hotkey);
     }
 
-    DB_WriteSetting(s, S_POS, get_pos_type(PosValues, data->position));
+    TD_WriteSetting(s, S_POS, get_pos_type(PosValues, data->position));
 
     return 1;
 }

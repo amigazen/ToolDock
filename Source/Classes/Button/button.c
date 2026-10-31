@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -94,7 +96,7 @@ VOID dock_button_launch(Object *o, struct ButtonGadgetData *dbd, Msg msg, STRPTR
         len += strlen(dropNames[i]) + 3;
     }
     if( len > 0 ) {
-        if( !( args = (STRPTR)DB_AllocMem(len, MEMF_CLEAR) ) ) {
+        if( !( args = (STRPTR)TD_AllocMem(len, MEMF_CLEAR) ) ) {
             return;
         }
 
@@ -110,14 +112,14 @@ VOID dock_button_launch(Object *o, struct ButtonGadgetData *dbd, Msg msg, STRPTR
         *pos = '\0'; 
     }
 
-    DB_RequestLaunch(o, dbd->path, args, dbd->con, dbd->startType == ST_WB ? TRUE : FALSE);
+    TD_RequestLaunch(o, dbd->path, args, dbd->con, dbd->startType == ST_WB ? TRUE : FALSE);
 }
 
 VOID load_icon(struct ButtonGadgetData *data, STRPTR path)
 {
     struct Screen *screen;
 
-    DEBUG(DB_Printf(__METHOD__ "path = %s\n", path));
+    DEBUG(TD_Printf(__METHOD__ "path = %s\n", path));
 
     if( data->diskObj ) {
         FreeDiskObject(data->diskObj);
@@ -151,7 +153,7 @@ VOID select_target(struct ButtonGadgetData *data, struct TR_Project *window)
 
     oldPath = data->selectedPath == NULL ? data->path : data->selectedPath;
 
-    if( newPath = DB_SelectFile((STRPTR)MSG_FR_ChooseApplication
+    if( newPath = TD_SelectFile((STRPTR)MSG_FR_ChooseApplication
                                 , (STRPTR)MSG_FR_OkText
                                 , (STRPTR)MSG_FR_CancelText
                                 , oldPath) ) {
@@ -159,7 +161,7 @@ VOID select_target(struct ButtonGadgetData *data, struct TR_Project *window)
         FREE_STRING(data->selectedPath);
 
         l = strlen(newPath) + 1;        
-        if( data->selectedPath = (STRPTR)DB_AllocMem(l, MEMF_CLEAR) ) {
+        if( data->selectedPath = (STRPTR)TD_AllocMem(l, MEMF_CLEAR) ) {
     
             CopyMem(newPath, data->selectedPath, l);
             TR_SetAttribute(window, OBJ_TXT_PATH, TRAT_Text, (ULONG)data->selectedPath);
@@ -177,15 +179,15 @@ VOID select_target(struct ButtonGadgetData *data, struct TR_Project *window)
 
 BOOL set_brush(struct ButtonGadgetData *data, struct TR_Project *window, STRPTR newPath)
 {
-    DEBUG(DB_Printf(__METHOD__ "newPath = %s\n", newPath));
+    DEBUG(TD_Printf(__METHOD__ "newPath = %s\n", newPath));
     
     if( newPath ) {
 
         if( data->brushImg ) {
-            DB_FreeBrush(data->brushImg);   
+            TD_FreeBrush(data->brushImg);   
         }
 
-        data->brushImg = DB_LoadBrush(newPath, BF_CREATE_MASK);
+        data->brushImg = TD_LoadBrush(newPath, BF_CREATE_MASK);
 
         TR_SetAttribute(window, OBJ_ICON, TRAT_Icon_Brush, (ULONG)data->brushImg);
 
@@ -199,30 +201,30 @@ VOID select_brush(struct ButtonGadgetData *data, struct TR_Project *window)
 {
     STRPTR oldPath, newPath;
     
-    DEBUG(DB_Printf(__METHOD__ "\n"));
+    DEBUG(TD_Printf(__METHOD__ "\n"));
 
     oldPath = (STRPTR)TR_GetAttribute(window, OBJ_STR_BRUSH, 0L);
 
-    if( newPath = DB_SelectFile((STRPTR)MSG_FR_ChooseBrush
+    if( newPath = TD_SelectFile((STRPTR)MSG_FR_ChooseBrush
                                 , (STRPTR)MSG_FR_OkText
                                 , (STRPTR)MSG_FR_CancelText
                                 , oldPath) ) {
 
-        DEBUG(DB_Printf(__METHOD__ "newPath = %s\n", newPath));
+        DEBUG(TD_Printf(__METHOD__ "newPath = %s\n", newPath));
 
         if( set_brush(data, window, newPath) ) {
     
-            DEBUG(DB_Printf(__METHOD__ "Set UI brush path\n"));            
+            DEBUG(TD_Printf(__METHOD__ "Set UI brush path\n"));            
 
             TR_SetAttribute(window, OBJ_STR_BRUSH, 0L, (ULONG)newPath);
         }
 
-        DEBUG(DB_Printf(__METHOD__, "Free path string\n"));
+        DEBUG(TD_Printf(__METHOD__, "Free path string\n"));
 
         FREE_STRING(newPath);
     }
 
-    DEBUG(DB_Printf(__METHOD__ "Done\n"));    
+    DEBUG(TD_Printf(__METHOD__ "Done\n"));    
 }
 
 ULONG __saveds button_lib_init(struct ButtonLibData* cld)
@@ -281,8 +283,8 @@ DB_METHOD_D(DISPOSE)
     }
 
     if( data->brushImg ) {
-        DEBUG(DB_Printf(__METHOD__ "Free brush %lx\n", data->brushImg));
-        DB_FreeBrush(data->brushImg);
+        DEBUG(TD_Printf(__METHOD__ "Free brush %lx\n", data->brushImg));
+        TD_FreeBrush(data->brushImg);
     }
 
     return 1;
@@ -292,7 +294,7 @@ DB_METHOD_DM(DRAW, DockMessageDraw)
 
     struct GadgetEnvironment env;
     
-    DB_GetDockGadgetEnvironment(o, &env);
+    TD_GetDockGadgetEnvironment(o, &env);
 
     if( env.gadgetBounds.w == 0 || env.gadgetBounds.h == 0 ) {
         return 1;
@@ -300,7 +302,7 @@ DB_METHOD_DM(DRAW, DockMessageDraw)
 
     if( data->brushImg ) {
 
-        DB_DrawBrush(data->brushImg,
+        TD_DrawBrush(data->brushImg,
             msg->rp,
             0, 0,
             env.gadgetBounds.x + (env.gadgetBounds.w - data->imageW) / 2, 
@@ -322,9 +324,9 @@ DB_METHOD_DM(DRAW, DockMessageDraw)
 
     if( env.showBorders ) {
         if( data->iconState == 0 ) {
-            DB_DrawOutsetFrame(msg->rp, &env.gadgetBounds);
+            TD_DrawOutsetFrame(msg->rp, &env.gadgetBounds);
         } else {
-            DB_DrawInsetFrame(msg->rp, &env.gadgetBounds);
+            TD_DrawInsetFrame(msg->rp, &env.gadgetBounds);
         }
     }
     return 1;
@@ -352,7 +354,7 @@ DB_METHOD_D(TICK)
         data->counter--;
         if( data->counter <= 0 ) {
             data->iconState = 1 - data->iconState;
-            DB_RequestDockGadgetDraw(o);
+            TD_RequestDockGadgetDraw(o);
         }
     }
 
@@ -365,7 +367,7 @@ DB_METHOD_D(CLICK)
 
     data->counter = 2;
     data->iconState = 1;
-    DB_RequestDockGadgetDraw(o);
+    TD_RequestDockGadgetDraw(o);
 
     return 1;
 }
@@ -376,7 +378,7 @@ DB_METHOD_DM(DROP,DockMessageDrop)
 
     data->counter = 2;
     data->iconState = 1;
-    DB_RequestDockGadgetDraw(o);
+    TD_RequestDockGadgetDraw(o);
 
     return 1;
 }
@@ -390,7 +392,7 @@ DB_METHOD_DM(GETSIZE,DockMessageGetSize)
 
     if( data->brushImg ) {
 
-        DB_GetBrushSize(data->brushImg, &data->imageW, &data->imageH);
+        TD_GetBrushSize(data->brushImg, &data->imageW, &data->imageH);
         msg->w = data->imageW + 2;
         msg->h = data->imageH + 2;     
 
@@ -413,7 +415,7 @@ DB_METHOD_DM(READCONFIG,DockMessageConfig)
     struct Values *vals;
     UWORD len;
 
-    while( DB_ReadSetting(msg->settings, &v) ) {
+    while( TD_ReadSetting(msg->settings, &v) ) {
         
         if( IS_KEY(S_NAME, v) ) {
             GET_STRING(v, data->name)     
@@ -436,7 +438,7 @@ DB_METHOD_DM(READCONFIG,DockMessageConfig)
         else if( IS_KEY(S_BRUSH, v) ) {
             GET_STRING(v, data->brushPath)
 
-            data->brushImg = DB_LoadBrush(data->brushPath, BF_CREATE_MASK);
+            data->brushImg = TD_LoadBrush(data->brushPath, BF_CREATE_MASK);
         }
     }    
 
@@ -449,25 +451,25 @@ DB_METHOD_DM(WRITECONFIG,DockMessageConfig)
 
     struct DockSettings *s = msg->settings;
     if( data->name ) {
-        DB_WriteSetting(s, S_NAME, data->name);
+        TD_WriteSetting(s, S_NAME, data->name);
     }
     if( data->path ) {
-        DB_WriteSetting(s, S_PATH, data->path);
+        TD_WriteSetting(s, S_PATH, data->path);
     }
     if( data->brushPath ) {
-        DB_WriteSetting(s, S_BRUSH, data->brushPath);
+        TD_WriteSetting(s, S_BRUSH, data->brushPath);
     }
     if( data->args ) {
-        DB_WriteSetting(s, S_ARGS, data->args);
+        TD_WriteSetting(s, S_ARGS, data->args);
     }
     if( data->hotKey ) {
-        DB_WriteSetting(s, S_HOTKEY, data->hotKey);
+        TD_WriteSetting(s, S_HOTKEY, data->hotKey);
     }
 
-    DB_WriteSetting(s, S_START, get_start_type(StartValues, data->startType));
+    TD_WriteSetting(s, S_START, get_start_type(StartValues, data->startType));
 
     if( data->con ) {
-        DB_WriteSetting(s, S_CON, data->con);
+        TD_WriteSetting(s, S_CON, data->con);
     }
 
     return 1;
@@ -493,9 +495,9 @@ DB_METHOD_DM(GETEDITOR, DockMessageGetEditor)
 
     struct IconInit *ii = NULL;
 
-    DEBUG(DB_Printf(__METHOD__ "name = %s, path = %s\n", data->name, data->path));
+    DEBUG(TD_Printf(__METHOD__ "name = %s, path = %s\n", data->name, data->path));
 
-    if( ii = (struct IconInit *)DB_AllocMem(sizeof(struct IconInit), MEMF_ANY) ) {
+    if( ii = (struct IconInit *)TD_AllocMem(sizeof(struct IconInit), MEMF_ANY) ) {
         ii->DiskObj = data->diskObj;
         ii->Brush = data->brushImg;
     }
@@ -503,7 +505,7 @@ DB_METHOD_DM(GETEDITOR, DockMessageGetEditor)
     startTypes[0] = (STRPTR)MSG_ST_Workbench;
     startTypes[1] = (STRPTR)MSG_ST_Shell;
 
-    msg->uiTags = DB_MakeTagList(   
+    msg->uiTags = TD_MakeTagList(   
         VertGroupA,
             Space,
             HorizGroupC,
@@ -642,31 +644,31 @@ DB_METHOD_DM(EDITORUPDATE, DockMessageEditorUpdate)
 
     str = (STRPTR)TR_GetAttribute(proj, OBJ_STR_NAME, 0);
     if( str && (len = strlen(str)) ) {        
-        data->name = (STRPTR)DB_AllocMem(len + 1, MEMF_ANY);
+        data->name = (STRPTR)TD_AllocMem(len + 1, MEMF_ANY);
         CopyMem(str, data->name, len + 1);
     }
 
     str = (STRPTR)TR_GetAttribute(proj, OBJ_STR_BRUSH, 0);
     if( str && (len = strlen(str)) ) {        
-        data->brushPath = (STRPTR)DB_AllocMem(len + 1, MEMF_ANY);
+        data->brushPath = (STRPTR)TD_AllocMem(len + 1, MEMF_ANY);
         CopyMem(str, data->brushPath, len + 1);
     }
 
     str = (STRPTR)TR_GetAttribute(proj, OBJ_STR_HOTKEY, 0);
     if( str && (len = strlen(str)) ) {        
-        data->hotKey = (STRPTR)DB_AllocMem(len + 1, MEMF_ANY);
+        data->hotKey = (STRPTR)TD_AllocMem(len + 1, MEMF_ANY);
         CopyMem(str, data->hotKey, len + 1);
     }
 
     str = (STRPTR)TR_GetAttribute(proj, OBJ_STR_ARGS, 0);
     if( str && (len = strlen(str)) ) {        
-        data->args = (STRPTR)DB_AllocMem(len + 1, MEMF_ANY);
+        data->args = (STRPTR)TD_AllocMem(len + 1, MEMF_ANY);
         CopyMem(str, data->args, len + 1);
     }
 
     str = (STRPTR)TR_GetAttribute(proj, OBJ_STR_CON, 0);
     if( str && (len = strlen(str)) ) {        
-        data->con = (STRPTR)DB_AllocMem(len + 1, MEMF_ANY);
+        data->con = (STRPTR)TD_AllocMem(len + 1, MEMF_ANY);
         CopyMem(str, data->con, len + 1);
     }   
 
@@ -694,18 +696,18 @@ DB_METHOD_DM(INITBUTTON,DockMessageInitButton)
     UWORD len;
 
     len = strlen(msg->name) + 1;
-    if( ! (data->name = DB_AllocMem(len, MEMF_ANY) ) ) {
+    if( ! (data->name = TD_AllocMem(len, MEMF_ANY) ) ) {
         return 0;
     }
     CopyMem(msg->name, data->name, len);
 
     len = strlen(msg->path) + 1;
-    if( ! (data->path = DB_AllocMem(len, MEMF_ANY) ) ) {
+    if( ! (data->path = TD_AllocMem(len, MEMF_ANY) ) ) {
         return 0;
     }
     CopyMem(msg->path, data->path, len);
 
-    DEBUG(DB_Printf(__METHOD__ "name = %s, path = %s\n", data->name, data->path));
+    DEBUG(TD_Printf(__METHOD__ "name = %s, path = %s\n", data->name, data->path));
 
     data->args = NULL;
     data->hotKey = NULL;

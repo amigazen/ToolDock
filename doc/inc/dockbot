@@ -8,32 +8,32 @@
 
                                @{b}tooldock.library@{ub}
 
-@{"DB_AllocMem()" LINK "DB_AllocMem"}           @{"DB_CloseSettings()" LINK "DB_CloseSettings"}
-@{"DB_DebugLog()" LINK "DB_DebugLog"}           @{"DB_DisposeConfig()" LINK "DB_DisposeConfig"}
-@{"DB_DrawInsetFrame()" LINK "DB_DrawInsetFrame"}     @{"DB_DrawOutsetFrame()" LINK "DB_DrawOutsetFrame"}
-@{"DB_FreeMem()" LINK "DB_FreeMem"}            @{"DB_GetDockGadgetEnvironment()" LINK "DB_GetDockGadgetEnvironment"}
-@{"DB_ListClasses()" LINK "DB_ListClasses"}        @{"DB_OpenSettingsRead()" LINK "DB_OpenSettingsRead"}
-@{"DB_OpenSettingsWrite()" LINK "DB_OpenSettingsWrite"}  @{"DB_ReadBeginBlock()" LINK "DB_ReadBeginBlock"}
-@{"DB_ReadConfig()" LINK "DB_ReadConfig"}         @{"DB_ReadEndBlock()" LINK "DB_ReadEndBlock"}
-@{"DB_ReadSetting()" LINK "DB_ReadSetting"}        @{"DB_RegisterDebugStream()" LINK "DB_RegisterDebugStream"}
-@{"DB_RegisterPort()" LINK "DB_RegisterPort"}       @{"DB_RequestDockGadgetDraw()" LINK "DB_RequestDockGadgetDraw"}
-@{"DB_RequestDockQuit()" LINK "DB_RequestDockQuit"}    @{"DB_RequestLaunch()" LINK "DB_RequestLaunch"}
-@{"DB_ShowError()" LINK "DB_ShowError"}          @{"DB_UnregisterPort()" LINK "DB_UnregisterPort"}
-@{"DB_WriteBeginBlock()" LINK "DB_WriteBeginBlock"}    @{"DB_WriteBeginEnd()" LINK "DB_WriteEndBlock"}
-@{"DB_WriteConfig()" LINK "DB_WriteConfig"}        @{"DB_WriteEndBlock()" LINK "DB_WriteEndBlock"}
-@{"DB_WriteSetting()" LINK "DB_WriteSetting"}       
+@{"TD_AllocMem()" LINK "TD_AllocMem"}           @{"TD_CloseSettings()" LINK "TD_CloseSettings"}
+@{"TD_DebugLog()" LINK "TD_DebugLog"}           @{"TD_DisposeConfig()" LINK "TD_DisposeConfig"}
+@{"TD_DrawInsetFrame()" LINK "TD_DrawInsetFrame"}     @{"TD_DrawOutsetFrame()" LINK "TD_DrawOutsetFrame"}
+@{"TD_FreeMem()" LINK "TD_FreeMem"}            @{"TD_GetDockGadgetEnvironment()" LINK "TD_GetDockGadgetEnvironment"}
+@{"TD_ListClasses()" LINK "TD_ListClasses"}        @{"TD_OpenSettingsRead()" LINK "TD_OpenSettingsRead"}
+@{"TD_OpenSettingsWrite()" LINK "TD_OpenSettingsWrite"}  @{"TD_ReadBeginBlock()" LINK "TD_ReadBeginBlock"}
+@{"TD_ReadConfig()" LINK "TD_ReadConfig"}         @{"TD_ReadEndBlock()" LINK "TD_ReadEndBlock"}
+@{"TD_ReadSetting()" LINK "TD_ReadSetting"}        @{"TD_RegisterDebugStream()" LINK "TD_RegisterDebugStream"}
+@{"TD_RegisterPort()" LINK "TD_RegisterPort"}       @{"TD_RequestDockGadgetDraw()" LINK "TD_RequestDockGadgetDraw"}
+@{"TD_RequestDockQuit()" LINK "TD_RequestDockQuit"}    @{"TD_RequestLaunch()" LINK "TD_RequestLaunch"}
+@{"TD_ShowError()" LINK "TD_ShowError"}          @{"TD_UnregisterPort()" LINK "TD_UnregisterPort"}
+@{"TD_WriteBeginBlock()" LINK "TD_WriteBeginBlock"}    @{"DB_WriteBeginEnd()" LINK "TD_WriteEndBlock"}
+@{"TD_WriteConfig()" LINK "TD_WriteConfig"}        @{"TD_WriteEndBlock()" LINK "TD_WriteEndBlock"}
+@{"TD_WriteSetting()" LINK "TD_WriteSetting"}       
 
 @ENDNODE
-@NODE "DB_AllocMem" "tooldock.library/DB_AllocMem()"
+@NODE "TD_AllocMem" "tooldock.library/TD_AllocMem()"
 @{b}
 
    NAME@{ub}
-        DB_AllocMem -- Allocate memory from the pools maintained by the library.@{b}
+        TD_AllocMem -- Allocate memory from the pools maintained by the library.@{b}
 
    SYNOPSIS@{ub}
-        BLOCK = DB_AllocMem(byteSize, attributes)
+        BLOCK = TD_AllocMem(byteSize, attributes)
           D0                  D0         D1
-        VOID* DB_AllocMem(ULONG, ULONG);@{b}
+        VOID* TD_AllocMem(ULONG, ULONG);@{b}
 
    FUNCTION@{ub}
         Allocates a block of memory from the pools maintained internally by the
@@ -59,29 +59,29 @@
         could not be satisfied 0 will be returned.@{b}
 
    EXAMPLE@{ub}
-        DB_AllocMem(64,0) - Allocate the best memory available.
-        DB_AllocMem(64, MEMF_CLEAR) - Allocate the best memory available and
+        TD_AllocMem(64,0) - Allocate the best memory available.
+        TD_AllocMem(64, MEMF_CLEAR) - Allocate the best memory available and
                                       clear it.
-        DB_AllocMem(64, MEMF_CHIP|MEMF_CLEAR) - Allocate cleared chip memory.@{b}
+        TD_AllocMem(64, MEMF_CHIP|MEMF_CLEAR) - Allocate cleared chip memory.@{b}
 
    SEE ALSO@{ub}
-        @{"DB_FreeMem()" LINK "DB_FreeMem"}, AllocMem()
+        @{"TD_FreeMem()" LINK "TD_FreeMem"}, AllocMem()
 
 @ENDNODE
-@NODE "DB_CloseSettings" "tooldock.library/DB_CloseSettings()"
+@NODE "TD_CloseSettings" "tooldock.library/TD_CloseSettings()"
 @{b}
 
    NAME@{ub}
-        DB_CloseSettings -- Closes a previously opened settings file.@{b}
+        TD_CloseSettings -- Closes a previously opened settings file.@{b}
 
    SYNOPSIS@{ub}
-        DB_CloseSettings(settings)
+        TD_CloseSettings(settings)
                            A0
-        VOID @{"DB_OpenSettingsWrite" LINK "DB_OpenSettingsWrite"}(struct DockSettings *);@{b}
+        VOID @{"TD_OpenSettingsWrite" LINK "TD_OpenSettingsWrite"}(struct DockSettings *);@{b}
 
    FUNCTION@{ub}
         Closes and deallocates a DockSettings structure previously allocated by
-        @{"DB_OpenSettingsRead" LINK "DB_OpenSettingsRead"} or @{"DB_OpenSettingsWrite" LINK "DB_OpenSettingsWrite"}.
+        @{"TD_OpenSettingsRead" LINK "TD_OpenSettingsRead"} or @{"TD_OpenSettingsWrite" LINK "TD_OpenSettingsWrite"}.
         Do not use the settings object after calling this function.@{b}
 
    INPUTS@{ub}
@@ -92,25 +92,25 @@
 
    EXAMPLE@{ub}
         struct DockSettings *s;
-        if( s = @{"DB_OpenSettingsRead" LINK "DB_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
+        if( s = @{"TD_OpenSettingsRead" LINK "TD_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
           ...
-          DB_CloseSettings(s);
+          TD_CloseSettings(s);
         }@{b}
 
    SEE ALSO@{ub}
-        @{"DB_OpenSettingsRead()" LINK "DB_OpenSettingsRead"},@{"DB_OpenSettingsWrite()" LINK "DB_OpenSettingsWrite"}
+        @{"TD_OpenSettingsRead()" LINK "TD_OpenSettingsRead"},@{"TD_OpenSettingsWrite()" LINK "TD_OpenSettingsWrite"}
 
 @ENDNODE
-@NODE "DB_DebugLog" "tooldock.library/DB_DebugLog()"
+@NODE "TD_DebugLog" "tooldock.library/TD_DebugLog()"
 @{b}
 
    NAME@{ub}
-        DB_DebugLog - Writes a message to the debug logging stream.@{b}
+        TD_DebugLog - Writes a message to the debug logging stream.@{b}
 
    SYNOPSIS@{ub}
-        DB_DebugLog(fmt,    argv);
+        TD_DebugLog(fmt,    argv);
                     A0      A1
-        DB_DebugLog(STRPTR, LONG *);@{b}
+        TD_DebugLog(STRPTR, LONG *);@{b}
 
    FUNCTION@{ub}
         Used for debug builds only. Writes a log message to the debug output
@@ -121,19 +121,19 @@
         argv - Pointer to the first arg value.@{b}
 
    SEE ALSO@{ub}
-        @{"DB_RegisterDebugStream" LINK "DB_RegisterDebugStream"}, VFPrintf
+        @{"TD_RegisterDebugStream" LINK "TD_RegisterDebugStream"}, VFPrintf
 
 @ENDNODE
-@NODE "DB_DisposeConfig" "tooldock.library/DB_DisposeConfig()"
+@NODE "TD_DisposeConfig" "tooldock.library/TD_DisposeConfig()"
 @{b}
 
    NAME@{ub}
-        DB_DisposeConfig - Cleans up the gadgets on a DockConfig structure.@{b}
+        TD_DisposeConfig - Cleans up the gadgets on a DockConfig structure.@{b}
 
    SYNOPSIS@{ub}
-        DB_DisposeConfig(cfg)
+        TD_DisposeConfig(cfg)
                          A0
-        VOID DB_DisposeConfig(@{"struct DockConfig" LINK "dockbot.h/File" 65} *);@{b}
+        VOID TD_DisposeConfig(@{"struct DockConfig" LINK "dockbot.h/File" 65} *);@{b}
 
    FUNCTION@{ub}
         Disposes of gadget objects and cleans up associated memory allocated
@@ -143,22 +143,22 @@
         cfg - The DockConfig structure containing references to gadgets.@{b}
 
    RESULT@{ub}
-        The gadgets allocated by @{"DB_ReadConfig" LINK "DB_ReadConfig"} will be cleaned up.@{b}
+        The gadgets allocated by @{"TD_ReadConfig" LINK "TD_ReadConfig"} will be cleaned up.@{b}
 
    SEE ALSO@{ub}
-        @{"DB_ReadConfig()" LINK "DB_ReadConfig"}
+        @{"TD_ReadConfig()" LINK "TD_ReadConfig"}
 
 @ENDNODE
-@NODE "DB_DrawInsetFrame" "tooldock.library/DB_DrawInsetFrame()"
+@NODE "TD_DrawInsetFrame" "tooldock.library/TD_DrawInsetFrame()"
 @{b}
 
    NAME@{ub}
-        @{"DB_DrawOutsetFrame" LINK "DB_DrawOutsetFrame"} -- Draws a lowered 3d rectangle.@{b}
+        @{"TD_DrawOutsetFrame" LINK "TD_DrawOutsetFrame"} -- Draws a lowered 3d rectangle.@{b}
 
    SYNOPSIS@{ub}
-        DB_DrawInsetFrame(rp, bounds)
+        TD_DrawInsetFrame(rp, bounds)
                           A0    A1
-        VOID DB_DrawInsetFrame(struct RastPort *, @{"struct Rect" LINK "dockbot.h/File" 96} *);@{b}
+        VOID TD_DrawInsetFrame(struct RastPort *, @{"struct Rect" LINK "dockbot.h/File" 96} *);@{b}
 
    FUNCTION@{ub}
         Draws a lowered 3d frame with the supplied RastPort.@{b}
@@ -172,20 +172,20 @@
 
    EXAMPLE@{ub}
         @{"struct Rect" LINK "dockbot.h/File" 96} bounds;
-        DB_GetDockGadgetBounds(obj, &bounds);
-        DB_DrawInsetFrame(rp, &bounds);
+        TD_GetDockGadgetBounds(obj, &bounds);
+        TD_DrawInsetFrame(rp, &bounds);
 
 @ENDNODE
-@NODE "DB_DrawOutsetFrame" "tooldock.library/DB_DrawOutsetFrame()"
+@NODE "TD_DrawOutsetFrame" "tooldock.library/TD_DrawOutsetFrame()"
 @{b}
 
    NAME@{ub}
-        DB_DrawOutsetFrame -- Draws a raised 3d rectangle.@{b}
+        TD_DrawOutsetFrame -- Draws a raised 3d rectangle.@{b}
 
    SYNOPSIS@{ub}
-        DB_DrawOutsetFrame(rp, bounds)
+        TD_DrawOutsetFrame(rp, bounds)
                            A0    A1
-        VOID DB_DrawOutsetFrame(struct RastPort *, @{"struct Rect" LINK "dockbot.h/File" 96} *);@{b}
+        VOID TD_DrawOutsetFrame(struct RastPort *, @{"struct Rect" LINK "dockbot.h/File" 96} *);@{b}
 
    FUNCTION@{ub}
         Draws a raised 3d frame with the supplied RastPort.@{b}
@@ -199,42 +199,42 @@
 
    EXAMPLE@{ub}
         @{"struct Rect" LINK "dockbot.h/File" 96} bounds;
-        DB_GetDockGadgetBounds(obj, &bounds);
-        DB_DrawOutsetFrame(rp, &bounds);
+        TD_GetDockGadgetBounds(obj, &bounds);
+        TD_DrawOutsetFrame(rp, &bounds);
 
 @ENDNODE
-@NODE "DB_FreeMem" "tooldock.library/DB_FreeMem()"
+@NODE "TD_FreeMem" "tooldock.library/TD_FreeMem()"
 @{b}
 
    NAME@{ub}
-        DB_FreeMem - Free a block of memory allocated by @{"DB_AllocMem" LINK "DB_AllocMem"}.@{b}
+        TD_FreeMem - Free a block of memory allocated by @{"TD_AllocMem" LINK "TD_AllocMem"}.@{b}
 
    SYNOPSIS@{ub}
-        DB_FreeMem(memoryBlock,byteSize)
+        TD_FreeMem(memoryBlock,byteSize)
                       A0         D0
-        DB_FreeMem(VOID *,ULONG);@{b}
+        TD_FreeMem(VOID *,ULONG);@{b}
 
    FUNCTION@{ub}
-        Frees a block of memory previously allocated with @{"DB_AllocMem" LINK "DB_AllocMem"}.@{b}
+        Frees a block of memory previously allocated with @{"TD_AllocMem" LINK "TD_AllocMem"}.@{b}
 
    INPUTS@{ub}
-        memoryBlock - The block of memory allocated by @{"DB_AllocMem" LINK "DB_AllocMem"}.
+        memoryBlock - The block of memory allocated by @{"TD_AllocMem" LINK "TD_AllocMem"}.
         byteSize    - The size of the block.@{b}
 
    SEE ALSO@{ub}
-        @{"DB_AllocMem()" LINK "DB_AllocMem"}, FreeMem()
+        @{"TD_AllocMem()" LINK "TD_AllocMem"}, FreeMem()
 
 @ENDNODE
-@NODE "DB_GetDockGadgetEnvironment" "tooldock.library/DB_GetDockGadgetEnvironment()"
+@NODE "TD_GetDockGadgetEnvironment" "tooldock.library/TD_GetDockGadgetEnvironment()"
 @{b}
 
    NAME@{ub}
-        DB_GetDockGadgetEnvironment -- Get the environment info for the gadget.@{b}
+        TD_GetDockGadgetEnvironment -- Get the environment info for the gadget.@{b}
 
    SYNOPSIS@{ub}
-        DB_GetDockGadgetEnvironment(obj, env)
+        TD_GetDockGadgetEnvironment(obj, env)
                                     A0    A1
-        VOID DB_GetDockGadgetEnvironment(Object *, @{"struct GadgetEnvironment" LINK "dockbot.h/File" 159} *)@{b}
+        VOID TD_GetDockGadgetEnvironment(Object *, @{"struct GadgetEnvironment" LINK "dockbot.h/File" 159} *)@{b}
 
    FUNCTION@{ub}
         Queries a dock gadget for it's position, size and information about
@@ -250,19 +250,19 @@
 
    EXAMPLE@{ub}
         struct DockGadgetEnvironment env;
-        DB_GetDockGadgetEnvironment(obj, &env);
+        TD_GetDockGadgetEnvironment(obj, &env);
 
 @ENDNODE
-@NODE "DB_ListClasses" "tooldock.library/DB_ListClasses()"
+@NODE "TD_ListClasses" "tooldock.library/TD_ListClasses()"
 @{b}
 
    NAME@{ub}
-        DB_ListClasses - List the available gadget classes.@{b}
+        TD_ListClasses - List the available gadget classes.@{b}
 
    SYNOPSIS@{ub}
-        DB_ListClasses(list)
+        TD_ListClasses(list)
                        A0
-        DB_ListClasses(struct List *)@{b}
+        TD_ListClasses(struct List *)@{b}
 
    FUNCTION@{ub}
         Populates the supplied list object with nodes containing the names of@{b}
@@ -277,16 +277,16 @@
    SEE ALSO@{ub}
 
 @ENDNODE
-@NODE "DB_OpenSettingsRead" "tooldock.library/DB_OpenSettingsRead()"
+@NODE "TD_OpenSettingsRead" "tooldock.library/TD_OpenSettingsRead()"
 @{b}
 
    NAME@{ub}
-        DB_OpenSettingsRead -- Open the settings file for reading.@{b}
+        TD_OpenSettingsRead -- Open the settings file for reading.@{b}
 
    SYNOPSIS@{ub}
-        Settings = DB_OpenSettingsRead(filename)
+        Settings = TD_OpenSettingsRead(filename)
           D0                              A0
-        struct DockSettings *DB_OpenSettingsRead(STRPTR);@{b}
+        struct DockSettings *TD_OpenSettingsRead(STRPTR);@{b}
 
    FUNCTION@{ub}
         Opens the settings file for reading.@{b}
@@ -300,25 +300,25 @@
 
    EXAMPLE@{ub}
         struct DockSettings *s;
-        if( s = DB_OpenSettingsRead("ENV:ToolDock.prefs") ) {
+        if( s = TD_OpenSettingsRead("ENV:ToolDock.prefs") ) {
           ...
-          @{"DB_CloseSettings" LINK "DB_CloseSettings"}(s);
+          @{"TD_CloseSettings" LINK "TD_CloseSettings"}(s);
         }@{b}
 
    SEE ALSO@{ub}
-        @{"DB_OpenSettingsWrite()" LINK "DB_OpenSettingsWrite"},@{"DB_CloseSettings()" LINK "DB_CloseSettings"}
+        @{"TD_OpenSettingsWrite()" LINK "TD_OpenSettingsWrite"},@{"TD_CloseSettings()" LINK "TD_CloseSettings"}
 
 @ENDNODE
-@NODE "DB_OpenSettingsWrite" "tooldock.library/DB_OpenSettingsWrite()"
+@NODE "TD_OpenSettingsWrite" "tooldock.library/TD_OpenSettingsWrite()"
 @{b}
 
    NAME@{ub}
-        DB_OpenSettingsWrite -- Open the settings file for writing.@{b}
+        TD_OpenSettingsWrite -- Open the settings file for writing.@{b}
 
    SYNOPSIS@{ub}
-        Settings = DB_OpenSettingsWrite(filename)
+        Settings = TD_OpenSettingsWrite(filename)
           D0                              A0
-        struct DockSettings *DB_OpenSettingsWrite(STRPTR);@{b}
+        struct DockSettings *TD_OpenSettingsWrite(STRPTR);@{b}
 
    FUNCTION@{ub}
         Opens the settings file for writing. If the file doesn't exist it will
@@ -333,25 +333,25 @@
 
    EXAMPLE@{ub}
         struct DockSettings *s;
-        if( s = DB_OpenSettingsWrite("ENV:ToolDock.prefs") ) {
+        if( s = TD_OpenSettingsWrite("ENV:ToolDock.prefs") ) {
           ...
-          @{"DB_CloseSettings" LINK "DB_CloseSettings"}(s);
+          @{"TD_CloseSettings" LINK "TD_CloseSettings"}(s);
         }@{b}
 
    SEE ALSO@{ub}
-        @{"DB_OpenSettingsRead()" LINK "DB_OpenSettingsRead"},@{"DB_CloseSettings()" LINK "DB_CloseSettings"}
+        @{"TD_OpenSettingsRead()" LINK "TD_OpenSettingsRead"},@{"TD_CloseSettings()" LINK "TD_CloseSettings"}
 
 @ENDNODE
-@NODE "DB_ReadBeginBlock" "tooldock.library/DB_ReadBeginBlock()"
+@NODE "TD_ReadBeginBlock" "tooldock.library/TD_ReadBeginBlock()"
 @{b}
 
    NAME@{ub}
-        DB_ReadBeginBlock -- Attempts to read a block start from the setings.@{b}
+        TD_ReadBeginBlock -- Attempts to read a block start from the setings.@{b}
 
    SYNOPSIS@{ub}
-        success = DB_ReadBeginBlock(settings)
+        success = TD_ReadBeginBlock(settings)
           D0                          A0
-        BOOL DB_ReadBeginBlock(struct DockSettings *);@{b}
+        BOOL TD_ReadBeginBlock(struct DockSettings *);@{b}
 
    FUNCTION@{ub}
         Looks for the word "begin" on the current line of the settings file.
@@ -359,36 +359,36 @@
         block.@{b}
 
    INPUTS@{ub}
-        settings - The DockSettings structure allocated by @{"DB_OpenSettingsRead" LINK "DB_OpenSettingsRead"}.@{b}
+        settings - The DockSettings structure allocated by @{"TD_OpenSettingsRead" LINK "TD_OpenSettingsRead"}.@{b}
 
    RESULT@{ub}
         TRUE if a block start was found, FALSE if it was not.@{b}
 
    EXAMPLE@{ub}
         struct DockSettings *s;
-        if( s = @{"DB_OpenSettingsRead" LINK "DB_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
-          if( DB_ReadBeginBlock(s) ) {
-            while(!@{"DB_ReadEndBlock" LINK "DB_ReadEndBlock"}(s)) {
+        if( s = @{"TD_OpenSettingsRead" LINK "TD_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
+          if( TD_ReadBeginBlock(s) ) {
+            while(!@{"TD_ReadEndBlock" LINK "TD_ReadEndBlock"}(s)) {
               ...
             }
           }
-          @{"DB_CloseSettings" LINK "DB_CloseSettings"}(s);
+          @{"TD_CloseSettings" LINK "TD_CloseSettings"}(s);
         }@{b}
 
    SEE ALSO@{ub}
-        @{"DB_OpenSettingsRead()" LINK "DB_OpenSettingsRead"},@{"DB_ReadEndBlock()" LINK "DB_ReadEndBlock"}
+        @{"TD_OpenSettingsRead()" LINK "TD_OpenSettingsRead"},@{"TD_ReadEndBlock()" LINK "TD_ReadEndBlock"}
 
 @ENDNODE
-@NODE "DB_ReadConfig" "tooldock.library/DB_ReadConfig()"
+@NODE "TD_ReadConfig" "tooldock.library/TD_ReadConfig()"
 @{b}
 
    NAME@{ub}
-        DB_ReadConfig - Read the DockBot configuration file.@{b}
+        TD_ReadConfig - Read the DockBot configuration file.@{b}
 
    SYNOPSIS@{ub}
-        success = DB_ReadConfig(cfg,settings)
+        success = TD_ReadConfig(cfg,settings)
           D0                                    A0  A1
-        BOOL DB_ReadConfig(@{"struct DockConfig" LINK "dockbot.h/File" 65} *, struct DockSettings *)@{b}
+        BOOL TD_ReadConfig(@{"struct DockConfig" LINK "dockbot.h/File" 65} *, struct DockSettings *)@{b}
 
    FUNCTION@{ub}
         Reads the configuration data from the settings object and populates
@@ -402,52 +402,52 @@
         TRUE if the configuration was read.
 
 @ENDNODE
-@NODE "DB_ReadEndBlock" "tooldock.library/DB_ReadEndBlock()"
+@NODE "TD_ReadEndBlock" "tooldock.library/TD_ReadEndBlock()"
 @{b}
 
    NAME@{ub}
-        DB_ReadEndBlock -- Attempts to read a block end from the setings.@{b}
+        TD_ReadEndBlock -- Attempts to read a block end from the setings.@{b}
 
    SYNOPSIS@{ub}
-        success = DB_ReadEndBlock(settings)
+        success = TD_ReadEndBlock(settings)
           D0                        A0
-        BOOL DB_ReadEndBlock(struct DockSettings *);@{b}
+        BOOL TD_ReadEndBlock(struct DockSettings *);@{b}
 
    FUNCTION@{ub}
         Looks for the word "end" on the current line of the settings file.
         If found the DockSettings struct records the end of an indented block.@{b}
 
    INPUTS@{ub}
-        settings - The DockSettings structure allocated by @{"DB_OpenSettingsRead" LINK "DB_OpenSettingsRead"}.@{b}
+        settings - The DockSettings structure allocated by @{"TD_OpenSettingsRead" LINK "TD_OpenSettingsRead"}.@{b}
 
    RESULT@{ub}
         TRUE if a block end was found, FALSE if it was not.@{b}
 
    EXAMPLE@{ub}
         struct DockSettings *s;
-        if( s = @{"DB_OpenSettingsRead" LINK "DB_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
-          if( @{"DB_ReadBeginBlock" LINK "DB_ReadBeginBlock"}(s) ) {
-            while(!DB_ReadEndBlock(s)) {
+        if( s = @{"TD_OpenSettingsRead" LINK "TD_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
+          if( @{"TD_ReadBeginBlock" LINK "TD_ReadBeginBlock"}(s) ) {
+            while(!TD_ReadEndBlock(s)) {
               ...
             }
           }
-          @{"DB_CloseSettings" LINK "DB_CloseSettings"}(s);
+          @{"TD_CloseSettings" LINK "TD_CloseSettings"}(s);
         }@{b}
 
    SEE ALSO@{ub}
-        @{"DB_OpenSettingsRead()" LINK "DB_OpenSettingsRead"},@{"DB_ReadBeginBlock()" LINK "DB_ReadBeginBlock"}
+        @{"TD_OpenSettingsRead()" LINK "TD_OpenSettingsRead"},@{"TD_ReadBeginBlock()" LINK "TD_ReadBeginBlock"}
 
 @ENDNODE
-@NODE "DB_ReadSetting" "tooldock.library/DB_ReadSetting()"
+@NODE "TD_ReadSetting" "tooldock.library/TD_ReadSetting()"
 @{b}
 
    NAME@{ub}
-        DB_ReadSetting -- Attempts to read a value from the settings file.@{b}
+        TD_ReadSetting -- Attempts to read a value from the settings file.@{b}
 
    SYNOPSIS@{ub}
-        success = DB_ReadSetting(settings, value)
+        success = TD_ReadSetting(settings, value)
           D0                       A0        A1
-        BOOL DB_ReadSetting(struct DockSettings *, @{"struct DockSettingValue" LINK "dockbot.h/File" 369} *);@{b}
+        BOOL TD_ReadSetting(struct DockSettings *, @{"struct DockSettingValue" LINK "dockbot.h/File" 369} *);@{b}
 
    FUNCTION@{ub}
         Looks for the key and value separated by an equals sign on the current
@@ -455,7 +455,7 @@
         If found the value struct will be filled in with key and value.@{b}
 
    INPUTS@{ub}
-        settings - The DockSettings structure allocated by @{"DB_OpenSettingsRead" LINK "DB_OpenSettingsRead"}.@{b}
+        settings - The DockSettings structure allocated by @{"TD_OpenSettingsRead" LINK "TD_OpenSettingsRead"}.@{b}
 
    RESULT@{ub}
         TRUE if a block end was found, FALSE if it was not.@{b}
@@ -463,31 +463,31 @@
    EXAMPLE@{ub}
         struct DockSettings *s;
         @{"struct DockSettingValue" LINK "dockbot.h/File" 369} val;
-        if( s = @{"DB_OpenSettingsRead" LINK "DB_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
-          if( @{"DB_ReadBeginBlock" LINK "DB_ReadBeginBlock"}(s) ) {
-            while(!@{"DB_ReadEndBlock" LINK "DB_ReadEndBlock"}(s)) {
-              if( DB_ReadSetting(s, &val) ) {
+        if( s = @{"TD_OpenSettingsRead" LINK "TD_OpenSettingsRead"}("ENV:ToolDock.prefs") ) {
+          if( @{"TD_ReadBeginBlock" LINK "TD_ReadBeginBlock"}(s) ) {
+            while(!@{"TD_ReadEndBlock" LINK "TD_ReadEndBlock"}(s)) {
+              if( TD_ReadSetting(s, &val) ) {
                 ...
               }
             }
           }
-          @{"DB_CloseSettings" LINK "DB_CloseSettings"}(s);
+          @{"TD_CloseSettings" LINK "TD_CloseSettings"}(s);
         }@{b}
 
    SEE ALSO@{ub}
-        @{"DB_OpenSettingsRead()" LINK "DB_OpenSettingsRead"}
+        @{"TD_OpenSettingsRead()" LINK "TD_OpenSettingsRead"}
 
 @ENDNODE
-@NODE "DB_RegisterDebugStream" "tooldock.library/DB_RegisterDebugStream()"
+@NODE "TD_RegisterDebugStream" "tooldock.library/TD_RegisterDebugStream()"
 @{b}
 
    NAME@{ub}
-        DB_RegisterDebugStream - Registers an output stream with tooldock.library.@{b}
+        TD_RegisterDebugStream - Registers an output stream with tooldock.library.@{b}
 
    SYNOPSIS@{ub}
-        DB_RegisterDebugStream(fh);
+        TD_RegisterDebugStream(fh);
                                A0
-        DB_RegisterDebugStream(BPTR);@{b}
+        TD_RegisterDebugStream(BPTR);@{b}
 
    FUNCTION@{ub}
         Used for debug builds only. Registers an output stream for the library
@@ -497,20 +497,20 @@
         fh - The output stream.@{b}
 
    SEE ALSO@{ub}
-        @{"DB_DebugLog" LINK "DB_DebugLog"}
+        @{"TD_DebugLog" LINK "TD_DebugLog"}
 
 @ENDNODE
-@NODE "DB_RegisterPort" "tooldock.library/DB_RegisterPort()"
+@NODE "TD_RegisterPort" "tooldock.library/TD_RegisterPort()"
 @{b}
 
    NAME@{ub}
-        DB_RegisterPort - Registers a message port with the Dock so that gadgets
+        TD_RegisterPort - Registers a message port with the Dock so that gadgets
                       can receive messages.@{b}
 
    SYNOPSIS@{ub}
-        DB_RegisterPort(obj, port);
+        TD_RegisterPort(obj, port);
                          A0   A1
-        DB_RegisterPort(Object *, struct MsgPort *);@{b}
+        TD_RegisterPort(Object *, struct MsgPort *);@{b}
 
    FUNCTION@{ub}
         Registers a gadget-owned port with the Dock so that the gadget can receive
@@ -523,19 +523,19 @@
         port - The port to be registered.@{b}
 
    SEE ALSO@{ub}
-        @{"DB_UnregisterPort" LINK "DB_UnregisterPort"}
+        @{"TD_UnregisterPort" LINK "TD_UnregisterPort"}
 
 @ENDNODE
-@NODE "DB_RequestDockGadgetDraw" "tooldock.library/DB_RequestDockGadgetDraw()"
+@NODE "TD_RequestDockGadgetDraw" "tooldock.library/TD_RequestDockGadgetDraw()"
 @{b}
 
    NAME@{ub}
-        DB_RequestDockGadgetDraw -- Requests the redraw of a dock gadget.@{b}
+        TD_RequestDockGadgetDraw -- Requests the redraw of a dock gadget.@{b}
 
    SYNOPSIS@{ub}
-        DB_RequestDockGadgetDraw(obj)
+        TD_RequestDockGadgetDraw(obj)
                                  A0
-        DB_RequestDockGadgetDraw(Object *);@{b}
+        TD_RequestDockGadgetDraw(Object *);@{b}
 
    FUNCTION@{ub}
         Sends an asynchronous message from a gadget to the DockBot application
@@ -546,23 +546,23 @@
 
    EXAMPLE@{ub}
         void request_draw(Object *obj) {
-          DB_RequestDockGadgetDraw(obj);
+          TD_RequestDockGadgetDraw(obj);
         }@{b}
 
    SEE ALSO@{ub}
         dockbot.h
 
 @ENDNODE
-@NODE "DB_RequestDockQuit" "tooldock.library/DB_RequestDockQuit()"
+@NODE "TD_RequestDockQuit" "tooldock.library/TD_RequestDockQuit()"
 @{b}
 
    NAME@{ub}
-        DB_RequestDockQuit -- Asks the DockBot application to quit.@{b}
+        TD_RequestDockQuit -- Asks the DockBot application to quit.@{b}
 
    SYNOPSIS@{ub}
-        DB_RequestDockQuit(obj)
+        TD_RequestDockQuit(obj)
                            A0
-        DB_RequestDockQuit(Object *);@{b}
+        TD_RequestDockQuit(Object *);@{b}
 
    FUNCTION@{ub}
         Sends an asynchronous message from a gadget to the DockBot application
@@ -573,23 +573,23 @@
 
    EXAMPLE@{ub}
         void request_quit(Object *obj) {
-          DB_RequestDockQuit(obj);
+          TD_RequestDockQuit(obj);
         }@{b}
 
    SEE ALSO@{ub}
         dockbot.h
 
 @ENDNODE
-@NODE "DB_RequestLaunch" "tooldock.library/DB_RequestLaunch()"
+@NODE "TD_RequestLaunch" "tooldock.library/TD_RequestLaunch()"
 @{b}
 
    NAME@{ub}
-        DB_RequestLaunch -- Requests the launch of an external program.@{b}
+        TD_RequestLaunch -- Requests the launch of an external program.@{b}
 
    SYNOPSIS@{ub}
-        DB_RequestLaunch(obj, path, args, console, wb)
+        TD_RequestLaunch(obj, path, args, console, wb)
                          A0   A1    A2    A3       D0
-        DB_RequestLaunch(Object *, STRPTR, STRPTR, STRPTR, BOOL);@{b}
+        TD_RequestLaunch(Object *, STRPTR, STRPTR, STRPTR, BOOL);@{b}
 
    FUNCTION@{ub}
         Sends an asynchronous message from a gadget to the DockBot application
@@ -604,22 +604,22 @@
              Workbench.@{b}
 
    EXAMPLE@{ub}
-        DB_RequestLaunch(obj, "SYS:Utilities/MultiView", "T:image.iff", NULL, TRUE);@{b}
+        TD_RequestLaunch(obj, "SYS:Utilities/MultiView", "T:image.iff", NULL, TRUE);@{b}
 
    SEE ALSO@{ub}
         dockbot.h
 
 @ENDNODE
-@NODE "DB_ShowError" "tooldock.library/DB_ShowError()"
+@NODE "TD_ShowError" "tooldock.library/TD_ShowError()"
 @{b}
 
    NAME@{ub}
-        DB_ShowError - Display an error message to the user.@{b}
+        TD_ShowError - Display an error message to the user.@{b}
 
    SYNOPSIS@{ub}
-        DB_ShowError(message)
+        TD_ShowError(message)
                       A0
-        DB_ShowError(STRPTR);@{b}
+        TD_ShowError(STRPTR);@{b}
 
    FUNCTION@{ub}
         Displays the message to the user in a requester.@{b}
@@ -628,16 +628,16 @@
         message - The error message to display to the user.
 
 @ENDNODE
-@NODE "DB_UnregisterPort" "tooldock.library/DB_UnregisterPort()"
+@NODE "TD_UnregisterPort" "tooldock.library/TD_UnregisterPort()"
 @{b}
 
    NAME@{ub}
-        DB_UnregisterPort - Removes a previously registered port from the Dock.@{b}
+        TD_UnregisterPort - Removes a previously registered port from the Dock.@{b}
 
    SYNOPSIS@{ub}
-        DB_UnregisterPort(obj, port);
+        TD_UnregisterPort(obj, port);
                            A0   A1
-        DB_UnregisterPort(Object *, struct MsgPort *);@{b}
+        TD_UnregisterPort(Object *, struct MsgPort *);@{b}
 
    FUNCTION@{ub}
         Removes a port registration from the Dock when the gadget is finished with
@@ -648,53 +648,53 @@
         port - The port to be un-registered.@{b}
 
    SEE ALSO@{ub}
-        @{"DB_RegisterPort" LINK "DB_RegisterPort"}
+        @{"TD_RegisterPort" LINK "TD_RegisterPort"}
 
 @ENDNODE
-@NODE "DB_WriteBeginBlock" "tooldock.library/DB_WriteBeginBlock()"
+@NODE "TD_WriteBeginBlock" "tooldock.library/TD_WriteBeginBlock()"
 @{b}
 
    NAME@{ub}
-        DB_WriteBeginBlock -- Writes the start of a block to the settings file.@{b}
+        TD_WriteBeginBlock -- Writes the start of a block to the settings file.@{b}
 
    SYNOPSIS@{ub}
-        success = DB_WriteBeginBlock(settings)
+        success = TD_WriteBeginBlock(settings)
           D0                            A0
-        BOOL DB_WriteBeginBlock(struct DockSettings *);@{b}
+        BOOL TD_WriteBeginBlock(struct DockSettings *);@{b}
 
    FUNCTION@{ub}
         Writes the word "begin" to the settings file previously opened with
-        @{"DB_OpenSettingsWrite" LINK "DB_OpenSettingsWrite"}. Subsequent writes to the file will be indented.@{b}
+        @{"TD_OpenSettingsWrite" LINK "TD_OpenSettingsWrite"}. Subsequent writes to the file will be indented.@{b}
 
    INPUTS@{ub}
-        settings - The DockSettings structure allocated by @{"DB_OpenSettingsWrite" LINK "DB_OpenSettingsWrite"}.@{b}
+        settings - The DockSettings structure allocated by @{"TD_OpenSettingsWrite" LINK "TD_OpenSettingsWrite"}.@{b}
 
    RESULT@{ub}
         TRUE if a block begin was written or FALSE if it was not.@{b}
 
    EXAMPLE@{ub}
         struct DockSettings *s;
-        if( s = @{"DB_OpenSettingsWrite" LINK "DB_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
-          if( DB_WriteBeginBlock(s) ) {
+        if( s = @{"TD_OpenSettingsWrite" LINK "TD_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
+          if( TD_WriteBeginBlock(s) ) {
             ...
           }
-          @{"DB_CloseSettings" LINK "DB_CloseSettings"}(s);
+          @{"TD_CloseSettings" LINK "TD_CloseSettings"}(s);
         }@{b}
 
    SEE ALSO@{ub}
-        @{"DB_OpenSettingsWrite()" LINK "DB_OpenSettingsWrite"}, @{"DB_WriteEndBlock()" LINK "DB_WriteEndBlock"}
+        @{"TD_OpenSettingsWrite()" LINK "TD_OpenSettingsWrite"}, @{"TD_WriteEndBlock()" LINK "TD_WriteEndBlock"}
 
 @ENDNODE
-@NODE "DB_WriteConfig" "tooldock.library/DB_WriteConfig()"
+@NODE "TD_WriteConfig" "tooldock.library/TD_WriteConfig()"
 @{b}
 
    NAME@{ub}
-        DB_WriteConfig - Write the DockBot configuration file.@{b}
+        TD_WriteConfig - Write the DockBot configuration file.@{b}
 
    SYNOPSIS@{ub}
-        success = DB_WriteConfig(cfg,settings)
+        success = TD_WriteConfig(cfg,settings)
           D0                                     A0  A1
-        BOOL DB_WriteConfig(@{"struct DockConfig" LINK "dockbot.h/File" 65} *, struct DockSettings *)@{b}
+        BOOL TD_WriteConfig(@{"struct DockConfig" LINK "dockbot.h/File" 65} *, struct DockSettings *)@{b}
 
    FUNCTION@{ub}
         Writes the configuration data in cfg to the settings object.@{b}
@@ -707,11 +707,11 @@
         TRUE if the configuration was written.
 
 @ENDNODE
-@NODE "DB_WriteEndBlock" "tooldock.library/DB_WriteEndBlock()"
+@NODE "TD_WriteEndBlock" "tooldock.library/TD_WriteEndBlock()"
 @{b}
 
    NAME@{ub}
-        DB_WriteEndBlock -- Writes the end of a block to the settings file.@{b}
+        TD_WriteEndBlock -- Writes the end of a block to the settings file.@{b}
 
    SYNOPSIS@{ub}
         success = DB_WriteBeginEnd(settings)
@@ -720,47 +720,47 @@
 
    FUNCTION@{ub}
         Writes the word "end" to the settings file previously opened with
-        @{"DB_OpenSettingsWrite" LINK "DB_OpenSettingsWrite"}.@{b}
+        @{"TD_OpenSettingsWrite" LINK "TD_OpenSettingsWrite"}.@{b}
 
    INPUTS@{ub}
-        settings - The DockSettings structure allocated by @{"DB_OpenSettingsWrite" LINK "DB_OpenSettingsWrite"}.@{b}
+        settings - The DockSettings structure allocated by @{"TD_OpenSettingsWrite" LINK "TD_OpenSettingsWrite"}.@{b}
 
    RESULT@{ub}
         TRUE if a block end was written or FALSE if it was not.@{b}
 
    EXAMPLE@{ub}
         struct DockSettings *s;
-        if( s = @{"DB_OpenSettingsWrite" LINK "DB_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
-          if( @{"DB_WriteBeginBlock" LINK "DB_WriteBeginBlock"}(s) ) {
+        if( s = @{"TD_OpenSettingsWrite" LINK "TD_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
+          if( @{"TD_WriteBeginBlock" LINK "TD_WriteBeginBlock"}(s) ) {
             ...
-            if( DB_WriteEndBlock(s) ) {
+            if( TD_WriteEndBlock(s) ) {
               ...
             }
           }
-          @{"DB_CloseSettings" LINK "DB_CloseSettings"}(s);
+          @{"TD_CloseSettings" LINK "TD_CloseSettings"}(s);
         }@{b}
 
    SEE ALSO@{ub}
-        @{"DB_OpenSettingsWrite()" LINK "DB_OpenSettingsWrite"}, @{"DB_WriteBeginBlock()" LINK "DB_WriteBeginBlock"}
+        @{"TD_OpenSettingsWrite()" LINK "TD_OpenSettingsWrite"}, @{"TD_WriteBeginBlock()" LINK "TD_WriteBeginBlock"}
 
 @ENDNODE
-@NODE "DB_WriteSetting" "tooldock.library/DB_WriteSetting()"
+@NODE "TD_WriteSetting" "tooldock.library/TD_WriteSetting()"
 @{b}
 
    NAME@{ub}
-        DB_WriteSetting -- Writes a key and value pair to the settings file.@{b}
+        TD_WriteSetting -- Writes a key and value pair to the settings file.@{b}
 
    SYNOPSIS@{ub}
-        success = DB_WriteSetting(settings,key,value)
+        success = TD_WriteSetting(settings,key,value)
           D0                        A0     A1  A2
-        BOOL @{"DB_WriteBeginEnd" LINK "DB_WriteEndBlock"}(struct DockSettings *,STRPTR,STRPTR);@{b}
+        BOOL @{"DB_WriteBeginEnd" LINK "TD_WriteEndBlock"}(struct DockSettings *,STRPTR,STRPTR);@{b}
 
    FUNCTION@{ub}
         Writes a key and value to a settings file previously opened with
-        @{"DB_OpenSettingsWrite" LINK "DB_OpenSettingsWrite"}. An equals sign, =, will separate the two.@{b}
+        @{"TD_OpenSettingsWrite" LINK "TD_OpenSettingsWrite"}. An equals sign, =, will separate the two.@{b}
 
    INPUTS@{ub}
-        settings - The DockSettings structure allocated by @{"DB_OpenSettingsWrite" LINK "DB_OpenSettingsWrite"}.
+        settings - The DockSettings structure allocated by @{"TD_OpenSettingsWrite" LINK "TD_OpenSettingsWrite"}.
         key      - A pointer to a NULL terminated string containing the key.
         value    - A pointer to a NULL terminated string containing the value.@{b}
 
@@ -769,16 +769,16 @@
 
    EXAMPLE@{ub}
         struct DockSettings *s;
-        if( s = @{"DB_OpenSettingsWrite" LINK "DB_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
-          if( @{"DB_WriteBeginBlock" LINK "DB_WriteBeginBlock"}(s) ) {
-            if( DB_WriteSetting(s, "key", "value") ) {
+        if( s = @{"TD_OpenSettingsWrite" LINK "TD_OpenSettingsWrite"}("ENV:ToolDock.prefs") ) {
+          if( @{"TD_WriteBeginBlock" LINK "TD_WriteBeginBlock"}(s) ) {
+            if( TD_WriteSetting(s, "key", "value") ) {
               ...
             }
           }
-          @{"DB_CloseSettings" LINK "DB_CloseSettings"}(s);
+          @{"TD_CloseSettings" LINK "TD_CloseSettings"}(s);
         }@{b}
 
    SEE ALSO@{ub}
-        @{"DB_OpenSettingsWrite()" LINK "DB_OpenSettingsWrite"}, @{"DB_WriteBeginBlock()" LINK "DB_WriteBeginBlock"}
+        @{"TD_OpenSettingsWrite()" LINK "TD_OpenSettingsWrite"}, @{"TD_WriteBeginBlock()" LINK "TD_WriteBeginBlock"}
 
 @ENDNODE

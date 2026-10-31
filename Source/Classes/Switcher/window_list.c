@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -61,7 +63,7 @@ VOID build_window_list(struct SwitcherGadgetData *data)
                 if( win->Title ) {
 
                     len = strlen(win->Title) + 5;
-                    if( item = (struct WindowListItem *)DB_AllocMem(sizeof(struct WindowListItem) + len, MEMF_CLEAR) ) {
+                    if( item = (struct WindowListItem *)TD_AllocMem(sizeof(struct WindowListItem) + len, MEMF_CLEAR) ) {
 
                         item->selected = FALSE;
                         item->win = win;
@@ -97,7 +99,7 @@ VOID build_window_list(struct SwitcherGadgetData *data)
                             data->width = width;
                         }
                         data->height += item->height;
-                        DEBUG(DB_Printf(__METHOD__ "item->height = %ld, data->height = %ld\n", item->height, data->height));
+                        DEBUG(TD_Printf(__METHOD__ "item->height = %ld, data->height = %ld\n", item->height, data->height));
 
                         if( prevItem ) {
                             prevItem->text.NextText = &item->text;
@@ -126,7 +128,7 @@ VOID free_window_list(struct SwitcherGadgetData *data)
 
         if( item = (struct WindowListItem *)RemTail(&data->items) ) {
 
-            DB_FreeMem(item, sizeof(struct WindowListItem) + item->labelLen);
+            TD_FreeMem(item, sizeof(struct WindowListItem) + item->labelLen);
         }
     }
 
@@ -165,7 +167,7 @@ VOID open_window(Object *o, struct SwitcherGadgetData *data)
 
     data->bounceTimer = 2;
 
-    DB_RequestDockGadgetDraw(o);
+    TD_RequestDockGadgetDraw(o);
 
     build_window_list(data);    
 
@@ -173,9 +175,9 @@ VOID open_window(Object *o, struct SwitcherGadgetData *data)
         return;
     }
 
-    DB_GetDockGadgetEnvironment(o, &env);
+    TD_GetDockGadgetEnvironment(o, &env);
 
-    DEBUG(DB_Printf(__METHOD__ "G = %ld,%ld,%ld,%ld W = %ld,%ld,%ld,%ld\n",
+    DEBUG(TD_Printf(__METHOD__ "G = %ld,%ld,%ld,%ld W = %ld,%ld,%ld,%ld\n",
         (LONG)env.gadgetBounds.x,(LONG)env.gadgetBounds.y,(LONG)env.gadgetBounds.w,(LONG)env.gadgetBounds.h,
         (LONG)env.windowBounds.x,(LONG)env.windowBounds.y,(LONG)env.windowBounds.w,(LONG)env.windowBounds.h));
 
@@ -213,7 +215,7 @@ VOID open_window(Object *o, struct SwitcherGadgetData *data)
                     break;
 
                 default:
-                    DB_ShowError("WTF?");
+                    TD_ShowError("WTF?");
                     break;
             }
         } else {
@@ -257,7 +259,7 @@ VOID open_window(Object *o, struct SwitcherGadgetData *data)
 
     if( data->win ) {
 
-        DB_RegisterPort(o, data->win->UserPort);
+        TD_RegisterPort(o, data->win->UserPort);
 
         draw_text(data);
 
@@ -276,7 +278,7 @@ VOID close_window(Object *o, struct SwitcherGadgetData *data)
     win = data->win;
     data->win = NULL;
 
-    DB_UnregisterPort(o, win->UserPort);
+    TD_UnregisterPort(o, win->UserPort);
 
     CloseWindow(win);
 
@@ -285,7 +287,7 @@ VOID close_window(Object *o, struct SwitcherGadgetData *data)
 
     free_window_list(data);
 
-    DB_RequestDockGadgetDraw(o);
+    TD_RequestDockGadgetDraw(o);
 }
 
 VOID toggle_window(Object *o, struct SwitcherGadgetData *data)
@@ -341,20 +343,20 @@ VOID switch_by_mouse(Object *o, struct SwitcherGadgetData *data, UWORD yPos)
 
         FOR_EACH_ITEM(&data->items, item) {
 
-            DEBUG(DB_Printf(__METHOD__ "%s : yPos = %ld, y = %ld, item->height = %ld\n", item->n.ln_Name, (LONG)yPos, (LONG)y, (LONG)item->height));
+            DEBUG(TD_Printf(__METHOD__ "%s : yPos = %ld, y = %ld, item->height = %ld\n", item->n.ln_Name, (LONG)yPos, (LONG)y, (LONG)item->height));
 
             y += item->height;
 
             if( y > yPos ) {
 
-                DEBUG(DB_Printf(__METHOD__ "Selected %s\n", item->n.ln_Name));
+                DEBUG(TD_Printf(__METHOD__ "Selected %s\n", item->n.ln_Name));
                 switch_to_selection(o, data, item);
                 break;
             }
         }       
     }
 
-    DEBUG(DB_Printf(__METHOD__ "No item selected\n"));
+    DEBUG(TD_Printf(__METHOD__ "No item selected\n"));
 
     data->closeTimer = 1;
 }
@@ -365,18 +367,18 @@ VOID switch_by_key(Object *o, struct SwitcherGadgetData *data, UWORD key)
 
     FOR_EACH_ITEM(&data->items, item) {
 
-        DEBUG(DB_Printf(__METHOD__ "%s : item->rawKey = %ld, key = %ld, item->height = %ld\n", item->n.ln_Name, (LONG)item->rawKey, (LONG)key, (LONG)item->height));
+        DEBUG(TD_Printf(__METHOD__ "%s : item->rawKey = %ld, key = %ld, item->height = %ld\n", item->n.ln_Name, (LONG)item->rawKey, (LONG)key, (LONG)item->height));
 
         if( item->rawKey == key ) {
 
-            DEBUG(DB_Printf(__METHOD__ "Selected %s\n", item->n.ln_Name));
+            DEBUG(TD_Printf(__METHOD__ "Selected %s\n", item->n.ln_Name));
 
             switch_to_selection(o, data, item);
             break;
         }
     }
 
-    DEBUG(DB_Printf(__METHOD__ "No item selected\n"));
+    DEBUG(TD_Printf(__METHOD__ "No item selected\n"));
 
     data->closeTimer = 1;
 }

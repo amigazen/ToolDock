@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -56,7 +58,7 @@ TR_CONSTRUCTOR(Icon)
                 TR_DoMethod((struct TROD_Object *)&Self, TROM_SETATTRIBUTE, (APTR)&saDat);
             }
 
-            DB_FreeMem(ii, sizeof(struct IconInit));
+            TD_FreeMem(ii, sizeof(struct IconInit));
         }
     }
     Self.DO.XResize = TRUE;
@@ -91,7 +93,7 @@ TR_SIMPLEMETHOD(Icon, INSTALL_REFRESH)
 
         if( Self.Brush ) {
 
-            DB_DrawBrush(Self.Brush,
+            TD_DrawBrush(Self.Brush,
                          rp,
                          0, 0, 
                          bounds.x + 1, bounds.y + 1, 
@@ -107,7 +109,7 @@ TR_SIMPLEMETHOD(Icon, INSTALL_REFRESH)
 
         }
 
-        DB_DrawOutsetFrame(rp, &bounds);
+        TD_DrawOutsetFrame(rp, &bounds);
     }
 
     return 1;
@@ -132,7 +134,7 @@ TR_METHOD(Icon, SETATTRIBUTE, SetAttributeData)
 
     if( Self.Brush ) {
     
-        DB_GetBrushSize(Self.Brush, &Self.IconWidth, &Self.IconHeight);
+        TD_GetBrushSize(Self.Brush, &Self.IconWidth, &Self.IconHeight);
     
     } else if( Self.DiskObj 
             && GetIconRectangleA(NULL, Self.DiskObj, NULL, &r, NULL) ) {

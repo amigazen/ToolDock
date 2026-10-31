@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -156,7 +158,7 @@ typedef enum {
 struct DockSettings;
 struct DockWindow;
 
-extern struct Library *DockBotBase;
+extern struct Library *ToolDockBase;
 
 struct GadgetEnvironment {
 	struct Rect gadgetBounds;
@@ -332,7 +334,7 @@ struct Values
 #define IS_KEY(key, setting) (strncmp(key, setting.Key, strlen(key)) == 0)
 
 #define GET_STRING(setting, dest) \
-    dest = (STRPTR)DB_AllocMem(setting.ValueLength + 1, MEMF_CLEAR); \ 
+    dest = (STRPTR)TD_AllocMem(setting.ValueLength + 1, MEMF_CLEAR); \ 
     CopyMem(setting.Value, dest, setting.ValueLength); \
     dest[setting.ValueLength] = '\0'; 
 
@@ -354,7 +356,7 @@ int atoi(const char *);
 
 #define FREE_STRING(str) \
     if( str ) { \
-        DB_FreeMem((VOID *)str, strlen((STRPTR)str) + 1); \
+        TD_FreeMem((VOID *)str, strlen((STRPTR)str) + 1); \
         str = NULL; \
     }
 

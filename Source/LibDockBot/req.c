@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -25,7 +27,7 @@
 
 #define DEFAULT_PATH "SYS:"
 
-extern struct DockBotLibrary *DockBotBaseFull;
+extern struct DockBotLibrary *ToolDockBaseFull;
  
 VOID ShowErrorInternal(STRPTR message)
 {
@@ -42,13 +44,13 @@ VOID ShowErrorInternal(STRPTR message)
     EasyRequest(NULL, &req, NULL, message);
 }
 
-VOID __asm __saveds DB_ShowError(
+VOID __asm __saveds TD_ShowError(
     register __a0 STRPTR message) 
 {
     ShowErrorInternal(message);
 }
 
-STRPTR __asm __saveds DB_SelectFile(
+STRPTR __asm __saveds TD_SelectFile(
     register __a0 STRPTR title,
     register __a1 STRPTR okText,
     register __a2 STRPTR cancelText,
@@ -74,7 +76,7 @@ STRPTR __asm __saveds DB_SelectFile(
     if( path ) {
 
         initialLen = strlen(path) + 1;
-        if( initialDir = AllocMemInternal(DockBotBaseFull, initialLen, MEMF_CLEAR) ) {
+        if( initialDir = AllocMemInternal(ToolDockBaseFull, initialLen, MEMF_CLEAR) ) {
 
             CopyMem(path, initialDir, initialLen);
 
@@ -100,7 +102,7 @@ STRPTR __asm __saveds DB_SelectFile(
             DEBUG(DebugLog(" selectedLen = %ld, rf_Dir = %s, rf->File = %s\n",
                 (LONG)selectedLen, fr->rf_Dir, fr->rf_File));
 
-            if( selectedFile = AllocMemInternal(DockBotBaseFull, selectedLen, MEMF_CLEAR) ) {
+            if( selectedFile = AllocMemInternal(ToolDockBaseFull, selectedLen, MEMF_CLEAR) ) {
               
                 CopyMem(fr->rf_Dir, selectedFile, strlen(fr->rf_Dir));
 
@@ -113,7 +115,7 @@ STRPTR __asm __saveds DB_SelectFile(
     }
 
     if( freeInitial ) {
-        FreeMemInternal(DockBotBaseFull, initialDir, initialLen);
+        FreeMemInternal(ToolDockBaseFull, initialDir, initialLen);
     }
 
     return selectedFile;

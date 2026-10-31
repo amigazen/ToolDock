@@ -1,59 +1,61 @@
-##base _DockBotBase
+##base _ToolDockBase
 ##bias 30
 ##public
 ***********************************
 *                                  
-*  DockBot - A Dock For AmigaOS 3  
+*  ToolDock - A Dock For AmigaOS 3
 *                                  
-*  © 2016 Andrew Kennan            
+*  SPDX-License-Identifier: MIT
+*  ToolDock changes Copyright 2026 amigazen project
+*  DockBot Copyright 2019 Andrew Kennan
 *                                  
 ***********************************
 * Dock gadget functions
-DB_GetDockGadgetEnvironment(obj,env)(a0/a1)
-DB_RequestDockQuit(obj)(a0)
-DB_RequestDockGadgetDraw(obj)(a0)
-DB_RequestLaunch(obj,path,args,console,wb)(a0/a1/a2/a3,d0)
+TD_GetDockGadgetEnvironment(obj,env)(a0/a1)
+TD_RequestDockQuit(obj)(a0)
+TD_RequestDockGadgetDraw(obj)(a0)
+TD_RequestLaunch(obj,path,args,console,wb)(a0/a1/a2/a3,d0)
 * Drawing utilities
-DB_DrawOutsetFrame(rp,bounds)(a0/a1)
-DB_DrawInsetFrame(rp,bounds)(a0/a1)
+TD_DrawOutsetFrame(rp,bounds)(a0/a1)
+TD_DrawInsetFrame(rp,bounds)(a0/a1)
 * Settings functions
-DB_OpenSettingsRead(filename)(a0)
-DB_OpenSettingsWrite(filename)(a0)
-DB_CloseSettings(settings)(a0)
-DB_ReadBeginBlock(settings)(a0)
-DB_ReadEndBlock(settings)(a0)
-DB_ReadSetting(settings,value)(a0/a1)
-DB_WriteBeginBlock(settings)(a0)
-DB_WriteEndBlock(settings)(a0)
-DB_WriteSetting(settings,key,value)(a0/a1/a2)
-DB_ReadConfig(cfg,settings)(a0/a1)
-DB_WriteConfig(cfg,settings)(a0/a1)
+TD_OpenSettingsRead(filename)(a0)
+TD_OpenSettingsWrite(filename)(a0)
+TD_CloseSettings(settings)(a0)
+TD_ReadBeginBlock(settings)(a0)
+TD_ReadEndBlock(settings)(a0)
+TD_ReadSetting(settings,value)(a0/a1)
+TD_WriteBeginBlock(settings)(a0)
+TD_WriteEndBlock(settings)(a0)
+TD_WriteSetting(settings,key,value)(a0/a1/a2)
+TD_ReadConfig(cfg,settings)(a0/a1)
+TD_WriteConfig(cfg,settings)(a0/a1)
 * Memory Management
-DB_AllocMem(byteSize,attributes)(d0/d1)
-DB_FreeMem(memoryBlock,byteSize)(a0,d0)
-DB_GetMemInfo()
+TD_AllocMem(byteSize,attributes)(d0/d1)
+TD_FreeMem(memoryBlock,byteSize)(a0,d0)
+TD_GetMemInfo()
 * Class Management
-DB_CreateDockGadget(name)(a0)
-DB_ListClasses(list)(a0)
+TD_CreateDockGadget(name)(a0)
+TD_ListClasses(list)(a0)
 * User Messages
-DB_ShowError(message)(a0)
+TD_ShowError(message)(a0)
 * Gadget Message Ports
-DB_RegisterPort(obj,port) (a0/a1)
-DB_UnregisterPort(obj,port) (a0,a1)
+TD_RegisterPort(obj,port) (a0/a1)
+TD_UnregisterPort(obj,port) (a0,a1)
 * Config cleanup
-DB_DisposeConfig(cfg) (a0)
+TD_DisposeConfig(cfg) (a0)
 * More gadget stuff
-DB_DisposeDockGadget(obj) (a0)
-DB_FreeGadget(dg) (a0)
-DB_AllocGadget(name) (a0)
+TD_DisposeDockGadget(obj) (a0)
+TD_FreeGadget(dg) (a0)
+TD_AllocGadget(name) (a0)
 * Debug Logging
-DB_RegisterDebugStream(fh) (a0)
-DB_DebugLog(fmt,argv) (a0/a1)
+TD_RegisterDebugStream(fh) (a0)
+TD_DebugLog(fmt,argv) (a0/a1)
 * Brushes
-DB_LoadBrush(fileName,flags) (a0,d0)
-DB_FreeBrush(brush) (a0)
-DB_DrawBrush(brush,rp,srcX,srcY,dstX,dstY,w,h) (a0/a1,d0/d1/d2/d3/d4/d5)
-DB_GetBrushSize(brush,w,h) (a0,a1,a2)
+TD_LoadBrush(fileName,flags) (a0,d0)
+TD_FreeBrush(brush) (a0)
+TD_DrawBrush(brush,rp,srcX,srcY,dstX,dstY,w,h) (a0/a1,d0/d1/d2/d3/d4/d5)
+TD_GetBrushSize(brush,w,h) (a0,a1,a2)
 * File Requester
-DB_SelectFile(title,okText,cancelText,path) (a0/a1/a2/a3)
+TD_SelectFile(title,okText,cancelText,path) (a0/a1/a2/a3)
 ##end

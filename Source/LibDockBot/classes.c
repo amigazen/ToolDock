@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -39,7 +41,7 @@
 
 extern struct Library *DOSBase;
 extern struct Library *IntuitionBase;
-extern struct DockBotLibrary *DockBotBaseFull;
+extern struct DockBotLibrary *ToolDockBaseFull;
 
 struct LibNode
 {
@@ -64,7 +66,7 @@ VOID FreeClassLibs(struct DockBotLibrary *lib) {
             Forbid();
             RemLibrary(ln->lib);
             Permit();
-            DB_FreeMem(ln, sizeof(struct LibNode));
+            TD_FreeMem(ln, sizeof(struct LibNode));
         }
     }
 }
@@ -83,7 +85,7 @@ UWORD ClassLibCount(struct DockBotLibrary *lib)
     return count;
 }
 
-Object * __asm __saveds DB_CreateDockGadget(
+Object * __asm __saveds TD_CreateDockGadget(
                             register __a0 STRPTR name)
 {
     Object *o;
@@ -97,12 +99,12 @@ Object * __asm __saveds DB_CreateDockGadget(
 
         if( lib = OpenLibrary(libName, 1) ) {
 
-            if( ln = (struct LibNode *)DB_AllocMem(sizeof(struct LibNode), MEMF_CLEAR) ) {
+            if( ln = (struct LibNode *)TD_AllocMem(sizeof(struct LibNode), MEMF_CLEAR) ) {
 
                 if( o = NewObjectA(NULL, name, TAG_DONE) ) {
 
                     ln->lib = lib;
-                    AddTail((struct List*)&DockBotBaseFull->l_ClassLibs, (struct Node *)ln);
+                    AddTail((struct List*)&ToolDockBaseFull->l_ClassLibs, (struct Node *)ln);
 
                     return o;
                 } else {
@@ -123,14 +125,14 @@ Object * __asm __saveds DB_CreateDockGadget(
         }
 
         if( ln ) {
-            DB_FreeMem(ln, sizeof(struct LibNode));
+            TD_FreeMem(ln, sizeof(struct LibNode));
         }
     }
 
     return o;
 }
 
-VOID __asm __saveds DB_DisposeDockGadget(
+VOID __asm __saveds TD_DisposeDockGadget(
     register __a0 Object *o)
 {
     if( o ) {
@@ -138,7 +140,7 @@ VOID __asm __saveds DB_DisposeDockGadget(
     }
 }
 
-BOOL __asm __saveds DB_ListClasses(
+BOOL __asm __saveds TD_ListClasses(
     register __a0 struct List *list)
 {
     BPTR lock;
@@ -152,13 +154,13 @@ BOOL __asm __saveds DB_ListClasses(
     UBYTE *pattern;
     LONG parseLen = strlen(GADGET_PAT) * 3;
 
-    if( pattern = DB_AllocMem(parseLen, MEMF_CLEAR) ) {
+    if( pattern = TD_AllocMem(parseLen, MEMF_CLEAR) ) {
 
         if( ParsePatternNoCase(GADGET_PAT, pattern, parseLen) != -1 ) {
 
             if( lock = Lock(GADGET_PATH, SHARED_LOCK) ) {
     
-                if( buf = (struct ExAllData *)DB_AllocMem(DIR_BUF_SIZE, MEMF_CLEAR) ) {
+                if( buf = (struct ExAllData *)TD_AllocMem(DIR_BUF_SIZE, MEMF_CLEAR) ) {
             
                     if( eac = AllocDosObject(DOS_EXALLCONTROL, NULL)) {
                 
@@ -185,7 +187,7 @@ BOOL __asm __saveds DB_ListClasses(
 
                                 len = strlen(ead->ed_Name) - strlen(GADGET_EXT);
           
-                                if( node = (struct Node *)DB_AllocMem(sizeof(struct Node) + len + 1, MEMF_CLEAR) ) {
+                                if( node = (struct Node *)TD_AllocMem(sizeof(struct Node) + len + 1, MEMF_CLEAR) ) {
                             
                                     name = (STRPTR)((UBYTE *)node + sizeof(struct Node));
 
@@ -205,13 +207,13 @@ BOOL __asm __saveds DB_ListClasses(
 
                         FreeDosObject(DOS_EXALLCONTROL, eac);
                     }
-                    DB_FreeMem(buf, DIR_BUF_SIZE);
+                    TD_FreeMem(buf, DIR_BUF_SIZE);
                 }
         
                 UnLock(lock);
             }
         }
-        DB_FreeMem(pattern, parseLen);
+        TD_FreeMem(pattern, parseLen);
     }
     
     return result;

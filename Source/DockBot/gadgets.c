@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -25,7 +27,7 @@ BOOL create_dock_handle(struct DockWindow *dock)
 
     DEBUG(printf(__FUNC__ "\n"));
 
-    if( dg = DB_AllocGadget(HANDLE_CLASS_NAME) ) {
+    if( dg = TD_AllocGadget(HANDLE_CLASS_NAME) ) {
 
         AddTail(&dock->cfg.gadgets, (struct Node *)dg);
 
@@ -83,7 +85,7 @@ VOID remove_dock_gadgets(struct DockWindow *dock)
 
         if( dg = (struct DgNode *)RemTail(&dock->cfg.gadgets) ) {
 
-            DB_FreeGadget(dg);
+            TD_FreeGadget(dg);
         }
     }
 }
@@ -100,7 +102,7 @@ VOID fill_background(struct DockWindow *dock, struct RastPort *rp, struct Rect *
         return;
     }
 
-    DB_GetBrushSize(dock->bgBrush, &stepX, &stepY);
+    TD_GetBrushSize(dock->bgBrush, &stepX, &stepY);
 
     sx = b->x;
     sy = b->y;
@@ -121,7 +123,7 @@ VOID fill_background(struct DockWindow *dock, struct RastPort *rp, struct Rect *
 
     while( y < ey ) {
 
-        DB_DrawBrush(dock->bgBrush, rp, 0, 0, x, y, stepX, stepY);
+        TD_DrawBrush(dock->bgBrush, rp, 0, 0, x, y, stepX, stepY);
 
         x += stepX;
         if( x >= ex ) {
@@ -139,7 +141,7 @@ VOID draw_edit_controls(struct DockWindow *dock, struct Screen *screen, struct R
     USHORT pat[] = { 0x5555, 0xAAAA };
     UWORD i1, i2, i3;
    
-    DB_GetDockGadgetEnvironment(gadget, &env);
+    TD_GetDockGadgetEnvironment(gadget, &env);
 
     if( OCLASS(gadget) == dock->handleClass ) {
         return;
@@ -224,18 +226,18 @@ VOID draw_edit_controls(struct DockWindow *dock, struct Screen *screen, struct R
 
 
     if( i1 != II_NONE ) {
-        DB_DrawBrush(dock->iconBrush, rp, i1 * dock->iconW, 0,
+        TD_DrawBrush(dock->iconBrush, rp, i1 * dock->iconW, 0,
             env.gadgetBounds.x, env.gadgetBounds.y, dock->iconW, dock->iconH);
     }
     
     if( i2 != II_NONE ) {
-        DB_DrawBrush(dock->iconBrush, rp, i2 * dock->iconW, 0,
+        TD_DrawBrush(dock->iconBrush, rp, i2 * dock->iconW, 0,
                 env.gadgetBounds.x + env.gadgetBounds.w - 1 - dock->iconW,
                 env.gadgetBounds.y, dock->iconW, dock->iconH);
     }
 
     if( i3 != II_NONE ) {
-        DB_DrawBrush(dock->iconBrush, rp, i3 * dock->iconW, 0,
+        TD_DrawBrush(dock->iconBrush, rp, i3 * dock->iconW, 0,
                 env.gadgetBounds.x,
                 env.gadgetBounds.y + env.gadgetBounds.h - 1 - dock->iconH,
                 dock->iconW, dock->iconH);
@@ -331,7 +333,7 @@ VOID draw_gadgets(struct DockWindow *dock)
     
             DEBUG(printf(__FUNC__ ": Drawing %s\n", curr->n.ln_Name));
 
-            DB_GetDockGadgetEnvironment(curr->dg, &env);
+            TD_GetDockGadgetEnvironment(curr->dg, &env);
 
             if( region = clip_to_gadget(dock, &env) ) {
 
@@ -352,7 +354,7 @@ VOID draw_gadgets(struct DockWindow *dock)
         }
         
         if( ! dock->cfg.showGadgetBorders ) {
-            DB_DrawOutsetFrame(rp, &r);
+            TD_DrawOutsetFrame(rp, &r);
         }
 
         update_window(dock, 0, 0, dock->renderW, dock->renderH);
@@ -372,7 +374,7 @@ VOID draw_gadget(struct DockWindow *dock, Object *gadget)
 
         rp = &dock->renderRP;
 
-        DB_GetDockGadgetEnvironment(gadget, &env);
+        TD_GetDockGadgetEnvironment(gadget, &env);
     
         if( region = clip_to_gadget(dock, &env) ) {
             
@@ -387,7 +389,7 @@ VOID draw_gadget(struct DockWindow *dock, Object *gadget)
                 r.w = dock->win->Width;
                 r.h = dock->win->Height;
 
-                DB_DrawOutsetFrame(rp, &r);
+                TD_DrawOutsetFrame(rp, &r);
             }
 
             if( DOCK_EDITING(dock) && gadget == dock->hoverGad ) {
@@ -479,7 +481,7 @@ VOID show_gadget_label(struct DockWindow *dock, Object *gadget, STRPTR label)
             tags[2].ti_Data = w + 4;
             tags[3].ti_Data = text.ITextFont->ta_YSize + 4;
 
-            DB_GetDockGadgetEnvironment(gadget, &env);
+            TD_GetDockGadgetEnvironment(gadget, &env);
 
             switch( dock->cfg.pos ) {
                 case DP_LEFT:
@@ -510,7 +512,7 @@ VOID show_gadget_label(struct DockWindow *dock, Object *gadget, STRPTR label)
                 b.y = 0;
                 b.w = tags[2].ti_Data;
                 b.h = tags[3].ti_Data;
-                DB_DrawOutsetFrame(dock->hoverWin->RPort, &b);
+                TD_DrawOutsetFrame(dock->hoverWin->RPort, &b);
             }
         }
 
@@ -615,7 +617,7 @@ VOID register_gadget_port(struct DgNode *g, struct GadgetMessagePort *portMsg)
 
     DEBUG(printf(__FUNC__ ": %s %lx\n", g->n.ln_Name, portMsg->port));
     
-    if( pr = DB_AllocMem(sizeof(struct PortReg), MEMF_CLEAR) ) {
+    if( pr = TD_AllocMem(sizeof(struct PortReg), MEMF_CLEAR) ) {
 
         pr->port = portMsg->port;
 
@@ -633,7 +635,7 @@ VOID unregister_gadget_port(struct DgNode *g, struct GadgetMessagePort *portMsg)
         if( pr->port == portMsg->port ) {
             Remove((struct Node *)pr);
 
-            DB_FreeMem(pr, sizeof(struct PortReg));
+            TD_FreeMem(pr, sizeof(struct PortReg));
 
             break;
         }
@@ -676,7 +678,7 @@ VOID handle_gadget_message(struct DockWindow *dock)
             }
         }
 
-        DB_FreeMem(msg, msg->m.mn_Length);
+        TD_FreeMem(msg, msg->m.mn_Length);
     }
 }
 

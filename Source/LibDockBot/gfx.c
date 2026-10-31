@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -27,7 +29,7 @@
 #define PDTA_MaskPlane (DTA_Dummy + 258)
 
 extern struct Library *IntuitionBase;
-extern struct DockBotLibrary *DockBotBaseFull;
+extern struct DockBotLibrary *ToolDockBaseFull;
 
 struct Brush {
     APTR image;
@@ -88,14 +90,14 @@ static VOID DrawFrame(struct RastPort *rp, struct Rect* b, int p1, int p2)
     DrawBorder(rp, &shineBorder, 0, 0);
 }
 
-VOID __asm __saveds DB_DrawOutsetFrame(
+VOID __asm __saveds TD_DrawOutsetFrame(
 	register __a0 struct RastPort *rp, 
 	register __a1 struct Rect *bounds)
 {
     DrawFrame(rp, bounds, SHADOWPEN, SHINEPEN);
 }
 
-VOID __asm __saveds DB_DrawInsetFrame(
+VOID __asm __saveds TD_DrawInsetFrame(
 	register __a0 struct RastPort *rp,  
 	register __a1 struct Rect *bounds)
 {
@@ -134,7 +136,7 @@ PLANEPTR CreateMaskPlane(struct BitMap *bm, UWORD w, UWORD h, UWORD d, BOOL inte
     DEBUG(DebugLog(__FUNC__ ": w = %ld, h = %ld, bpr = %ld, stride = %ld, rep = %ld\n",
         (ULONG)w, (ULONG)h, (ULONG)bpr, (ULONG)stride, (ULONG)rep));
 
-    if( mask = AllocMemInternal(DockBotBaseFull, bm->BytesPerRow * bm->Rows, MEMF_CHIP|MEMF_CLEAR)) {
+    if( mask = AllocMemInternal(ToolDockBaseFull, bm->BytesPerRow * bm->Rows, MEMF_CHIP|MEMF_CLEAR)) {
 
         byte = mask;
 
@@ -197,7 +199,7 @@ VOID TrimBrush(struct Brush *b, UWORD tc)
     b->h = my;
 }
 
-APTR __asm __saveds DB_LoadBrush(
+APTR __asm __saveds TD_LoadBrush(
     register __a0 STRPTR fileName,
     register __d0 UWORD flags)
 {
@@ -220,7 +222,7 @@ APTR __asm __saveds DB_LoadBrush(
                                         PDTA_DestMode, 1L, // PMODE_V43
                                         TAG_END) ) {
 
-            if( b = (struct Brush *)AllocMemInternal(DockBotBaseFull,
+            if( b = (struct Brush *)AllocMemInternal(ToolDockBaseFull,
                                         sizeof(struct Brush),
                                          MEMF_ANY | MEMF_CLEAR) ) {
                 b->image = img;
@@ -281,7 +283,7 @@ APTR __asm __saveds DB_LoadBrush(
     return NULL;
 }
 
-VOID __asm __saveds DB_FreeBrush(
+VOID __asm __saveds TD_FreeBrush(
     register __a0 APTR brush)
 {
     struct Brush *b = (struct Brush *)brush;
@@ -290,7 +292,7 @@ VOID __asm __saveds DB_FreeBrush(
 
     if( b->maskPlane && b->freeMask ) {
         DEBUG(DebugLog("  Mask Plane %ld bytes\n", b->bm->BytesPerRow * b->bm->Rows));
-        FreeMemInternal(DockBotBaseFull, b->maskPlane, b->bm->BytesPerRow * b->bm->Rows);
+        FreeMemInternal(ToolDockBaseFull, b->maskPlane, b->bm->BytesPerRow * b->bm->Rows);
     }
 
     if( b->image ) {
@@ -299,10 +301,10 @@ VOID __asm __saveds DB_FreeBrush(
     }
 
     DEBUG(DebugLog("  Brush\n"));    
-    FreeMemInternal(DockBotBaseFull, b, sizeof(struct Brush));
+    FreeMemInternal(ToolDockBaseFull, b, sizeof(struct Brush));
 }
 
-VOID __asm __saveds DB_DrawBrush(
+VOID __asm __saveds TD_DrawBrush(
     register __a0 APTR brush,
     register __a1 struct RastPort *rp,
     register __d0 UWORD srcX,
@@ -336,7 +338,7 @@ VOID __asm __saveds DB_DrawBrush(
     }
 }
 
-VOID __asm __saveds DB_GetBrushSize(
+VOID __asm __saveds TD_GetBrushSize(
     register __a0 APTR brush,
     register __a1 UWORD *w,
     register __a2 UWORD *h)

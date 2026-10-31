@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -60,7 +62,7 @@ struct Values BooleanValues[] = {
 
 extern struct Library *DOSBase;
 extern struct Library *SysBase;
-extern struct DockBotLibrary *DockBotBaseFull;
+extern struct DockBotLibrary *ToolDockBaseFull;
 
 struct DockSettings
 {    
@@ -72,7 +74,7 @@ struct DockSettings
 };
 
 
-struct DockSettings * __asm __saveds DB_OpenSettingsRead(
+struct DockSettings * __asm __saveds TD_OpenSettingsRead(
     register __a0 STRPTR filename)
 {
     BPTR fh;
@@ -87,17 +89,17 @@ struct DockSettings * __asm __saveds DB_OpenSettingsRead(
 
             if( ExamineFH(fh, fib) ) {
     
-                if( s = (struct DockSettings *)AllocMemInternal(DockBotBaseFull, sizeof(struct DockSettings), MEMF_CLEAR) ) {
+                if( s = (struct DockSettings *)AllocMemInternal(ToolDockBaseFull, sizeof(struct DockSettings), MEMF_CLEAR) ) {
                     
                     s->size = fib->fib_Size;
-                    s->buffer = (STRPTR)AllocMemInternal(DockBotBaseFull, s->size, MEMF_CLEAR);
+                    s->buffer = (STRPTR)AllocMemInternal(ToolDockBaseFull, s->size, MEMF_CLEAR);
                     s->pos = 0;
                     s->depth = 0;
                     s->fh = 0;
                     if( ! Read(fh, s->buffer, s->size) ) {
         
-                        FreeMemInternal(DockBotBaseFull, s->buffer, s->size);
-                        FreeMemInternal(DockBotBaseFull, s, sizeof(struct DockSettings));
+                        FreeMemInternal(ToolDockBaseFull, s->buffer, s->size);
+                        FreeMemInternal(ToolDockBaseFull, s, sizeof(struct DockSettings));
                         s = NULL;
                     }
                 }
@@ -110,7 +112,7 @@ struct DockSettings * __asm __saveds DB_OpenSettingsRead(
     return s;
 }
 
-struct DockSettings * __asm __saveds DB_OpenSettingsWrite(
+struct DockSettings * __asm __saveds TD_OpenSettingsWrite(
     register __a0 STRPTR filename)
 {
     BPTR fh;
@@ -121,7 +123,7 @@ struct DockSettings * __asm __saveds DB_OpenSettingsWrite(
     
         SetFileSize(fh, 0, OFFSET_BEGINNING);
 
-        if( s = (struct DockSettings *)AllocMemInternal(DockBotBaseFull, sizeof(struct DockSettings), MEMF_CLEAR) ) {
+        if( s = (struct DockSettings *)AllocMemInternal(ToolDockBaseFull, sizeof(struct DockSettings), MEMF_CLEAR) ) {
             s->size = 0;
             s->buffer = NULL;
             s->pos = 0;
@@ -135,7 +137,7 @@ struct DockSettings * __asm __saveds DB_OpenSettingsWrite(
     return s;
 }
 
-VOID __asm __saveds DB_CloseSettings(
+VOID __asm __saveds TD_CloseSettings(
     register __a0 struct DockSettings *settings)
 {
     if( settings->fh != 0 ) {
@@ -143,9 +145,9 @@ VOID __asm __saveds DB_CloseSettings(
     }
 
     if( settings->buffer ) {
-        FreeMemInternal(DockBotBaseFull, settings->buffer, settings->size);
+        FreeMemInternal(ToolDockBaseFull, settings->buffer, settings->size);
     }
-    FreeMemInternal(DockBotBaseFull, settings, sizeof(struct DockSettings));
+    FreeMemInternal(ToolDockBaseFull, settings, sizeof(struct DockSettings));
 }
 
 static BOOL WriteIndent(struct DockSettings *settings)
@@ -223,7 +225,7 @@ static BOOL ReadTo(struct DockSettings *settings, UBYTE b, UWORD *len, BOOL allo
     return FALSE;
 }
 
-BOOL __asm __saveds DB_ReadBeginBlock(
+BOOL __asm __saveds TD_ReadBeginBlock(
     register __a0 struct DockSettings *settings)
 {
     UWORD pos;
@@ -241,7 +243,7 @@ BOOL __asm __saveds DB_ReadBeginBlock(
     return FALSE;
 }
 
-BOOL __asm __saveds DB_ReadEndBlock(
+BOOL __asm __saveds TD_ReadEndBlock(
     register __a0 struct DockSettings *settings)
 {
     UWORD pos;
@@ -260,7 +262,7 @@ BOOL __asm __saveds DB_ReadEndBlock(
     return FALSE;
 }
 
-BOOL __asm __saveds DB_ReadSetting(
+BOOL __asm __saveds TD_ReadSetting(
     register __a0 struct DockSettings *settings, 
     register __a1 struct DockSettingValue *value)
 {
@@ -285,7 +287,7 @@ BOOL __asm __saveds DB_ReadSetting(
     return TRUE;
 }
 
-BOOL __asm __saveds DB_WriteBeginBlock(
+BOOL __asm __saveds TD_WriteBeginBlock(
     register __a0 struct DockSettings *settings)
 {
     LONG len;
@@ -303,7 +305,7 @@ BOOL __asm __saveds DB_WriteBeginBlock(
     return TRUE;
 }
 
-BOOL __asm __saveds DB_WriteEndBlock(
+BOOL __asm __saveds TD_WriteEndBlock(
     register __a0 struct DockSettings *settings)
 {
     LONG len;
@@ -322,7 +324,7 @@ BOOL __asm __saveds DB_WriteEndBlock(
     return TRUE;
 }
 
-BOOL __asm __saveds DB_WriteSetting(
+BOOL __asm __saveds TD_WriteSetting(
     register __a0 struct DockSettings *settings, 
     register __a1 STRPTR key, 
     register __a2 STRPTR value)
@@ -386,7 +388,7 @@ BOOL add_dock_gadget(struct DockConfig *cfg, struct DockSettings *settings, STRP
 {
     struct DgNode *n;
    
-    if( n = DB_AllocGadget(name) ) {
+    if( n = TD_AllocGadget(name) ) {
     
         dock_gadget_read_settings(n->dg, settings);
 
@@ -406,7 +408,7 @@ BOOL read_dock_gadget(
     STRPTR gadName;
     BOOL r = FALSE;
 
-    while( DB_ReadSetting(settings, &v) ) {
+    while( TD_ReadSetting(settings, &v) ) {
         if( IS_KEY(S_GADGET, v) ) {
 
             GET_STRING(v, gadName);
@@ -433,7 +435,7 @@ STRPTR get_name(struct Values *values, UWORD val) {
 }
 
 
-BOOL __asm __saveds DB_ReadConfig(
+BOOL __asm __saveds TD_ReadConfig(
     register __a0 struct DockConfig *cfg,
     register __a1 struct DockSettings *settings)
 {
@@ -443,24 +445,24 @@ BOOL __asm __saveds DB_ReadConfig(
     BOOL r;
 
     r = TRUE;
-    if( DB_ReadBeginBlock(settings) ) {
+    if( TD_ReadBeginBlock(settings) ) {
 
         while( TRUE ) {
 
-            if( DB_ReadBeginBlock(settings) ) {
+            if( TD_ReadBeginBlock(settings) ) {
                 if( ! read_dock_gadget(cfg, settings) ) {
                     r = FALSE;
                     break;
                 }
-                if( !DB_ReadEndBlock(settings) ) {
+                if( !TD_ReadEndBlock(settings) ) {
                     r = FALSE;
                     break;
                 }
             }
-            if( DB_ReadEndBlock(settings) ) {
+            if( TD_ReadEndBlock(settings) ) {
                 break;
             }
-            if( DB_ReadSetting(settings, &v) ) {
+            if( TD_ReadSetting(settings, &v) ) {
                 if( IS_KEY(S_ALIGN, v) ) {
                     GET_VALUE(v, AlignValues, vals, l, cfg->align)
                 }
@@ -495,7 +497,7 @@ BOOL __asm __saveds DB_ReadConfig(
     return r;
 }
 
-BOOL __asm __saveds DB_WriteConfig(
+BOOL __asm __saveds TD_WriteConfig(
     register __a0 struct DockConfig *cfg,
     register __a1 struct DockSettings *settings)
 {
@@ -503,30 +505,30 @@ BOOL __asm __saveds DB_WriteConfig(
     struct DgNode *curr;
     UBYTE padding[3] = {0,0,0};
 
-    if( DB_WriteBeginBlock(settings) ) {
+    if( TD_WriteBeginBlock(settings) ) {
 
-        if( ! DB_WriteSetting(settings, S_ALIGN, get_name(AlignValues, cfg->align) ) ) {
+        if( ! TD_WriteSetting(settings, S_ALIGN, get_name(AlignValues, cfg->align) ) ) {
             goto error;
         }
 
-        if( ! DB_WriteSetting(settings, S_POSITION, get_name(PositionValues, cfg->pos) ) ) {
+        if( ! TD_WriteSetting(settings, S_POSITION, get_name(PositionValues, cfg->pos) ) ) {
             goto error;
         }
 
-        if( ! DB_WriteSetting(settings, S_LABELS, get_name(BooleanValues, cfg->showGadgetLabels) ) ) {
+        if( ! TD_WriteSetting(settings, S_LABELS, get_name(BooleanValues, cfg->showGadgetLabels) ) ) {
             goto error;
         }
 
-        if( ! DB_WriteSetting(settings, S_BORDERS, get_name(BooleanValues, cfg->showGadgetBorders) ) ) {
+        if( ! TD_WriteSetting(settings, S_BORDERS, get_name(BooleanValues, cfg->showGadgetBorders) ) ) {
             goto error;
         }
 
-        if( cfg->bgBrushPath && ! DB_WriteSetting(settings, S_BACKGROUND, cfg->bgBrushPath) ) {
+        if( cfg->bgBrushPath && ! TD_WriteSetting(settings, S_BACKGROUND, cfg->bgBrushPath) ) {
             goto error;
         }
 
         padding[0] = '0' + (UBYTE)cfg->gadgetPadding;
-        if( ! DB_WriteSetting(settings, S_PADDING, (STRPTR)&padding) ) {
+        if( ! TD_WriteSetting(settings, S_PADDING, (STRPTR)&padding) ) {
             goto error;
         }
 
@@ -536,22 +538,22 @@ BOOL __asm __saveds DB_WriteConfig(
                 continue;
             }
 
-            if( ! DB_WriteBeginBlock(settings) ) {
+            if( ! TD_WriteBeginBlock(settings) ) {
                 goto error;
             }
 
-            if( ! DB_WriteSetting(settings, S_GADGET, curr->n.ln_Name) ) {
+            if( ! TD_WriteSetting(settings, S_GADGET, curr->n.ln_Name) ) {
                 goto error;
             }
 
             dock_gadget_write_settings(curr->dg, settings);
 
-            if( ! DB_WriteEndBlock(settings) ) {
+            if( ! TD_WriteEndBlock(settings) ) {
                 goto error;
             }
         }
 
-        if( ! DB_WriteEndBlock(settings) ) {
+        if( ! TD_WriteEndBlock(settings) ) {
             goto error;
         }
             
@@ -568,7 +570,7 @@ exit:
     return r;   
 }
 
-struct DgNode * __asm __saveds DB_AllocGadget(
+struct DgNode * __asm __saveds TD_AllocGadget(
     register __a0 STRPTR name)
 {
     Object *dg;
@@ -577,13 +579,13 @@ struct DgNode * __asm __saveds DB_AllocGadget(
     STRPTR nc;
 
     l = strlen(name) + 1;
-    if( nc = AllocMemInternal(DockBotBaseFull, l, MEMF_CLEAR) ) {
+    if( nc = AllocMemInternal(ToolDockBaseFull, l, MEMF_CLEAR) ) {
 
         CopyMem(name, nc, l);
     
-        if( dg = DB_CreateDockGadget(nc) ) {
+        if( dg = TD_CreateDockGadget(nc) ) {
 
-            if( n = AllocMemInternal(DockBotBaseFull, sizeof(struct DgNode), MEMF_CLEAR) ) {
+            if( n = AllocMemInternal(ToolDockBaseFull, sizeof(struct DgNode), MEMF_CLEAR) ) {
         
                 n->n.ln_Name = nc;
                 n->dg = dg;
@@ -593,16 +595,16 @@ struct DgNode * __asm __saveds DB_AllocGadget(
                 return n;
             }
 
-            DB_DisposeDockGadget(dg);
+            TD_DisposeDockGadget(dg);
         }
 
-        FreeMemInternal(DockBotBaseFull, nc, l);
+        FreeMemInternal(ToolDockBaseFull, nc, l);
     }
 
     return NULL;
 }
 
-VOID __asm __saveds DB_FreeGadget(
+VOID __asm __saveds TD_FreeGadget(
     register __a0 struct DgNode *dg)
 {
     struct PortReg *pr;
@@ -611,22 +613,22 @@ VOID __asm __saveds DB_FreeGadget(
    
     FREE_STRING(dg->n.ln_Name);
 
-    DB_DisposeDockGadget(dg->dg);
+    TD_DisposeDockGadget(dg->dg);
            
     while( !IsListEmpty((struct List *)&dg->ports) ) {
 
         if( pr = (struct PortReg *)RemTail((struct List *)&dg->ports) ) {
 
-            FreeMemInternal(DockBotBaseFull, pr, sizeof(struct PortReg));
+            FreeMemInternal(ToolDockBaseFull, pr, sizeof(struct PortReg));
         }
     }
 
-    FreeMemInternal(DockBotBaseFull, dg, sizeof(struct DgNode));    
+    FreeMemInternal(ToolDockBaseFull, dg, sizeof(struct DgNode));    
 
     DEBUG(DebugLog(__FUNC__ ": Done.\n"));
 }
 
-VOID __asm __saveds DB_DisposeConfig(
+VOID __asm __saveds TD_DisposeConfig(
     register __a0 struct DockConfig *cfg)
 {
     struct DgNode *dg;
@@ -635,7 +637,7 @@ VOID __asm __saveds DB_DisposeConfig(
     
         if( dg = (struct DgNode *)RemTail(&cfg->gadgets) ) {
 
-            DB_FreeGadget(dg);
+            TD_FreeGadget(dg);
         }
     }    
 }

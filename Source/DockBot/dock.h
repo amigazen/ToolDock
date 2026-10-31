@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -154,7 +156,7 @@ struct DockWindow
     // Background image
     APTR bgBrush;
 
-    // Path to WBRun
+    /* Directory containing the ToolDock executable. */
     UBYTE progPath[2048];
 
 	// Editing

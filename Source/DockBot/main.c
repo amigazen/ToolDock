@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -24,7 +26,7 @@ struct Library *LayersBase;
 struct Library *GfxBase;
 struct Library *IntuitionBase;
 struct Library *WorkbenchBase;
-struct Library *DockBotBase;
+struct Library *ToolDockBase;
 struct Library *GadToolsBase;
 struct Library *CxBase;
 struct Library *LocaleBase;
@@ -54,10 +56,10 @@ struct Library *open_lib(STRPTR name, UWORD version, BOOL optional)
         }
 
         l = strlen(name) + strlen(MSG_ERR_OpenLibrary);
-        if( msg = DB_AllocMem(l, MEMF_ANY) ) {
+        if( msg = TD_AllocMem(l, MEMF_ANY) ) {
             sprintf(msg, MSG_ERR_OpenLibrary, version, name);
-            DB_ShowError(msg);
-            DB_FreeMem(msg, l);
+            TD_ShowError(msg);
+            TD_FreeMem(msg, l);
         }
     } else {
         DEBUG(printf("OK\n"));
@@ -88,14 +90,14 @@ int main(int argc, char** argv)
 
 #endif
 
-    if( DockBotBase = OpenLibrary("PROGDIR:tooldock.library", 1) ) {
+    if( ToolDockBase = OpenLibrary("PROGDIR:tooldock.library", 1) ) {
 
 #ifdef DEBUG_BUILD
 
-        DB_RegisterDebugStream(NULL);
+        TD_RegisterDebugStream(NULL);
 #endif
 
-        DEBUG(DB_RegisterDebugStream(Output()));
+        DEBUG(TD_RegisterDebugStream(Output()));
 
         if( DosBase = open_lib("dos.library", 39, FALSE) ) {
 
@@ -140,6 +142,6 @@ int main(int argc, char** argv)
             }
             close_lib("dos.library", DosBase);
         }  
-        close_lib("tooldock.library", DockBotBase);
+        close_lib("tooldock.library", ToolDockBase);
     }
 }

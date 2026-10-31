@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -238,17 +240,17 @@ VOID launch_dropped_icon(struct DockWindow *dock, struct AppMessage *msg)
         arg = msg->am_ArgList;
 
         if( tmpBuf == NULL ) {
-            tmpBuf = DB_AllocMem(2048, MEMF_CLEAR);
+            tmpBuf = TD_AllocMem(2048, MEMF_CLEAR);
         }
 
-        buffers = DB_AllocMem(msg->am_NumArgs * sizeof(STRPTR), MEMF_ANY);
+        buffers = TD_AllocMem(msg->am_NumArgs * sizeof(STRPTR), MEMF_ANY);
         for( i = 0; i < msg->am_NumArgs; i++ ) {
 
             NameFromLock(arg->wa_Lock, tmpBuf, 2048);
             AddPart(tmpBuf, arg->wa_Name, 2048);
             len = strlen(tmpBuf);
 
-            buffers[i] = DB_AllocMem(len + 1, MEMF_ANY);
+            buffers[i] = TD_AllocMem(len + 1, MEMF_ANY);
             CopyMem(tmpBuf, buffers[i], len + 1);
 
             arg++;
@@ -257,13 +259,13 @@ VOID launch_dropped_icon(struct DockWindow *dock, struct AppMessage *msg)
         dock_gadget_drop(gadget, buffers, msg->am_NumArgs);
 
         for( i = 0; i < msg->am_NumArgs; i++ ) {
-            DB_FreeMem(buffers[i], strlen(buffers[i]) + 1);
+            TD_FreeMem(buffers[i], strlen(buffers[i]) + 1);
         }
-        DB_FreeMem(buffers, msg->am_NumArgs * sizeof(STRPTR));
+        TD_FreeMem(buffers, msg->am_NumArgs * sizeof(STRPTR));
     }
 
     if( tmpBuf != NULL ) {
-        DB_FreeMem(tmpBuf, 2048);
+        TD_FreeMem(tmpBuf, 2048);
     }
 }
 
@@ -307,7 +309,7 @@ VOID handle_edit_click(struct DockWindow *dock, struct DgNode *dg, UWORD mouseX,
     struct GadgetEnvironment env;
     UWORD x, y, cx, cy, op;
 
-    DB_GetDockGadgetEnvironment(dg->dg, &env);
+    TD_GetDockGadgetEnvironment(dg->dg, &env);
     
     if( env.index == 0 ) {
         return;

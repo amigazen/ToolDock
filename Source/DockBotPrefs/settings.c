@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -33,7 +35,7 @@ struct DgNode * add_dock_gadget(struct DockPrefs *prefs, STRPTR name)
 
     DEBUG(printf("add_dock_gadget: %s\n", name));
 
-    if( dg = DB_AllocGadget(name) ) {
+    if( dg = TD_AllocGadget(name) ) {
 
         AddTail((struct List *)&prefs->cfg.gadgets, (struct Node *)dg);
 
@@ -51,14 +53,14 @@ VOID remove_dock_gadget(struct DgNode *dg)
 
     Remove((struct Node *)dg);
 
-    DB_FreeGadget(dg);
+    TD_FreeGadget(dg);
 }
 
 VOID remove_dock_gadgets(struct DockPrefs *prefs)
 {
     DEBUG(printf("remove_dock_gadgets\n"));
 
-    DB_DisposeConfig(&prefs->cfg);
+    TD_DisposeConfig(&prefs->cfg);
 }
 
 VOID free_plugins(struct DockPrefs *prefs)
@@ -73,7 +75,7 @@ VOID free_plugins(struct DockPrefs *prefs)
 
             len = sizeof(struct Node) + strlen(node->ln_Name) + 1;
 
-            DB_FreeMem(node, len);
+            TD_FreeMem(node, len);
         }
     }
 }
@@ -115,9 +117,9 @@ BOOL load_config(struct DockPrefs *prefs)
 
     DEBUG(printf("load_config\n"));
 
-    if( s = DB_OpenSettingsRead(CONFIG_FILE) ) {
+    if( s = TD_OpenSettingsRead(CONFIG_FILE) ) {
 
-        if( DB_ReadConfig(&prefs->cfg, s) ) {
+        if( TD_ReadConfig(&prefs->cfg, s) ) {
 
             r = TRUE;
 
@@ -126,7 +128,7 @@ BOOL load_config(struct DockPrefs *prefs)
             }
         }
 
-        DB_CloseSettings(s);
+        TD_CloseSettings(s);
     }
     return r;    
 }
@@ -138,14 +140,14 @@ BOOL save_config(struct DockPrefs *prefs, BOOL permanent)
 
     DEBUG(printf("save_config: %s\n", permanent ? CONFIG_FILE_PERM : CONFIG_FILE));
 
-    if( s = DB_OpenSettingsWrite(permanent ? CONFIG_FILE_PERM : CONFIG_FILE) ) {
+    if( s = TD_OpenSettingsWrite(permanent ? CONFIG_FILE_PERM : CONFIG_FILE) ) {
 
-        if( DB_WriteConfig(&prefs->cfg, s) ) {
+        if( TD_WriteConfig(&prefs->cfg, s) ) {
 
             r = TRUE;
         }
 
-        DB_CloseSettings(s);
+        TD_CloseSettings(s);
     }
 
     return r;
@@ -166,7 +168,7 @@ VOID revert_config(VOID) {
 
             if( ExamineFH(fh1, fib) ) {
 
-                if( buf = DB_AllocMem(fib->fib_Size, MEMF_ANY) ) {
+                if( buf = TD_AllocMem(fib->fib_Size, MEMF_ANY) ) {
                 
                     Read(fh1, buf, fib->fib_Size);
 
@@ -179,7 +181,7 @@ VOID revert_config(VOID) {
                         Close(fh2);
                     }
 
-                    DB_FreeMem(buf, fib->fib_Size);
+                    TD_FreeMem(buf, fib->fib_Size);
 
                 }
 

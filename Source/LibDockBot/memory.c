@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -24,7 +26,7 @@ VOID FreeMemInternalReal(struct DockBotLibrary *lib, VOID *memoryBlock, ULONG by
 
 #endif
 
-extern struct DockBotLibrary *DockBotBase;
+extern struct DockBotLibrary *ToolDockBase;
 
 BOOL InitMem(struct DockBotLibrary *lib) 
 {
@@ -207,22 +209,22 @@ VOID FreeMemInternalReal(struct DockBotLibrary *lib, VOID *memoryBlock, ULONG by
     }
 }
 
-VOID* __asm __saveds DB_GetMemInfo(VOID)
+VOID* __asm __saveds TD_GetMemInfo(VOID)
 {
-    return (VOID*)&DockBotBase->l_MemControl;
+    return (VOID*)&ToolDockBase->l_MemControl;
 }
 
-VOID* __asm __saveds DB_AllocMem(
+VOID* __asm __saveds TD_AllocMem(
     register __d0 ULONG byteSize,
     register __d1 ULONG attributes)
 {
-    return AllocMemInternal(DockBotBase, byteSize, attributes);
+    return AllocMemInternal(ToolDockBase, byteSize, attributes);
 }
 
-VOID __asm __saveds DB_FreeMem(
+VOID __asm __saveds TD_FreeMem(
     register __a0 VOID *memoryBlock,
     register __d0 ULONG byteSize)
 {
-    FreeMemInternal(DockBotBase, memoryBlock, byteSize);
+    FreeMemInternal(ToolDockBase, memoryBlock, byteSize);
 }
 

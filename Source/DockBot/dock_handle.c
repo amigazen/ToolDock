@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -35,7 +37,7 @@ VOID dock_handle_draw(Class *c, Object *o, struct RastPort *rp)
 
     dhd = INST_DATA(c,o);
 
-    DB_GetDockGadgetEnvironment(o, &env);
+    TD_GetDockGadgetEnvironment(o, &env);
 
     if( screen = LockPubScreen(NULL) ) {
     
@@ -53,9 +55,9 @@ VOID dock_handle_draw(Class *c, Object *o, struct RastPort *rp)
     }     
 
     if( dhd->counter == 0 ) {
-        DB_DrawOutsetFrame(rp, &env.gadgetBounds);
+        TD_DrawOutsetFrame(rp, &env.gadgetBounds);
     } else {
-        DB_DrawInsetFrame(rp, &env.gadgetBounds);
+        TD_DrawInsetFrame(rp, &env.gadgetBounds);
     }
 }
 
@@ -71,7 +73,7 @@ ULONG __saveds dock_handle_dispatch(Class *c, Object *o, Msg msg)
         case DM_CLICK:
             dhd = INST_DATA(c,o);
             dhd->counter = 2;
-            DB_RequestDockGadgetDraw(o);
+            TD_RequestDockGadgetDraw(o);
             break;
 
         case DM_TICK:
@@ -79,7 +81,7 @@ ULONG __saveds dock_handle_dispatch(Class *c, Object *o, Msg msg)
             if( dhd->counter > 0 ) {
                 dhd->counter--;
                 if( dhd->counter == 0 ) {
-                    DB_RequestDockGadgetDraw(o);
+                    TD_RequestDockGadgetDraw(o);
                 }
             }
             break;

@@ -2,8 +2,10 @@
 **
 **  ToolDock - A Dock For AmigaOS 3
 **
-**  Copyright 2026 amigazen project
-**  Based on DockBot by Andrew Kennan
+**  SPDX-License-Identifier: MIT
+**
+**  ToolDock changes Copyright 2026 amigazen project
+**  DockBot Copyright 2019 Andrew Kennan
 **
 ************************************/
 
@@ -78,7 +80,7 @@ DB_METHOD_DM(DRAW, DockMessageDraw)
                        0,      1,
                   ICON_W,      1 };
 
-    DB_GetDockGadgetEnvironment(o, &env);
+    TD_GetDockGadgetEnvironment(o, &env);
     x = env.gadgetBounds.x + (env.gadgetBounds.w - (ICON_W + ICON_OFF * 2)) / 2;    
     y = env.gadgetBounds.y + (env.gadgetBounds.h - (ICON_H + ICON_OFF * 2)) / 2;
     
@@ -94,13 +96,13 @@ DB_METHOD_DM(DRAW, DockMessageDraw)
 
             if( data->closeTimer == 0 ) {
 
-                DB_DrawOutsetFrame(msg->rp, &env.gadgetBounds);
+                TD_DrawOutsetFrame(msg->rp, &env.gadgetBounds);
 
                 off1 = ICON_OFF;
                 off2 = ICON_OFF * 2;
             } else {
 
-                DB_DrawInsetFrame(msg->rp, &env.gadgetBounds);
+                TD_DrawInsetFrame(msg->rp, &env.gadgetBounds);
 
                 off1 = ICON_OFF * 2;
                 off2 = ICON_OFF;
@@ -161,7 +163,7 @@ DB_METHOD_DM(MESSAGE, DockMessagePort)
     UWORD keyCode = 0;
     UWORD mouseY = 0;
 
-    DEBUG(DB_Printf(__METHOD__ "data = %lx\n"));
+    DEBUG(TD_Printf(__METHOD__ "data = %lx\n"));
 
     while( im = (struct IntuiMessage *)GetMsg(msg->port) ) {
 
@@ -185,11 +187,11 @@ DB_METHOD_DM(MESSAGE, DockMessagePort)
     }
 
     if( mouseY > 0 ) {
-        DEBUG(DB_Printf(__METHOD__ "mouseY = %ld\n", (LONG)mouseY));
+        DEBUG(TD_Printf(__METHOD__ "mouseY = %ld\n", (LONG)mouseY));
         switch_by_mouse(o, data, mouseY);
 
     } else if( keyCode > 0 ) {
-        DEBUG(DB_Printf(__METHOD__ "keyCode = %ld\n", (LONG)keyCode));
+        DEBUG(TD_Printf(__METHOD__ "keyCode = %ld\n", (LONG)keyCode));
         if( data->bounceTimer == 0 ) {
             switch_by_key(o, data, keyCode);
         }
