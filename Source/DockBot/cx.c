@@ -10,8 +10,57 @@
 ************************************/
 
 #include "dock.h"
+#include "applife.h"
 
+#include <devices/inputevent.h>
 #include <clib/commodities_protos.h>
+
+#define CX_RMB_ID  0x7FFF
+
+STATIC VOID attach_rmb_filter(struct DockWindow *dock)
+{
+    struct InputXpression ix;
+    CxObj *filter;
+    CxObj *sender;
+
+    if( dock->cxBroker == NULL || dock->cxPort == NULL ) {
+        return;
+    }
+    if( ! applife_have_popup() ) {
+        return;
+    }
+
+    /* MENUUP, not MENUDOWN. Opening popupmenu on press deadlocks against
+       the still-in-flight down event (same pattern as Menu/menu_cx.c). */
+    ix.ix_Version = IX_VERSION;
+    ix.ix_Class = IECLASS_RAWMOUSE;
+    ix.ix_Code = (UWORD)(IECODE_RBUTTON | IECODE_UP_PREFIX);
+    ix.ix_CodeMask = 0xFFFF;
+    ix.ix_Qualifier = 0;
+    ix.ix_QualMask = 0;
+    ix.ix_QualSame = 0;
+
+    filter = CxFilter("rawmouse");
+    if( filter == NULL ) {
+        return;
+    }
+    SetFilterIX(filter, &ix);
+    if( CxObjError(filter) ) {
+        DeleteCxObj(filter);
+        return;
+    }
+
+    sender = CxSender(dock->cxPort, CX_RMB_ID);
+    if( sender == NULL ) {
+        DeleteCxObj(filter);
+        return;
+    }
+
+    /* No CxTranslate: Intuition still sees the RMB. */
+    AttachCxObj(filter, sender);
+    AttachCxObj(dock->cxBroker, filter);
+    dock->rmbCxWatch = TRUE;
+}
 
 BOOL create_cx_broker(struct DockWindow *dock)
 {
@@ -52,6 +101,7 @@ VOID free_cx_broker(struct DockWindow *dock)
         DeleteCxObjAll(dock->cxBroker);
         dock->cxBroker = NULL;
     }
+    dock->rmbCxWatch = FALSE;
 
     if( dock->cxPort ) {
         delete_port(dock->cxPort);
@@ -113,6 +163,8 @@ BOOL init_cx_broker(struct DockWindow *dock)
             msgId++;
         }
 
+        attach_rmb_filter(dock);
+
         ActivateCxObj(dock->cxBroker, 1L);
 
         return TRUE;
@@ -128,11 +180,22 @@ VOID handle_cx_message(struct DockWindow *dock)
     CxMsg *msg;
     ULONG msgType, msgId, ix;
     struct DgNode *curr;
+    struct InputEvent *ie;
+    BOOL rmbUp;
 
     while( msg = (CxMsg*)GetMsg(dock->cxPort) ) {
 
         msgType = CxMsgType(msg);
         msgId = CxMsgID(msg);
+        rmbUp = FALSE;
+        if( msgType == CXM_IEVENT && msgId == CX_RMB_ID ) {
+            ie = (struct InputEvent *)CxMsgData(msg);
+            if( ie != NULL
+                && ie->ie_Class == IECLASS_RAWMOUSE
+                && ie->ie_Code == (UWORD)(IECODE_RBUTTON | IECODE_UP_PREFIX) ) {
+                rmbUp = TRUE;
+            }
+        }
 
         ReplyMsg((struct Message *)msg);
 
@@ -171,6 +234,13 @@ VOID handle_cx_message(struct DockWindow *dock)
                 break;
 
             case CXM_IEVENT:
+                if( msgId == CX_RMB_ID ) {
+                    if( rmbUp ) {
+                        handle_cx_rmb(dock);
+                    }
+                    break;
+                }
+
                 ix = 0;
 
                 FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {

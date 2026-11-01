@@ -18,7 +18,7 @@ struct FC_String {
     LONG id;
 };
 
-extern struct FC_String DockExchange_Strings[7];
+extern struct FC_String DockExchange_Strings[8];
 
 #define MSG_Description (DockExchange_Strings[0].msg)
 #define _MSG_Description (DockExchange_Strings+0)
@@ -34,5 +34,7 @@ extern struct FC_String DockExchange_Strings[7];
 #define _MSG_POP_None (DockExchange_Strings+5)
 #define MSG_ERR_NoExchange (DockExchange_Strings[6].msg)
 #define _MSG_ERR_NoExchange (DockExchange_Strings+6)
+#define MSG_POP_Remove (DockExchange_Strings[7].msg)
+#define _MSG_POP_Remove (DockExchange_Strings+7)
 
 #endif

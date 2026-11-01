@@ -23,3 +23,6 @@ None
 MSG_ERR_NoExchange (//)
 Could not find SYS:Utilities/Exchange.
 ;
+MSG_POP_Remove (//)
+Remove
+;

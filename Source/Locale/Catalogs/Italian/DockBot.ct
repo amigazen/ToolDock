@@ -101,5 +101,21 @@ ToolDock versione %s\n\nBarra Dock per AmigaOS 3.x\n\nCopyright 2026 amigazen pr
 MSG_CX_Description
 Barra Dock per AmigaOS 3.x
 ; A Dock For AmigaOS 3
+;
+MSG_POP_Remove
+Rimuovi
+; Remove
+;
+MSG_DEL_Title
+Rimuovi
+; Remove
+;
+MSG_DEL_Text
+Sei sicuro di volerlo togliere dal dock?
+; Are you sure you want to remove this from the dock?
+;
+MSG_DEL_Buttons
+_Rimuovi|_Annulla
+; _Remove|_Cancel
 ; 
 ;

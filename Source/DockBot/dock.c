@@ -302,7 +302,7 @@ VOID show_about(struct DockWindow *dock)
         *(STRPTR *)(fmtArgs + 4) = msg ? msg : (STRPTR)"";
         cursor = body;
         RawDoFmt((STRPTR)MSG_ABOUT_Text, fmtArgs, (VOID (*)())put_fmt_char, &cursor);
-        TD_OpenRequest(NULL, (STRPTR)MSG_ABOUT_Title, body,
+        TD_OpenRequest(dock->win, (STRPTR)MSG_ABOUT_Title, body,
             (STRPTR)MSG_OK, TDREQIMAGE_INFO);
         TD_FreeMem(body, bodyLen);
     }

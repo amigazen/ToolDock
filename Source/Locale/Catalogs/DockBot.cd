@@ -71,5 +71,17 @@ ToolDock Version %s\n\nA Dock For AmigaOS 3\n\nCopyright 2026 amigazen project\n
 ;
 MSG_CX_Description (//)
 A Dock For AmigaOS 3
+;
+MSG_POP_Remove (//)
+Remove
+;
+MSG_DEL_Title (//)
+Remove
+;
+MSG_DEL_Text (//)
+Are you sure you want to remove this from the dock?
+;
+MSG_DEL_Buttons (//)
+_Remove|_Cancel
 ; 
 ;

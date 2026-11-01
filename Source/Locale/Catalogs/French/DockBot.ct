@@ -1,5 +1,5 @@
 ## version $VER: ToolDock.catalog 1.9 (2020-04-17)
-## language français
+## language franÃ§ais
 ## codeset 0
 ;
 ;#language english
@@ -23,7 +23,7 @@ Impossible d'ouvrir la version %d de %s.
 ; Unable to open version %d of %s.
 ;
 MSG_ERR_CantAddDirectory
-Désolé, les dossiers ne peuvent pas être ajoutés au dock.
+DÃ©solÃ©, les dossiers ne peuvent pas Ãªtre ajoutÃ©s au dock.
 ; Sorry, directories cannot be added to the dock.
 ;
 ; Menu Strings
@@ -32,7 +32,7 @@ Projet
 ; Project
 ;
 MSG_MENU_Settings
-Préférences
+PrÃ©fÃ©rences
 ; Settings
 ;
 MSG_MENU_About
@@ -68,21 +68,21 @@ E
 ; E
 ;
 MSG_MENU_Save
-Enregistrer les paramétres
+Enregistrer les paramÃ©tres
 ; Save Settings
 MSG_KEY_Save
 W
 ; W
 ;
 MSG_MENU_Revert
-Retablir les paramétres
+Retablir les paramÃ©tres
 ; Revert Settings
 MSG_KEY_Revert
 Z
 ; Z
 ;
 MSG_MENU_OpenPrefs
-Ouvrir les paramétres...
+Ouvrir les paramÃ©tres...
 ; Open Preferences...
 MSG_KEY_OpenPrefs
 S
@@ -100,5 +100,21 @@ Version de ToolDock %s\n\nUn Dock pour AmigaOS 3\n\nCopyright 2026 amigazen proj
 MSG_CX_Description
 Un Dock pour AmigaOS 3
 ; A Dock For AmigaOS 3
+;
+MSG_POP_Remove
+Retirer
+; Remove
+;
+MSG_DEL_Title
+Retirer
+; Remove
+;
+MSG_DEL_Text
+Etes-vous sur de retirer ceci du dock ?
+; Are you sure you want to remove this from the dock?
+;
+MSG_DEL_Buttons
+_Retirer|_Annuler
+; _Remove|_Cancel
 ; 
 ;

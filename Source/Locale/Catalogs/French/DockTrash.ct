@@ -29,3 +29,7 @@ MSG_ERR_EmptyFailed
 Impossible de vider la corbeille.
 ; Could not empty the trash.
 ;
+MSG_POP_Remove
+Retirer
+; Remove
+;

@@ -88,3 +88,7 @@ MSG_POP_Quit
 Esci
 ; Quit
 ;
+MSG_POP_Remove
+Rimuovi
+; Remove
+;

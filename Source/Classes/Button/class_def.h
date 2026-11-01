@@ -14,11 +14,12 @@
 
 #include "gadget_class.h"
 #include "dockbutton_cat.h"
+#include "applife.h"
 
 #define CLASS_NAME      "DockButton"
 #define CLASS_VERSION   1
-#define CLASS_REVISION  4
-#define CLASS_VER_STR   "1.4 (" DS ")"
+#define CLASS_REVISION  5
+#define CLASS_VER_STR   "1.5 (" DS ")"
 #define CLASS_COPYRIGHT "Copyright 2026 amigazen project. Based on DockBot by Andrew Kennan"
 #define PRIVATE_DATA    ButtonGadgetData
 #define PARENT_CLASS    DB_ROOT_CLASS
@@ -92,6 +93,9 @@ struct ButtonGadgetData
     STRPTR pendingRx[16];
     UWORD pendingRxCount;
     UWORD pendingRxTries;
+    STRPTR tdCmdLabel[AL_CMD_MAX];
+    STRPTR tdCmd[AL_CMD_MAX];
+    UWORD tdCmdCount;
 };
 
 #endif

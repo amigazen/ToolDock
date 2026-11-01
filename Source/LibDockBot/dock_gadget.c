@@ -223,6 +223,10 @@ ULONG __saveds dock_gadget_dispatch(Class *c, Object *o, Msg msg)
             send_unregister_port_msg_to_dock(c, o, (struct DockMessagePort *)msg);
             break;
 
+        case DM_REQ_REMOVE:
+            send_message_no_params(c, o, GM_REMOVE);
+            break;
+
         case DM_TICK:
         case DM_CLICK:
         case DM_DROP:

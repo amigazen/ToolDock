@@ -272,7 +272,7 @@ DockBot/layout.o: DockBot/layout.c DockBot/dock.h
 DockBot/settings.o: DockBot/settings.c DockBot/dock.h
 DockBot/debug.o: DockBot/debug.c DockBot/dock.h
 DockBot/window.o: DockBot/window.c DockBot/dock.h
-DockBot/cx.o: DockBot/cx.c DockBot/dock.h
+DockBot/cx.o: DockBot/cx.c DockBot/dock.h DockBot/applife.h
 DockBot/appicon.o: DockBot/appicon.c DockBot/dock.h
 DockBot/timer.o: DockBot/timer.c DockBot/dock.h
 DockBot/rearrange.o: DockBot/rearrange.c DockBot/rearrange.h DockBot/dock.h DockBot/dropzone.h
@@ -323,8 +323,8 @@ DockPrefs/main.o DockPrefs/dock_cat.o DockPrefs/settings.o DockPrefs/new_gadget.
 Classes/Button/pragmas.h: Classes/template.fd
 	$(FD_CONV) Classes/template.fd Classes/Button/pragmas.h
 
-Classes/Button/lib.o: Classes/Button/lib.c Classes/template.c
-Classes/Button/button.o: Classes/Button/button.c DockBot/applife.h
+Classes/Button/lib.o: Classes/Button/lib.c Classes/template.c Classes/Button/class_def.h DockBot/applife.h
+Classes/Button/button.o: Classes/Button/button.c Classes/Button/class_def.h DockBot/applife.h
 Classes/Button/triton_icon.o: Classes/Button/triton_icon.c
 Classes/Button/dockbutton_cat.o: Classes/Button/dockbutton_cat.c
 
@@ -335,7 +335,7 @@ $(BTN_CLASS_OBJS):
 Classes/Clock/pragmas.h: Classes/template.fd
 	$(FD_CONV) Classes/template.fd Classes/Clock/pragmas.h
 
-Classes/Clock/lib.o: Classes/Clock/lib.c Classes/template.c
+Classes/Clock/lib.o: Classes/Clock/lib.c Classes/template.c Classes/Clock/class_def.h
 Classes/Clock/clock.o: Classes/Clock/clock.c
 Classes/Clock/dockclock_cat.o: Classes/Clock/dockclock_cat.c
 
@@ -346,7 +346,7 @@ $(CLK_OBJS):
 Classes/Mem/pragmas.h: Classes/template.fd
 	$(FD_CONV) Classes/template.fd Classes/Mem/pragmas.h
 
-Classes/Mem/lib.o: Classes/Mem/lib.c Classes/template.c
+Classes/Mem/lib.o: Classes/Mem/lib.c Classes/template.c Classes/Mem/class_def.h
 Classes/Mem/mem.o: Classes/Mem/mem.c
 Classes/Mem/dockmem_cat.o: Classes/Mem/dockmem_cat.c
 
@@ -357,7 +357,7 @@ $(MEM_OBJS):
 Classes/Net/pragmas.h: Classes/template.fd
 	$(FD_CONV) Classes/template.fd Classes/Net/pragmas.h
 
-Classes/Net/lib.o: Classes/Net/lib.c Classes/template.c
+Classes/Net/lib.o: Classes/Net/lib.c Classes/template.c Classes/Net/class_def.h
 Classes/Net/net.o: Classes/Net/net.c
 Classes/Net/docknet_cat.o: Classes/Net/docknet_cat.c
 
@@ -368,7 +368,7 @@ $(NET_OBJS):
 Classes/Switcher/pragmas.h: Classes/template.fd
 	$(FD_CONV) Classes/template.fd Classes/Switcher/pragmas.h
 
-Classes/Switcher/lib.o: Classes/Switcher/lib.c Classes/template.c
+Classes/Switcher/lib.o: Classes/Switcher/lib.c Classes/template.c Classes/Switcher/class_def.h
 Classes/Switcher/switcher.o: Classes/Switcher/switcher.c
 Classes/Switcher/prefs.o: Classes/Switcher/prefs.c
 Classes/Switcher/window_list.o: Classes/Switcher/window_list.c
@@ -381,7 +381,7 @@ $(SW_OBJS):
 Classes/Eyes/pragmas.h: Classes/template.fd
 	$(FD_CONV) Classes/template.fd Classes/Eyes/pragmas.h
 
-Classes/Eyes/lib.o: Classes/Eyes/lib.c Classes/template.c
+Classes/Eyes/lib.o: Classes/Eyes/lib.c Classes/template.c Classes/Eyes/class_def.h
 Classes/Eyes/eyes.o: Classes/Eyes/eyes.c
 Classes/Eyes/eyes_cat.o: Classes/Eyes/eyes_cat.c
 
@@ -392,7 +392,7 @@ $(EYES_OBJS):
 Classes/Trash/pragmas.h: Classes/template.fd
 	$(FD_CONV) Classes/template.fd Classes/Trash/pragmas.h
 
-Classes/Trash/lib.o: Classes/Trash/lib.c Classes/template.c
+Classes/Trash/lib.o: Classes/Trash/lib.c Classes/template.c Classes/Trash/class_def.h DockBot/applife.h
 Classes/Trash/trash.o: Classes/Trash/trash.c Classes/Trash/trash_move.h DockBot/applife.h
 Classes/Trash/trash_move.o: Classes/Trash/trash_move.c Classes/Trash/trash_move.h
 Classes/Trash/docktrash_cat.o: Classes/Trash/docktrash_cat.c
@@ -404,7 +404,7 @@ $(TRASH_CLASS_OBJS):
 Classes/Open/pragmas.h: Classes/template.fd
 	$(FD_CONV) Classes/template.fd Classes/Open/pragmas.h
 
-Classes/Open/lib.o: Classes/Open/lib.c Classes/template.c
+Classes/Open/lib.o: Classes/Open/lib.c Classes/template.c Classes/Open/class_def.h
 Classes/Open/open.o: Classes/Open/open.c Classes/Open/open_item.h
 Classes/Open/open_item.o: Classes/Open/open_item.c Classes/Open/open_item.h
 Classes/Open/dockopen_cat.o: Classes/Open/dockopen_cat.c
@@ -416,7 +416,7 @@ $(OPEN_OBJS):
 Classes/Exchange/pragmas.h: Classes/template.fd
 	$(FD_CONV) Classes/template.fd Classes/Exchange/pragmas.h
 
-Classes/Exchange/lib.o: Classes/Exchange/lib.c Classes/template.c
+Classes/Exchange/lib.o: Classes/Exchange/lib.c Classes/template.c Classes/Exchange/class_def.h DockBot/applife.h
 Classes/Exchange/exchange.o: Classes/Exchange/exchange.c DockBot/applife.h
 Classes/Exchange/dockexchange_cat.o: Classes/Exchange/dockexchange_cat.c
 

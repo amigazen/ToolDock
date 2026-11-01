@@ -1,5 +1,5 @@
 ## version $VER: DockExchange.catalog 1.0 (01.11.2026)
-## language español
+## language espaÃ±ol
 ## codeset 0
 ;
 ; DockExchange
@@ -32,4 +32,8 @@ Ninguno
 MSG_ERR_NoExchange
 No se encontro SYS:Utilities/Exchange.
 ; Could not find SYS:Utilities/Exchange.
+;
+MSG_POP_Remove
+Quitar
+; Remove
 ;

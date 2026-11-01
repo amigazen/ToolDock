@@ -611,7 +611,11 @@ VOID handle_gadget_message(struct DockWindow *dock)
 
                 case GM_UNREGISTER_PORT:
                     unregister_gadget_port(curr, (struct GadgetMessagePort *)msg);
-                    break;                
+                    break;
+
+                case GM_REMOVE:
+                    request_remove_gadget(dock, curr);
+                    break;
             }
         }
 

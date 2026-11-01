@@ -155,6 +155,8 @@ struct DockWindow
 	// Commodities
 	struct MsgPort *cxPort;
 	CxObj *cxBroker;
+    BOOL rmbHandled;
+    BOOL rmbCxWatch;
 
     // Gadget name tooltips
     Object *hoverGad;
@@ -265,6 +267,8 @@ VOID handle_notify_message(struct DockWindow *dock);
 
 VOID reload_config(struct DockWindow *dock);
 
+VOID request_remove_gadget(struct DockWindow *dock, struct DgNode *dg);
+
 VOID load_icon_brushes(struct DockWindow *dock);
 
 VOID free_icon_brushes(struct DockWindow *dock);
@@ -285,6 +289,8 @@ BOOL show_dock_window(struct DockWindow* dock);
 VOID handle_drop_event(struct DockWindow* dock);
 
 VOID handle_window_event(struct DockWindow *dock);
+
+VOID handle_cx_rmb(struct DockWindow *dock);
 
 VOID open_settings(struct DockWindow *dock);
 

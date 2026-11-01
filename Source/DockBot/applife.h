@@ -24,6 +24,9 @@
  *   TD_RXOPEN  ARexx open-file command (%s = path)
  *   TD_LAUNCH  ONCE | MULTI | DOCS
  *   TD_OPEN    WB | CLI | RX
+ *   TD_CMD     Popup item "Label|command" (also TD_CMD2..TD_CMD8)
+ *              Command prefixes: WB path, CLI path, RX arexx.
+ *              A path with ':' is launched; otherwise ARexx if TD_RX is set.
  */
 
 /* TD_LAUNCH on the program icon. MULTI is the default when omitted. */
@@ -42,6 +45,9 @@
 #define AL_POP_SHOW         2
 #define AL_POP_HIDE         3
 #define AL_POP_QUIT         4
+#define AL_POP_REMOVE       5
+#define AL_POP_CMD          16
+#define AL_CMD_MAX          8
 
 #define AL_CAN_SHOW         1
 #define AL_CAN_HIDE         2
@@ -54,6 +60,9 @@
 BOOL applife_init(VOID);
 VOID applife_expunge(VOID);
 VOID applife_reap(VOID);
+
+/* FALSE when popupmenu.library was not opened. Menus then no-op. */
+BOOL applife_have_popup(VOID);
 
 BOOL applife_port_present(STRPTR name);
 BOOL applife_broker_present(STRPTR name);
@@ -68,7 +77,7 @@ STRPTR applife_format_rxopen(STRPTR fmt, STRPTR path);
 
 ULONG applife_open_app_popup(struct Window *win, STRPTR title,
     STRPTR openStr, STRPTR showStr, STRPTR hideStr, STRPTR quitStr,
-    UWORD flags);
+    STRPTR removeStr, STRPTR *cmdLabels, UWORD cmdCount, UWORD flags);
 
 /* One selectable row. Returns 1 when the item is chosen. */
 ULONG applife_open_choice_popup(struct Window *win, STRPTR title,
@@ -78,7 +87,12 @@ ULONG applife_open_choice_popup(struct Window *win, STRPTR title,
  * Exchange-style menu: each running broker is a row with a Show/Hide/Quit
  * submenu. BrokerCommand is issued here before return.
  */
-VOID applife_run_exchange_popup(struct Window *win, STRPTR title,
-    STRPTR showStr, STRPTR hideStr, STRPTR quitStr, STRPTR noneStr);
+ULONG applife_run_exchange_popup(struct Window *win, STRPTR title,
+    STRPTR showStr, STRPTR hideStr, STRPTR quitStr, STRPTR noneStr,
+    STRPTR removeStr);
+
+/* item plus a Remove row. Returns itemId or AL_POP_REMOVE. */
+ULONG applife_open_action_popup(struct Window *win, STRPTR title,
+    STRPTR item, BOOL itemDisabled, ULONG itemId, STRPTR removeStr);
 
 #endif

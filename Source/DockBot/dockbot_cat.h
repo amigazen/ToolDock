@@ -23,7 +23,7 @@ struct FC_String {
     LONG id;
 };
 
-extern struct FC_String DockBot_Strings[23];
+extern struct FC_String DockBot_Strings[27];
 
 #define MSG_OK (DockBot_Strings[0].msg)
 #define _MSG_OK (DockBot_Strings+0)
@@ -71,5 +71,13 @@ extern struct FC_String DockBot_Strings[23];
 #define _MSG_ABOUT_Text (DockBot_Strings+21)
 #define MSG_CX_Description (DockBot_Strings[22].msg)
 #define _MSG_CX_Description (DockBot_Strings+22)
+#define MSG_POP_Remove (DockBot_Strings[23].msg)
+#define _MSG_POP_Remove (DockBot_Strings+23)
+#define MSG_DEL_Title (DockBot_Strings[24].msg)
+#define _MSG_DEL_Title (DockBot_Strings+24)
+#define MSG_DEL_Text (DockBot_Strings[25].msg)
+#define _MSG_DEL_Text (DockBot_Strings+25)
+#define MSG_DEL_Buttons (DockBot_Strings[26].msg)
+#define _MSG_DEL_Buttons (DockBot_Strings+26)
 
 #endif

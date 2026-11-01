@@ -18,7 +18,7 @@ struct FC_String {
     LONG id;
 };
 
-extern struct FC_String DockTrash_Strings[6];
+extern struct FC_String DockTrash_Strings[7];
 
 #define MSG_Description (DockTrash_Strings[0].msg)
 #define _MSG_Description (DockTrash_Strings+0)
@@ -32,5 +32,7 @@ extern struct FC_String DockTrash_Strings[6];
 #define _MSG_POP_Empty (DockTrash_Strings+4)
 #define MSG_ERR_EmptyFailed (DockTrash_Strings[5].msg)
 #define _MSG_ERR_EmptyFailed (DockTrash_Strings+5)
+#define MSG_POP_Remove (DockTrash_Strings[6].msg)
+#define _MSG_POP_Remove (DockTrash_Strings+6)
 
 #endif

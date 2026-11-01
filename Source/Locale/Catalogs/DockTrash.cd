@@ -20,3 +20,6 @@ Empty Trash
 MSG_ERR_EmptyFailed (//)
 Could not empty the trash.
 ;
+MSG_POP_Remove (//)
+Remove
+;

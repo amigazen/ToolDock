@@ -64,3 +64,6 @@ Hide
 MSG_POP_Quit (//)
 Quit
 ;
+MSG_POP_Remove (//)
+Remove
+;

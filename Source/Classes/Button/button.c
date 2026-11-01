@@ -158,8 +158,13 @@ STATIC VOID zero_applife(struct ButtonGadgetData *data)
     data->hbCount = 0;
     data->pendingRxCount = 0;
     data->pendingRxTries = 0;
+    data->tdCmdCount = 0;
     for( i = 0; i < 16; i++ ) {
         data->pendingRx[i] = NULL;
+    }
+    for( i = 0; i < AL_CMD_MAX; i++ ) {
+        data->tdCmdLabel[i] = NULL;
+        data->tdCmd[i] = NULL;
     }
 }
 
@@ -179,6 +184,17 @@ STATIC VOID free_pending_rx(struct ButtonGadgetData *data)
     data->pendingRxTries = 0;
 }
 
+STATIC VOID free_td_cmds(struct ButtonGadgetData *data)
+{
+    UWORD i;
+
+    for( i = 0; i < AL_CMD_MAX; i++ ) {
+        FREE_STRING(data->tdCmdLabel[i]);
+        FREE_STRING(data->tdCmd[i]);
+    }
+    data->tdCmdCount = 0;
+}
+
 STATIC VOID free_td_strings(struct ButtonGadgetData *data)
 {
     FREE_STRING(data->tdCx);
@@ -190,6 +206,90 @@ STATIC VOID free_td_strings(struct ButtonGadgetData *data)
     data->tdLaunch = TD_LAUNCH_MULTI;
     data->tdOpen = TD_OPEN_DEFAULT;
     free_pending_rx(data);
+    free_td_cmds(data);
+}
+
+/* TD_CMD=Label|command  also TD_CMD2..TD_CMD8. Prefix WB / CLI / RX. */
+STATIC VOID add_td_cmd(struct ButtonGadgetData *data, STRPTR spec)
+{
+    STRPTR bar;
+    STRPTR label;
+    STRPTR cmd;
+    UBYTE tmp[80];
+    UWORD n;
+    UWORD i;
+
+    if( data->tdCmdCount >= AL_CMD_MAX || spec == NULL || spec[0] == 0 ) {
+        return;
+    }
+
+    bar = spec;
+    while( *bar && *bar != '|' ) {
+        bar++;
+    }
+    if( *bar == '|' ) {
+        n = (UWORD)(bar - spec);
+        if( n >= sizeof(tmp) ) {
+            n = sizeof(tmp) - 1;
+        }
+        for( i = 0; i < n; i++ ) {
+            tmp[i] = spec[i];
+        }
+        tmp[n] = 0;
+        while( n > 0 && tmp[n - 1] == ' ' ) {
+            n--;
+            tmp[n] = 0;
+        }
+        label = tmp;
+        cmd = bar + 1;
+        while( *cmd == ' ' ) {
+            cmd++;
+        }
+    } else {
+        label = spec;
+        cmd = spec;
+    }
+    if( label[0] == 0 || cmd[0] == 0 ) {
+        return;
+    }
+
+    copy_td_string(&data->tdCmdLabel[data->tdCmdCount], label, 40);
+    copy_td_string(&data->tdCmd[data->tdCmdCount], cmd, TT_LEN_CMD);
+    if( data->tdCmdLabel[data->tdCmdCount] && data->tdCmd[data->tdCmdCount] ) {
+        data->tdCmdCount++;
+    } else {
+        FREE_STRING(data->tdCmdLabel[data->tdCmdCount]);
+        FREE_STRING(data->tdCmd[data->tdCmdCount]);
+    }
+}
+
+STATIC VOID parse_td_cmds(struct ButtonGadgetData *data, STRPTR *tts)
+{
+    UWORD i;
+    UBYTE key[8];
+    STRPTR val;
+
+    key[0] = 'T';
+    key[1] = 'D';
+    key[2] = '_';
+    key[3] = 'C';
+    key[4] = 'M';
+    key[5] = 'D';
+    key[6] = 0;
+    key[7] = 0;
+
+    for( i = 0; i < AL_CMD_MAX; i++ ) {
+        if( i == 0 ) {
+            key[6] = 0;
+        } else {
+            key[6] = (UBYTE)('1' + i);
+            key[7] = 0;
+        }
+        val = FindToolType(tts, key);
+        if( val && val[0] ) {
+            add_td_cmd(data, val);
+        }
+    }
 }
 
 STATIC VOID parse_tooltypes(struct ButtonGadgetData *data)
@@ -210,6 +310,7 @@ STATIC VOID parse_tooltypes(struct ButtonGadgetData *data)
     copy_td_string(&data->tdRxHide, FindToolType(tts, (STRPTR)TT_RXHIDE), TT_LEN_CMD);
     copy_td_string(&data->tdRxQuit, FindToolType(tts, (STRPTR)TT_RXQUIT), TT_LEN_CMD);
     copy_td_string(&data->tdRxOpen, FindToolType(tts, (STRPTR)TT_RXOPEN), TT_LEN_CMD);
+    parse_td_cmds(data, tts);
 
     val = FindToolType(tts, (STRPTR)TT_LAUNCH);
     if( tt_eq(val, (STRPTR)"ONCE") ) {
@@ -241,6 +342,106 @@ STATIC UWORD effective_open(struct ButtonGadgetData *data)
         return TD_OPEN_CLI;
     }
     return data->tdOpen;
+}
+
+STATIC BOOL has_rxopen(struct ButtonGadgetData *data)
+{
+    if( data->tdRx && data->tdRx[0] && data->tdRxOpen && data->tdRxOpen[0] ) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+STATIC BOOL prefix_eq(STRPTR s, STRPTR pre)
+{
+    UBYTE a, b;
+
+    if( s == NULL || pre == NULL ) {
+        return FALSE;
+    }
+    while( *s && *pre ) {
+        a = *s;
+        b = *pre;
+        if( a >= 'A' && a <= 'Z' ) {
+            a = (UBYTE)(a + 32);
+        }
+        if( b >= 'A' && b <= 'Z' ) {
+            b = (UBYTE)(b + 32);
+        }
+        if( a != b ) {
+            return FALSE;
+        }
+        s++;
+        pre++;
+    }
+    if( *pre ) {
+        return FALSE;
+    }
+    if( *s == 0 || *s == ' ' ) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+STATIC BOOL has_colon(STRPTR s)
+{
+    if( s == NULL ) {
+        return FALSE;
+    }
+    while( *s ) {
+        if( *s == ':' ) {
+            return TRUE;
+        }
+        s++;
+    }
+    return FALSE;
+}
+
+STATIC VOID run_custom_cmd(Object *o, struct ButtonGadgetData *data, UWORD idx)
+{
+    STRPTR cmd;
+    BOOL wb;
+
+    if( idx >= data->tdCmdCount ) {
+        return;
+    }
+    cmd = data->tdCmd[idx];
+    if( cmd == NULL || cmd[0] == 0 ) {
+        return;
+    }
+
+    if( prefix_eq(cmd, (STRPTR)"RX") ) {
+        cmd += 2;
+        while( *cmd == ' ' ) {
+            cmd++;
+        }
+        if( data->tdRx && data->tdRx[0] && cmd[0] ) {
+            applife_send_rexx(data->tdRx, cmd);
+        }
+        return;
+    }
+
+    wb = (data->startType == ST_WB) ? TRUE : FALSE;
+    if( prefix_eq(cmd, (STRPTR)"WB") ) {
+        cmd += 2;
+        while( *cmd == ' ' ) {
+            cmd++;
+        }
+        wb = TRUE;
+    } else if( prefix_eq(cmd, (STRPTR)"CLI") ) {
+        cmd += 3;
+        while( *cmd == ' ' ) {
+            cmd++;
+        }
+        wb = FALSE;
+    } else if( data->tdRx && data->tdRx[0] && ! has_colon(cmd) ) {
+        applife_send_rexx(data->tdRx, cmd);
+        return;
+    }
+
+    if( cmd[0] ) {
+        TD_RequestLaunch(o, cmd, NULL, NULL, wb);
+    }
 }
 
 STATIC BOOL can_control(struct ButtonGadgetData *data)
@@ -393,10 +594,8 @@ STATIC VOID handle_files(Object *o, struct ButtonGadgetData *data,
 
     openHow = effective_open(data);
 
-    if( openHow == TD_OPEN_RX ) {
-        if( data->tdRxOpen == NULL || data->tdRxOpen[0] == 0 ) {
-            return;
-        }
+    /* Unique-instance open command takes dropped names, not a new launch. */
+    if( has_rxopen(data) ) {
         if( data->appRunning ) {
             send_rxopen_paths(data, paths, count);
             return;
@@ -404,6 +603,10 @@ STATIC VOID handle_files(Object *o, struct ButtonGadgetData *data,
         dock_button_launch(o, data, NULL, NULL, 0);
         queue_pending_rx(data, paths, count);
         data->hbCount = AL_HB_TICKS;
+        return;
+    }
+
+    if( openHow == TD_OPEN_RX ) {
         return;
     }
 
@@ -425,8 +628,9 @@ STATIC VOID dock_button_activate(Object *o, struct ButtonGadgetData *data,
     STRPTR *paths, UWORD count)
 {
     if( count > 0 ) {
-        if( data->tdLaunch == TD_LAUNCH_ONCE && data->appRunning ) {
-            handle_files(o, data, paths, count);
+        if( data->tdLaunch == TD_LAUNCH_ONCE && data->appRunning
+            && ! has_rxopen(data) ) {
+            applife_show(data->tdCx, data->tdRx, data->tdRxShow);
             return;
         }
         handle_files(o, data, paths, count);
@@ -742,6 +946,10 @@ DB_METHOD_DM(POPUP, DockMessagePopup)
     ULONG choice;
     STRPTR title;
 
+    if( ! applife_have_popup() ) {
+        return 0;
+    }
+
     flags = AL_CAN_OPEN;
     if( data->appRunning ) {
         flags = 0;
@@ -763,7 +971,18 @@ DB_METHOD_DM(POPUP, DockMessagePopup)
 
     choice = applife_open_app_popup(msg->window, title,
         (STRPTR)MSG_POP_Open, (STRPTR)MSG_POP_Show,
-        (STRPTR)MSG_POP_Hide, (STRPTR)MSG_POP_Quit, flags);
+        (STRPTR)MSG_POP_Hide, (STRPTR)MSG_POP_Quit,
+        (STRPTR)MSG_POP_Remove, data->tdCmdLabel, data->tdCmdCount, flags);
+
+    if( choice == AL_POP_REMOVE ) {
+        DoMethod(o, DM_REQ_REMOVE);
+        return 1;
+    }
+    if( choice >= AL_POP_CMD && choice < (ULONG)(AL_POP_CMD + AL_CMD_MAX) ) {
+        run_custom_cmd(o, data, (UWORD)(choice - AL_POP_CMD));
+        flash_button(o, data);
+        return 1;
+    }
 
     switch( choice ) {
         case AL_POP_OPEN:

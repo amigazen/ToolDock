@@ -21,8 +21,8 @@
 
 #define CLASS_NAME      "DockTrash"
 #define CLASS_VERSION   1
-#define CLASS_REVISION  1
-#define CLASS_VER_STR   "1.1 (" DS ")"
+#define CLASS_REVISION  2
+#define CLASS_VER_STR   "1.2 (" DS ")"
 #define CLASS_COPYRIGHT "Copyright 2026 amigazen project. Based on DockBot by Andrew Kennan"
 #define PRIVATE_DATA    TrashGadgetData
 #define PARENT_CLASS    DB_ROOT_CLASS

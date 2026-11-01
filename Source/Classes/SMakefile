@@ -26,7 +26,7 @@ INC = IDIR=//include IDIR=. IDIR=$(TRITON_INC)
 CLASS_LIBS = LIB:sc.lib LIB:amiga.lib $(TRITON_LIB)
 OUT = /$(DIR)/Gadgets
 
-BTN_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Button $(DEF_DS) $(DEF_BV)
+BTN_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Button IDIR=../DockBot IDIR=$(NDK_INC) IDIR=$(PM_INC) $(DEF_DS) $(DEF_BV)
 CLK_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Clock $(DEF_DS) $(DEF_BV)
 MEM_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Mem $(DEF_DS) $(DEF_BV)
 NET_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Net IDIR=$(ROADSHOW) $(DEF_DS) $(DEF_BV)
@@ -36,7 +36,8 @@ TRASH_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Trash IDIR=../DockBot IDIR=$(NDK_
 OPEN_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Open $(DEF_DS) $(DEF_BV)
 EX_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Exchange IDIR=../DockBot IDIR=$(NDK_INC) IDIR=$(PM_INC) $(DEF_DS) $(DEF_BV)
 
-BTN_OBJS = Button/lib.o Button/button.o Button/triton_icon.o Button/dockbutton_cat.o
+BTN_CLASS_OBJS = Button/lib.o Button/button.o Button/triton_icon.o Button/dockbutton_cat.o
+BTN_OBJS = $(BTN_CLASS_OBJS) ../DockBot/applife.o
 CLK_OBJS = Clock/lib.o Clock/clock.o Clock/dockclock_cat.o
 MEM_OBJS = Mem/lib.o Mem/mem.o Mem/dockmem_cat.o
 NET_OBJS = Net/lib.o Net/net.o Net/docknet_cat.o

@@ -15,7 +15,7 @@
 
 #include "DockButton_cat.h"
 
-struct FC_String DockButton_Strings[17] = {
+struct FC_String DockButton_Strings[18] = {
     { (STRPTR) "A button for ToolDock", 0 },
     { (STRPTR) "Workbench", 1 },
     { (STRPTR) "Shell", 2 },
@@ -32,7 +32,8 @@ struct FC_String DockButton_Strings[17] = {
     { (STRPTR) "Open", 13 },
     { (STRPTR) "Show", 14 },
     { (STRPTR) "Hide", 15 },
-    { (STRPTR) "Quit", 16 }
+    { (STRPTR) "Quit", 16 },
+    { (STRPTR) "Remove", 17 }
 };
 
 VOID InitCatalog(struct Catalog *catalog)
@@ -40,7 +41,7 @@ VOID InitCatalog(struct Catalog *catalog)
     struct FC_String *fc;
 	UWORD i;
 
-    for (i = 0, fc = DockButton_Strings;  i < 17;  i++, fc++) {
+    for (i = 0, fc = DockButton_Strings;  i < 18;  i++, fc++) {
 	
 		fc->msg = GetCatalogStr(catalog, fc->id, (STRPTR) fc->msg);
     }

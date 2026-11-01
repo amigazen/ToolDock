@@ -1,5 +1,5 @@
 ## version $VER: ToolDock.catalog 1.9 (2020-04-17)
-## language español
+## language espaÃ±ol
 ## codeset 0
 ;
 ;#language english
@@ -68,21 +68,21 @@ E
 ; E
 ;
 MSG_MENU_Save
-Guardar Configuraciónes
+Guardar ConfiguraciÃ³nes
 ; Save Settings
 MSG_KEY_Save
 G
 ; W
 ;
 MSG_MENU_Revert
-Revertir Configuración
+Revertir ConfiguraciÃ³n
 ; Revert Settings
 MSG_KEY_Revert
 Z
 ; Z
 ;
 MSG_MENU_OpenPrefs
-Configuración abierta...
+ConfiguraciÃ³n abierta...
 ; Open Preferences...
 MSG_KEY_OpenPrefs
 C
@@ -100,5 +100,21 @@ ToolDock Version %s\n\nUna barra para AmigaOS 3\n\nCopyright 2026 amigazen proje
 MSG_CX_Description
 Una barra para AmigaOS 3
 ; A Dock For AmigaOS 3
+;
+MSG_POP_Remove
+Quitar
+; Remove
+;
+MSG_DEL_Title
+Quitar
+; Remove
+;
+MSG_DEL_Text
+Seguro que quieres quitar esto del dock?
+; Are you sure you want to remove this from the dock?
+;
+MSG_DEL_Buttons
+_Quitar|_Cancelar
+; _Remove|_Cancel
 ; 
 ;

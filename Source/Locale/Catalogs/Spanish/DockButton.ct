@@ -1,5 +1,5 @@
 ## version $VER: DockButton.catalog 1.0 (2019-11-26)
-## language español
+## language espaÃ±ol
 ## codeset 0
 ;
 ;#language english
@@ -9,7 +9,7 @@
 ;
 ;
 MSG_Description
-Un botón para ToolDock
+Un botÃ³n para ToolDock
 ; A button for ToolDock
 ;
 ;
@@ -26,7 +26,7 @@ Shell
 ; File Requester
 ;
 MSG_FR_ChooseApplication
-Escoge una aplicación
+Escoge una aplicaciÃ³n
 ; Choose an application
 ;
 MSG_FR_ChooseBrush
@@ -86,4 +86,8 @@ Ocultar
 MSG_POP_Quit
 Salir
 ; Quit
+;
+MSG_POP_Remove
+Quitar
+; Remove
 ;

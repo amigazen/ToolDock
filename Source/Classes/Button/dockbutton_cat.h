@@ -21,7 +21,7 @@ struct FC_String {
     LONG id;
 };
 
-extern struct FC_String DockButton_Strings[17];
+extern struct FC_String DockButton_Strings[18];
 
 #define MSG_Description (DockButton_Strings[0].msg)
 #define _MSG_Description (DockButton_Strings+0)
@@ -57,5 +57,7 @@ extern struct FC_String DockButton_Strings[17];
 #define _MSG_POP_Hide (DockButton_Strings+15)
 #define MSG_POP_Quit (DockButton_Strings[16].msg)
 #define _MSG_POP_Quit (DockButton_Strings+16)
+#define MSG_POP_Remove (DockButton_Strings[17].msg)
+#define _MSG_POP_Remove (DockButton_Strings+17)
 
 #endif

@@ -1,5 +1,5 @@
 ## version $VER: DockButton.catalog 1.0 (2020-03-22)
-## language français
+## language franÃ§ais
 ## codeset 0
 ;
 ;#language english
@@ -34,7 +34,7 @@ Choisir une image
 ; Choose an image
 ;
 MSG_FR_OkText
-Sélectionner
+SÃ©lectionner
 ; Select
 ;
 MSG_FR_CancelText
@@ -61,7 +61,7 @@ Raccourci
 ; Key
 ;
 MSG_UI_StartType
-Démarrage
+DÃ©marrage
 ; Start Type
 ;
 MSG_UI_Console
@@ -86,4 +86,8 @@ Cacher
 MSG_POP_Quit
 Quitter
 ; Quit
+;
+MSG_POP_Remove
+Retirer
+; Remove
 ;

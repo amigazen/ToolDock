@@ -12,6 +12,7 @@
 #include "dock.h"
 #include "rearrange.h"
 #include "dropzone.h"
+#include "td_request.h"
 
 #include <clib/exec_protos.h>
 #include <clib/alib_protos.h>
@@ -91,26 +92,25 @@ BOOL load_config(struct DockWindow *dock)
         DEBUG(DB_Printf(__FUNC__ ":  settings opened\n"));
 
         if( TD_ReadConfig(&dock->cfg, s) ) {
-
             DEBUG(DB_Printf(__FUNC__ ":  config read\n"));
-
-            if( dock->cfg.bgBrushPath ) {
-
-                DEBUG(DB_Printf(__FUNC__ ":  load background %s...", dock->cfg.bgBrushPath));
-                if( dock->bgBrush = TD_LoadBrush(dock->cfg.bgBrushPath, BF_NONE) ) {
-                    DEBUG(DB_Printf("OK\n"));
-                } else {
-                    DEBUG(DB_Printf("FAILED\n"));
-                }
-            }
-
-            FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
-
-                dock_gadget_added(curr->dg, dock->gadgetPort);
-            }
-
             r = TRUE;
+        } else {
+            DEBUG(DB_Printf(__FUNC__ ":  config incomplete\n"));
+        }
 
+        if( dock->cfg.bgBrushPath ) {
+
+            DEBUG(DB_Printf(__FUNC__ ":  load background %s...", dock->cfg.bgBrushPath));
+            if( dock->bgBrush = TD_LoadBrush(dock->cfg.bgBrushPath, BF_NONE) ) {
+                DEBUG(DB_Printf("OK\n"));
+            } else {
+                DEBUG(DB_Printf("FAILED\n"));
+            }
+        }
+
+        FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
+
+            dock_gadget_added(curr->dg, dock->gadgetPort);
         }
 
         TD_CloseSettings(s);
@@ -206,6 +206,48 @@ VOID write_config(struct DockWindow *dock, STRPTR path)
         Insert(&dock->cfg.gadgets, (struct Node *)ph, pred);
         dock->placeholder = ph;
     }
+}
+
+VOID request_remove_gadget(struct DockWindow *dock, struct DgNode *dg)
+{
+    LONG ans;
+
+    if( dock == NULL || dg == NULL || dock->win == NULL ) {
+        return;
+    }
+    if( dock->handleClass && dg->dg && OCLASS(dg->dg) == dock->handleClass ) {
+        return;
+    }
+    if( dg == dock->placeholder ) {
+        return;
+    }
+
+    /* Blocks the dock window while the requester is open. */
+    ans = TD_OpenRequest(dock->win,
+        (STRPTR)MSG_DEL_Title,
+        (STRPTR)MSG_DEL_Text,
+        (STRPTR)MSG_DEL_Buttons,
+        TDREQIMAGE_QUESTION);
+    if( ans != 1 ) {
+        return;
+    }
+
+    rearrange_cancel(dock);
+    if( dock->hoverGad == dg->dg ) {
+        dock->hoverGad = NULL;
+    }
+    if( dock->editNode == dg ) {
+        dock->editNode = NULL;
+    }
+
+    Remove((struct Node *)dg);
+    TD_FreeGadget(dg);
+
+    ensure_placeholder(dock);
+    layout_gadgets(dock);
+    update_hover_gadget(dock);
+    draw_gadgets(dock);
+    save_config(dock);
 }
 
 VOID save_config(struct DockWindow *dock)

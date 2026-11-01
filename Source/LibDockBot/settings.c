@@ -471,8 +471,9 @@ BOOL __asm __saveds TD_ReadConfig(
 
             if( TD_ReadBeginBlock(settings) ) {
                 if( ! read_dock_gadget(cfg, settings) ) {
-                    r = FALSE;
-                    break;
+                    /* Missing class: drop this item, keep the rest. */
+                    while( TD_ReadSetting(settings, &v) ) {
+                    }
                 }
                 if( !TD_ReadEndBlock(settings) ) {
                     r = FALSE;

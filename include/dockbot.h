@@ -124,6 +124,7 @@ typedef enum {
     DM_REQ_LAUNCH       = 1209,
     DM_REG_PORT         = 1210,
     DM_UNREG_PORT       = 1211,
+    DM_REQ_REMOVE       = 1212,
 
     // Event Handlers.
 	DM_TICK 		    = 1302,
@@ -307,7 +308,8 @@ typedef enum {
     GM_LAUNCH           = 1702,
     GM_REGISTER_PORT    = 1703,
     GM_UNREGISTER_PORT  = 1704,
-    GM_GET_DOCK_INFO    = 1705
+    GM_GET_DOCK_INFO    = 1705,
+    GM_REMOVE           = 1706
 } GadgetMessageType;
 
 struct GadgetMessage {

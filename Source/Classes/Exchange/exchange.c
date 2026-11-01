@@ -313,9 +313,15 @@ DB_METHOD_D(CLICK)
 
 DB_METHOD_DM(POPUP, DockMessagePopup)
 
-    applife_run_exchange_popup(msg->window, (STRPTR)MSG_Label,
+    if( ! applife_have_popup() ) {
+        return 0;
+    }
+    if( applife_run_exchange_popup(msg->window, (STRPTR)MSG_Label,
         (STRPTR)MSG_POP_Show, (STRPTR)MSG_POP_Hide,
-        (STRPTR)MSG_POP_Quit, (STRPTR)MSG_POP_None);
+        (STRPTR)MSG_POP_Quit, (STRPTR)MSG_POP_None,
+        (STRPTR)MSG_POP_Remove) == AL_POP_REMOVE ) {
+        DoMethod(o, DM_REQ_REMOVE);
+    }
     return 1;
 }
 

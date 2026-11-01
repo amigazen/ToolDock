@@ -72,6 +72,8 @@ VOID handle_timer_message(struct DockWindow *dock)
     while( msg = GetMsg(dock->timerPort) ) {
     }
 
+    dock->rmbHandled = FALSE;
+
     /* wb.doc: Workbench holds the display for the whole icon drag.
        The hook draws. This task must not call Intuition. */
     if( dock->hoverOverDock ) {

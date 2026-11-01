@@ -379,10 +379,19 @@ DB_METHOD_DM(POPUP, DockMessagePopup)
     ULONG choice;
     BOOL canEmpty;
 
+    if( ! applife_have_popup() ) {
+        return 0;
+    }
+
     refresh_trash_state(data);
     canEmpty = (data->devicePresent && data->hasContents) ? TRUE : FALSE;
-    choice = applife_open_choice_popup(msg->window, (STRPTR)MSG_Label,
-        (STRPTR)MSG_POP_Empty, canEmpty ? FALSE : TRUE);
+    choice = applife_open_action_popup(msg->window, (STRPTR)MSG_Label,
+        (STRPTR)MSG_POP_Empty, canEmpty ? FALSE : TRUE, 1,
+        (STRPTR)MSG_POP_Remove);
+    if( choice == AL_POP_REMOVE ) {
+        DoMethod(o, DM_REQ_REMOVE);
+        return 1;
+    }
     if( choice ) {
         if( ! data->devicePresent ) {
             TD_ShowError((STRPTR)MSG_ERR_NoTrash);

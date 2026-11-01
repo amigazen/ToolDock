@@ -34,10 +34,7 @@ enum {
     MENU_IDX_Iconify   =  4,
     MENU_IDX_Quit      =  6,
     MENU_IDX_Settings  =  7,
-    MENU_IDX_Edit      =  8,
-    MENU_IDX_Save      =  9,
-    MENU_IDX_Revert    = 10,
-    MENU_IDX_OpenPrefs = 11
+    MENU_IDX_OpenPrefs =  8
 };
 
 struct NewMenu mainMenu[] = {
@@ -51,9 +48,6 @@ struct NewMenu mainMenu[] = {
     {  NM_ITEM, 0 /*MSG_MENU_Quit*/,        0, 0, 0, (APTR)MI_QUIT },
 
     { NM_TITLE, 0 /*MSG_MENU_Settings*/,    0, 0, 0, 0 },
-    {  NM_ITEM, 0 /*MSG_MENU_Edit*/,        0, CHECKIT|MENUTOGGLE, 0, (APTR)MI_EDIT },
-    {  NM_ITEM, 0 /*MSG_MENU_SaveSettings*/,0, 0, 0, (APTR)MI_SAVE },
-    {  NM_ITEM, 0 /*MSG_MENU_RevertSettings*/, 0, 0, 0, (APTR)MI_REVERT },
     {  NM_ITEM, 0 /*MSG_MENU_OpenPrefs*/,   0, 0, 0, (APTR)MI_OPEN_PREFS }, 
 
     { NM_END,   0,                       0, 0, 0, 0 }
@@ -79,12 +73,6 @@ BOOL build_menu(struct DockWindow *dock) {
     mainMenu[MENU_IDX_Quit].nm_CommKey     = (STRPTR)MSG_KEY_Quit;
 
     mainMenu[MENU_IDX_Settings].nm_Label   = (STRPTR)MSG_MENU_Settings;
-    mainMenu[MENU_IDX_Edit].nm_Label   = (STRPTR)MSG_MENU_EditMode;
-    mainMenu[MENU_IDX_Edit].nm_CommKey = (STRPTR)MSG_KEY_EditMode;
-    mainMenu[MENU_IDX_Save].nm_Label   = (STRPTR)MSG_MENU_Save;
-    mainMenu[MENU_IDX_Save].nm_CommKey = (STRPTR)MSG_KEY_Save;
-    mainMenu[MENU_IDX_Revert].nm_Label =    (STRPTR)MSG_MENU_Revert;
-    mainMenu[MENU_IDX_Revert].nm_CommKey =  (STRPTR)MSG_KEY_Revert;
     mainMenu[MENU_IDX_OpenPrefs].nm_Label   = (STRPTR)MSG_MENU_OpenPrefs;
     mainMenu[MENU_IDX_OpenPrefs].nm_CommKey = (STRPTR)MSG_KEY_OpenPrefs;
 
@@ -139,20 +127,9 @@ struct MenuItem *find_menu_item(struct Menu *menu, MenuIndex ix)
 
 VOID update_settings_menu(struct DockWindow *dock)
 {
-    if( dock->runState == RS_EDITING ) {
-    
-        find_menu_item(dock->menu, MI_EDIT)->Flags |= CHECKED;
-        find_menu_item(dock->menu, MI_SAVE)->Flags |= ITEMENABLED;
-        find_menu_item(dock->menu, MI_REVERT)->Flags |= ITEMENABLED;
-
-    } else {
-    
-        find_menu_item(dock->menu, MI_EDIT)->Flags &= ~CHECKED;
-        find_menu_item(dock->menu, MI_SAVE)->Flags &= ~ITEMENABLED;
-        find_menu_item(dock->menu, MI_REVERT)->Flags &= ~ITEMENABLED;
-
+    if( dock->win == NULL || dock->menu == NULL ) {
+        return;
     }
-
     ResetMenuStrip(dock->win, dock->menu);
 }
 
@@ -208,7 +185,7 @@ BOOL show_dock_window(struct DockWindow *dock)
     tags[10].ti_Data = IDCMP_MOUSEBUTTONS | IDCMP_REFRESHWINDOW
         | IDCMP_CHANGEWINDOW | IDCMP_MENUPICK | IDCMP_MOUSEMOVE;
     tags[11].ti_Tag = WA_RMBTrap;
-    tags[11].ti_Data = TRUE;
+    tags[11].ti_Data = applife_have_popup() ? TRUE : FALSE;
     tags[12].ti_Tag = TAG_DONE;
     tags[12].ti_Data = 0;
 
@@ -594,24 +571,6 @@ STATIC VOID handle_menu_choice(struct DockWindow *dock, MenuIndex menuItem)
             open_help(dock);
             break;
 
-       case MI_EDIT:
-            rearrange_cancel(dock);
-            if( dock->runState == RS_EDITING ) {
-                dock->runState = RS_STOP_EDIT;
-            } else {
-                dock->runState = RS_START_EDIT;
-            }
-            break;
-
-       case MI_SAVE:
-            save_config(dock);
-            dock->runState = RS_STOP_EDIT;
-            break;
-
-       case MI_REVERT:
-            dock->runState = RS_LOADING;
-            break;
-
        default:
             break;
     }
@@ -634,8 +593,6 @@ STATIC VOID open_dock_rmb_menu(struct DockWindow *dock)
         PMItem((STRPTR)MSG_MENU_Quit),
             PM_UserData, MI_QUIT, PMEnd,
         PMBar, PMEnd,
-        PMItem((STRPTR)MSG_MENU_EditMode),
-            PM_UserData, MI_EDIT, PMEnd,
         PMItem((STRPTR)MSG_MENU_OpenPrefs),
             PM_UserData, MI_OPEN_PREFS, PMEnd,
         PMEnd;
@@ -649,10 +606,51 @@ STATIC VOID open_dock_rmb_menu(struct DockWindow *dock)
     }
 }
 
+STATIC VOID handle_rmb(struct DockWindow *dock, UWORD mouseX, UWORD mouseY);
+
+VOID handle_cx_rmb(struct DockWindow *dock)
+{
+    struct Window *win;
+    struct Screen *scr;
+    WORD mx, my;
+    UWORD x, y;
+
+    win = dock->win;
+    if( win == NULL || dock->hoverOverDock ) {
+        return;
+    }
+    scr = win->WScreen;
+    if( scr == NULL ) {
+        return;
+    }
+
+    mx = scr->MouseX;
+    my = scr->MouseY;
+    if( mx < win->LeftEdge || my < win->TopEdge ) {
+        return;
+    }
+    if( mx >= (WORD)(win->LeftEdge + win->Width) ) {
+        return;
+    }
+    if( my >= (WORD)(win->TopEdge + win->Height) ) {
+        return;
+    }
+
+    x = (UWORD)(mx - win->LeftEdge);
+    y = (UWORD)(my - win->TopEdge);
+    DEBUG(DB_Printf("cx_rmb %ld,%ld\n", (LONG)x, (LONG)y));
+    handle_rmb(dock, x, y);
+}
+
 STATIC VOID handle_rmb(struct DockWindow *dock, UWORD mouseX, UWORD mouseY)
 {
     struct DgNode *dg;
     struct GadgetEnvironment env;
+    ULONG choice;
+
+    if( ! applife_have_popup() ) {
+        return;
+    }
 
     if( dock->runState != RS_RUNNING ) {
         open_dock_rmb_menu(dock);
@@ -664,6 +662,14 @@ STATIC VOID handle_rmb(struct DockWindow *dock, UWORD mouseX, UWORD mouseY)
         TD_GetDockGadgetEnvironment(dg->dg, &env);
         if( env.index != 0 ) {
             if( dock_gadget_popup(dg->dg, dock->win) ) {
+                return;
+            }
+            if( dg != dock->placeholder ) {
+                choice = applife_open_choice_popup(dock->win, dg->n.ln_Name,
+                    (STRPTR)MSG_POP_Remove, FALSE);
+                if( choice ) {
+                    request_remove_gadget(dock, dg);
+                }
                 return;
             }
         }
@@ -711,7 +717,9 @@ VOID handle_window_event(struct DockWindow *dock)
                 } else if( msgCode == SELECTUP ) {
                     rearrange_mouse_up(dock, mouseX, mouseY);
                 } else if( msgCode == MENUDOWN ) {
-                    handle_rmb(dock, mouseX, mouseY);
+                    if( ! dock->rmbCxWatch ) {
+                        handle_rmb(dock, mouseX, mouseY);
+                    }
                 }
                 break;
 

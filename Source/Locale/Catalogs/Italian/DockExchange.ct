@@ -33,3 +33,7 @@ MSG_ERR_NoExchange
 Impossibile trovare SYS:Utilities/Exchange.
 ; Could not find SYS:Utilities/Exchange.
 ;
+MSG_POP_Remove
+Rimuovi
+; Remove
+;

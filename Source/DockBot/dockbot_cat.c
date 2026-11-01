@@ -17,7 +17,7 @@
 
 #include "DockBot_cat.h"
 
-struct FC_String DockBot_Strings[23] = {
+struct FC_String DockBot_Strings[27] = {
     { (STRPTR) "OK", 0 },
     { (STRPTR) "Unable to open version %d of %s.", 1 },
     { (STRPTR) "Sorry, directories cannot be added to the dock.", 2 },
@@ -40,7 +40,11 @@ struct FC_String DockBot_Strings[23] = {
     { (STRPTR) "S", 19 },
     { (STRPTR) "About ToolDock", 20 },
     { (STRPTR) "ToolDock Version %s\n\nA Dock For AmigaOS 3\n\nCopyright 2026 amigazen project\nBased on DockBot by Andrew Kennan\n\n%s", 21 },
-    { (STRPTR) "A Dock For AmigaOS 3", 22 }
+    { (STRPTR) "A Dock For AmigaOS 3", 22 },
+    { (STRPTR) "Remove", 23 },
+    { (STRPTR) "Remove", 24 },
+    { (STRPTR) "Are you sure you want to remove this from the dock?", 25 },
+    { (STRPTR) "_Remove|_Cancel", 26 }
 };
 
 STATIC struct Catalog *DockBotCatalog = NULL;
@@ -64,7 +68,7 @@ VOID open_catalog(VOID)
 		return;
 	}
 
-    for (i = 0, fc = DockBot_Strings;  i < 23;  i++, fc++) {
+    for (i = 0, fc = DockBot_Strings;  i < 27;  i++, fc++) {
 	
 		fc->msg = GetCatalogStr(DockBotCatalog, fc->id, (STRPTR) fc->msg);
     }

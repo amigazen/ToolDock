@@ -12,13 +12,14 @@
 
 #include "docktrash_cat.h"
 
-struct FC_String DockTrash_Strings[6] = {
+struct FC_String DockTrash_Strings[7] = {
     { (STRPTR) "A trashcan gadget that uses the TRASH: volume", 0 },
     { (STRPTR) "Trash", 1 },
     { (STRPTR) "TRASH: is not available. Start WBTrash first.", 2 },
     { (STRPTR) "Could not move the dropped item to the trash.", 3 },
     { (STRPTR) "Empty Trash", 4 },
-    { (STRPTR) "Could not empty the trash.", 5 }
+    { (STRPTR) "Could not empty the trash.", 5 },
+    { (STRPTR) "Remove", 6 }
 };
 
 VOID InitCatalog(struct Catalog *catalog)
@@ -26,7 +27,7 @@ VOID InitCatalog(struct Catalog *catalog)
     struct FC_String *fc;
     UWORD i;
 
-    for (i = 0, fc = DockTrash_Strings;  i < 6;  i++, fc++) {
+    for (i = 0, fc = DockTrash_Strings;  i < 7;  i++, fc++) {
         fc->msg = GetCatalogStr(catalog, fc->id, (STRPTR) fc->msg);
     }
 }

@@ -81,6 +81,7 @@ BOOL applife_init(VOID)
     if( RexxSysBase == NULL ) {
         RexxSysBase = OpenLibrary(RXSNAME, 0);
     }
+    /* Optional. Icon and Project popups stay unused if this fails. */
     if( PopupMenuBase == NULL ) {
         PopupMenuBase = (struct PopupMenuBase *)OpenLibrary(POPUPMENU_NAME,
             POPUPMENU_VERSION);
@@ -91,6 +92,14 @@ BOOL applife_init(VOID)
 
     alReady = TRUE;
     return TRUE;
+}
+
+BOOL applife_have_popup(VOID)
+{
+    if( PopupMenuBase ) {
+        return TRUE;
+    }
+    return FALSE;
 }
 
 VOID applife_reap(VOID)
@@ -337,11 +346,16 @@ STRPTR applife_format_rxopen(STRPTR fmt, STRPTR path)
 
 ULONG applife_open_app_popup(struct Window *win, STRPTR title,
     STRPTR openStr, STRPTR showStr, STRPTR hideStr, STRPTR quitStr,
-    UWORD flags)
+    STRPTR removeStr, STRPTR *cmdLabels, UWORD cmdCount, UWORD flags)
 {
     struct PopupMenu *menu;
+    struct TagItem mt[32];
     ULONG result;
     STRPTR head;
+    UWORD t;
+    UWORD i;
+    UWORD ncmd;
+    BOOL ok;
 
     result = AL_POP_NONE;
     if( PopupMenuBase == NULL || win == NULL ) {
@@ -364,31 +378,107 @@ ULONG applife_open_app_popup(struct Window *win, STRPTR title,
     if( quitStr == NULL ) {
         quitStr = (STRPTR)"Quit";
     }
-
-    menu = PMMenu(head),
-        PMItem(openStr),
-            PM_UserData, AL_POP_OPEN,
-            PM_Disabled, (flags & AL_CAN_OPEN) ? FALSE : TRUE,
-            PMEnd,
-        PMBar, PMEnd,
-        PMItem(showStr),
-            PM_UserData, AL_POP_SHOW,
-            PM_Disabled, (flags & AL_CAN_SHOW) ? FALSE : TRUE,
-            PMEnd,
-        PMItem(hideStr),
-            PM_UserData, AL_POP_HIDE,
-            PM_Disabled, (flags & AL_CAN_HIDE) ? FALSE : TRUE,
-            PMEnd,
-        PMItem(quitStr),
-            PM_UserData, AL_POP_QUIT,
-            PM_Disabled, (flags & AL_CAN_QUIT) ? FALSE : TRUE,
-            PMEnd,
-        PMEnd;
-
-    if( menu ) {
-        result = PM_OpenPopupMenu(win, PM_Menu, menu, TAG_DONE);
-        PM_FreePopupMenu(menu);
+    if( removeStr == NULL ) {
+        removeStr = (STRPTR)"Remove";
     }
+
+    ncmd = cmdCount;
+    if( ncmd > AL_CMD_MAX ) {
+        ncmd = AL_CMD_MAX;
+    }
+    if( cmdLabels == NULL ) {
+        ncmd = 0;
+    }
+
+    t = 0;
+    mt[t].ti_Tag = PM_Item;
+    mt[t].ti_Data = (ULONG)PM_MakeItem(PM_Hidden, TRUE, TAG_DONE);
+    t++;
+    mt[t].ti_Tag = PM_Item;
+    mt[t].ti_Data = (ULONG)PM_MakeItem(PM_Title, head,
+        PM_NoSelect, TRUE, PM_ShinePen, TRUE, PM_Shadowed, TRUE,
+        PM_Center, TRUE, TAG_DONE);
+    t++;
+    mt[t].ti_Tag = PM_Item;
+    mt[t].ti_Data = (ULONG)PM_MakeItem(PM_WideTitleBar, TRUE, TAG_DONE);
+    t++;
+    mt[t].ti_Tag = PM_Item;
+    mt[t].ti_Data = (ULONG)PM_MakeItem(PM_Title, openStr,
+        PM_UserData, AL_POP_OPEN,
+        PM_Disabled, (flags & AL_CAN_OPEN) ? FALSE : TRUE,
+        TAG_DONE);
+    t++;
+    mt[t].ti_Tag = PM_Item;
+    mt[t].ti_Data = (ULONG)PM_MakeItem(PM_WideTitleBar, TRUE, TAG_DONE);
+    t++;
+    mt[t].ti_Tag = PM_Item;
+    mt[t].ti_Data = (ULONG)PM_MakeItem(PM_Title, showStr,
+        PM_UserData, AL_POP_SHOW,
+        PM_Disabled, (flags & AL_CAN_SHOW) ? FALSE : TRUE,
+        TAG_DONE);
+    t++;
+    mt[t].ti_Tag = PM_Item;
+    mt[t].ti_Data = (ULONG)PM_MakeItem(PM_Title, hideStr,
+        PM_UserData, AL_POP_HIDE,
+        PM_Disabled, (flags & AL_CAN_HIDE) ? FALSE : TRUE,
+        TAG_DONE);
+    t++;
+    mt[t].ti_Tag = PM_Item;
+    mt[t].ti_Data = (ULONG)PM_MakeItem(PM_Title, quitStr,
+        PM_UserData, AL_POP_QUIT,
+        PM_Disabled, (flags & AL_CAN_QUIT) ? FALSE : TRUE,
+        TAG_DONE);
+    t++;
+
+    if( ncmd > 0 ) {
+        mt[t].ti_Tag = PM_Item;
+        mt[t].ti_Data = (ULONG)PM_MakeItem(PM_WideTitleBar, TRUE, TAG_DONE);
+        t++;
+        for( i = 0; i < ncmd; i++ ) {
+            if( cmdLabels[i] == NULL || cmdLabels[i][0] == 0 ) {
+                continue;
+            }
+            mt[t].ti_Tag = PM_Item;
+            mt[t].ti_Data = (ULONG)PM_MakeItem(PM_Title, cmdLabels[i],
+                PM_UserData, (ULONG)(AL_POP_CMD + i),
+                TAG_DONE);
+            t++;
+        }
+    }
+
+    mt[t].ti_Tag = PM_Item;
+    mt[t].ti_Data = (ULONG)PM_MakeItem(PM_WideTitleBar, TRUE, TAG_DONE);
+    t++;
+    mt[t].ti_Tag = PM_Item;
+    mt[t].ti_Data = (ULONG)PM_MakeItem(PM_Title, removeStr,
+        PM_UserData, AL_POP_REMOVE,
+        TAG_DONE);
+    t++;
+    mt[t].ti_Tag = TAG_DONE;
+
+    ok = TRUE;
+    for( i = 0; i < t; i++ ) {
+        if( mt[i].ti_Tag == PM_Item && mt[i].ti_Data == 0 ) {
+            ok = FALSE;
+            break;
+        }
+    }
+
+    menu = NULL;
+    if( ok ) {
+        menu = PM_MakeMenuA(mt);
+    }
+    if( menu == NULL ) {
+        for( i = 0; i < t; i++ ) {
+            if( mt[i].ti_Tag == PM_Item && mt[i].ti_Data ) {
+                PM_FreePopupMenu((struct PopupMenu *)mt[i].ti_Data);
+            }
+        }
+        return AL_POP_NONE;
+    }
+
+    result = PM_OpenPopupMenu(win, PM_Menu, menu, TAG_DONE);
+    PM_FreePopupMenu(menu);
     return result;
 }
 
@@ -413,6 +503,47 @@ ULONG applife_open_choice_popup(struct Window *win, STRPTR title,
         PMItem(item),
             PM_UserData, 1,
             PM_Disabled, disabled ? TRUE : FALSE,
+            PMEnd,
+        PMEnd;
+
+    if( menu ) {
+        result = PM_OpenPopupMenu(win, PM_Menu, menu, TAG_DONE);
+        PM_FreePopupMenu(menu);
+    }
+    return result;
+}
+
+ULONG applife_open_action_popup(struct Window *win, STRPTR title,
+    STRPTR item, BOOL itemDisabled, ULONG itemId, STRPTR removeStr)
+{
+    struct PopupMenu *menu;
+    ULONG result;
+
+    result = AL_POP_NONE;
+    if( PopupMenuBase == NULL || win == NULL ) {
+        return AL_POP_NONE;
+    }
+    if( title == NULL || title[0] == 0 ) {
+        title = (STRPTR)"Menu";
+    }
+    if( item == NULL || item[0] == 0 ) {
+        item = (STRPTR)"OK";
+    }
+    if( removeStr == NULL ) {
+        removeStr = (STRPTR)"Remove";
+    }
+    if( itemId == 0 ) {
+        itemId = 1;
+    }
+
+    menu = PMMenu(title),
+        PMItem(item),
+            PM_UserData, itemId,
+            PM_Disabled, itemDisabled ? TRUE : FALSE,
+            PMEnd,
+        PMBar, PMEnd,
+        PMItem(removeStr),
+            PM_UserData, AL_POP_REMOVE,
             PMEnd,
         PMEnd;
 
@@ -451,8 +582,9 @@ STATIC VOID al_copy(STRPTR dst, STRPTR src, ULONG dstlen)
     dst[i] = 0;
 }
 
-VOID applife_run_exchange_popup(struct Window *win, STRPTR title,
-    STRPTR showStr, STRPTR hideStr, STRPTR quitStr, STRPTR noneStr)
+ULONG applife_run_exchange_popup(struct Window *win, STRPTR title,
+    STRPTR showStr, STRPTR hideStr, STRPTR quitStr, STRPTR noneStr,
+    STRPTR removeStr)
 {
     struct List blist;
     struct Node *n;
@@ -462,7 +594,7 @@ VOID applife_run_exchange_popup(struct Window *win, STRPTR title,
     struct PopupMenu *items[AL_CX_MAX];
     struct PopupMenu *subs[AL_CX_MAX];
     struct PopupMenu *noneItem;
-    struct TagItem mt[(AL_CX_MAX + 4) * 2];
+    struct TagItem mt[(AL_CX_MAX + 6) * 2];
     UWORD count;
     UWORD i;
     UWORD t;
@@ -473,8 +605,8 @@ VOID applife_run_exchange_popup(struct Window *win, STRPTR title,
     LONG cmd;
     BOOL ok;
 
-    if( PopupMenuBase == NULL || win == NULL || CxBase == NULL ) {
-        return;
+    if( PopupMenuBase == NULL || win == NULL ) {
+        return AL_POP_NONE;
     }
     if( title == NULL || title[0] == 0 ) {
         title = (STRPTR)"Exchange";
@@ -491,30 +623,35 @@ VOID applife_run_exchange_popup(struct Window *win, STRPTR title,
     if( noneStr == NULL ) {
         noneStr = (STRPTR)"None";
     }
+    if( removeStr == NULL ) {
+        removeStr = (STRPTR)"Remove";
+    }
 
     ents = (struct AlCxEntry *)AllocMem(
         sizeof(struct AlCxEntry) * AL_CX_MAX, MEMF_CLEAR);
     if( ents == NULL ) {
-        return;
+        return AL_POP_NONE;
     }
 
     /* Snapshot names so the CX list is not held while the menu is open. */
-    NewList(&blist);
-    CopyBrokerList(&blist);
     count = 0;
-    n = blist.lh_Head;
-    while( n && n->ln_Succ && count < AL_CX_MAX ) {
-        bc = (struct BrokerCopy *)n;
-        al_copy(ents[count].name, bc->bc_Name, CBD_NAMELEN);
-        if( bc->bc_Title[0] ) {
-            al_copy(ents[count].title, bc->bc_Title, CBD_TITLELEN);
-        } else {
-            al_copy(ents[count].title, bc->bc_Name, CBD_TITLELEN);
+    if( CxBase ) {
+        NewList(&blist);
+        CopyBrokerList(&blist);
+        n = blist.lh_Head;
+        while( n && n->ln_Succ && count < AL_CX_MAX ) {
+            bc = (struct BrokerCopy *)n;
+            al_copy(ents[count].name, bc->bc_Name, CBD_NAMELEN);
+            if( bc->bc_Title[0] ) {
+                al_copy(ents[count].title, bc->bc_Title, CBD_TITLELEN);
+            } else {
+                al_copy(ents[count].title, bc->bc_Name, CBD_TITLELEN);
+            }
+            count++;
+            n = n->ln_Succ;
         }
-        count++;
-        n = n->ln_Succ;
+        FreeBrokerList(&blist);
     }
-    FreeBrokerList(&blist);
 
     made = 0;
     ok = TRUE;
@@ -586,6 +723,13 @@ VOID applife_run_exchange_popup(struct Window *win, STRPTR title,
             }
         }
         if( ok ) {
+            mt[t].ti_Tag = PM_Item;
+            mt[t].ti_Data = (ULONG)PM_MakeItem(PM_WideTitleBar, TRUE, TAG_DONE);
+            t++;
+            mt[t].ti_Tag = PM_Item;
+            mt[t].ti_Data = (ULONG)PM_MakeItem(PM_Title, removeStr,
+                PM_UserData, AL_POP_REMOVE, TAG_DONE);
+            t++;
             mt[t].ti_Tag = TAG_DONE;
             menu = PM_MakeMenuA(mt);
         }
@@ -601,13 +745,18 @@ VOID applife_run_exchange_popup(struct Window *win, STRPTR title,
             PM_FreePopupMenu(noneItem);
         }
         FreeMem(ents, sizeof(struct AlCxEntry) * AL_CX_MAX);
-        return;
+        return AL_POP_NONE;
     }
 
     result = PM_OpenPopupMenu(win, PM_Menu, menu, TAG_DONE);
     PM_FreePopupMenu(menu);
 
-    if( result ) {
+    if( result == AL_POP_REMOVE ) {
+        FreeMem(ents, sizeof(struct AlCxEntry) * AL_CX_MAX);
+        return AL_POP_REMOVE;
+    }
+
+    if( result && CxBase ) {
         idx = (UWORD)(result >> AL_CX_SHIFT);
         act = (UWORD)(result & 15);
         if( idx < count && ents[idx].name[0] ) {
@@ -622,4 +771,5 @@ VOID applife_run_exchange_popup(struct Window *win, STRPTR title,
     }
 
     FreeMem(ents, sizeof(struct AlCxEntry) * AL_CX_MAX);
+    return AL_POP_NONE;
 }
