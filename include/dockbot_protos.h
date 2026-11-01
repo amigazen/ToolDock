@@ -16,8 +16,11 @@
 #include <intuition/intuition.h>
 #include <intuition/classes.h>
 #include <dos/dos.h>
+#include <exec/ports.h>
+#include <workbench/workbench.h>
 
 #include "dockbot.h"
+#include "dockicon.h"
 
 /****** tooldock.library/TD_GetDockGadgetEnvironment ***********************
 *
@@ -908,5 +911,41 @@ VOID __asm __saveds TD_GetBrushSize(
     register __a0 APTR brush,
     register __a1 UWORD *w,
     register __a2 UWORD *h);
+
+/****** tooldock.library/TD_AddDockIconA ************************************
+*
+*   NAME
+*	TD_AddDockIconA -- Add an AppIcon-shaped item to the running dock.
+*
+*   SYNOPSIS
+*	icon = TD_AddDockIconA(id, userdata, text, msgport, lock, diskobj, tags)
+*	D0                     D0  D1        A0    A1       A2    A3       A4
+*
+*	struct DockIcon *TD_AddDockIconA(ULONG, ULONG, STRPTR, struct MsgPort *,
+*	    BPTR, struct DiskObject *, struct TagItem *);
+*
+*   FUNCTION
+*	Same arguments as workbench.library/AddAppIconA. The dock draws
+*	diskobj and sends AppMessages (AMTYPE_APPICON, AMCLASSICON_*) to
+*	msgport. Returns NULL if ToolDock is not running.
+*
+*   SEE ALSO
+*	TD_RemoveDockIcon(), TD_RedrawDockIcon(), AddAppIconA()
+*
+***************************************************************************/
+struct DockIcon * __asm __saveds TD_AddDockIconA(
+    register __d0 ULONG id,
+    register __d1 ULONG userdata,
+    register __a0 STRPTR text,
+    register __a1 struct MsgPort *msgport,
+    register __a2 BPTR lock,
+    register __a3 struct DiskObject *diskobj,
+    register __a4 struct TagItem *taglist);
+
+BOOL __asm __saveds TD_RemoveDockIcon(
+    register __a0 struct DockIcon *icon);
+
+VOID __asm __saveds TD_RedrawDockIcon(
+    register __a0 struct DockIcon *icon);
 
 #endif

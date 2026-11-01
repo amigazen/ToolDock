@@ -277,6 +277,7 @@ struct DockWindow* create_dock(VOID)
         dock->runState = RS_STARTING;
         dock->disableLayout = TRUE;
 
+        NewList((struct List *)&dock->dockIcons);
         InitRastPort(&dock->renderRP);
 
         if( dock->pubPort = CreatePort(APP_NAME, 0L) ) {
@@ -308,6 +309,8 @@ struct DockWindow* create_dock(VOID)
 VOID free_dock(struct DockWindow* dock)
 {
     DEBUG(DB_Printf("free_dock\n"));
+
+    free_dock_icons(dock);
 
     free_cx_broker(dock);
 

@@ -55,3 +55,7 @@
 #pragma libcall ToolDockBase TD_GetBrushSize ea A9803
 /* File Requester*/
 #pragma libcall ToolDockBase TD_SelectFile f0 BA9804
+/* Dock icons (AppIcon mirror)*/
+#pragma libcall ToolDockBase TD_AddDockIconA f6 CBA981007
+#pragma libcall ToolDockBase TD_RemoveDockIcon fc 801
+#pragma libcall ToolDockBase TD_RedrawDockIcon 102 801

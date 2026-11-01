@@ -126,6 +126,11 @@ struct DockWindow
 
     // Built in classes
     Class *handleClass;
+    Class *appIconClass;
+
+    // Client dock icons (TD_AddDockIconA)
+    struct MinList dockIcons;
+    struct MsgPort *diReplyPort;
 
     // Prefs file change notification
     struct MsgPort* notifyPort;
@@ -399,6 +404,20 @@ BOOL init_cx_broker(struct DockWindow *dock);
 VOID free_cx_broker(struct DockWindow *dock);
 
 VOID handle_cx_message(struct DockWindow *dock);
+
+// dockicon.c - TD_AddDockIconA host and TOOLDOCK ARexx
+
+BOOL init_dock_icons(struct DockWindow *dock);
+
+VOID free_dock_icons(struct DockWindow *dock);
+
+VOID dock_icons_preserve(struct DockWindow *dock);
+
+VOID dock_icons_restore(struct DockWindow *dock);
+
+VOID handle_pub_port(struct DockWindow *dock);
+
+VOID handle_dockicon_replies(struct DockWindow *dock);
 
 #endif
 

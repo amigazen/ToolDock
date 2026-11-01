@@ -58,4 +58,8 @@ TD_DrawBrush(brush,rp,srcX,srcY,dstX,dstY,w,h) (a0/a1,d0/d1/d2/d3/d4/d5)
 TD_GetBrushSize(brush,w,h) (a0,a1,a2)
 * File Requester
 TD_SelectFile(title,okText,cancelText,path) (a0/a1/a2/a3)
+* Dock icons (AppIcon mirror)
+TD_AddDockIconA(id,userdata,text,msgport,lock,diskobj,taglist)(d0/d1/a0/a1/a2/a3/a4)
+TD_RemoveDockIcon(icon)(a0)
+TD_RedrawDockIcon(icon)(a0)
 ##end

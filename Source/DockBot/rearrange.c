@@ -1636,6 +1636,9 @@ STATIC BOOL gadget_takes_drop(Object *obj)
     if( class_name_is(id, DB_TRASH_CLASS) ) {
         return TRUE;
     }
+    if( class_name_is(id, DB_APPICON_CLASS) ) {
+        return TRUE;
+    }
     return FALSE;
 }
 
@@ -1690,8 +1693,18 @@ BOOL rearrange_want_insert(struct DockWindow *dock, struct AppMessage *msg,
         }
     }
 
-    /* Insert only after the pointer has sat on the dock for a beat.
-       An immediate drop on Open/Button/Trash uses that item instead. */
+    /* Hit-test before closing the vacant hole so the pointer still
+       matches the tiles the user dropped on. */
+    dg = get_gadget_at(dock, msg->am_MouseX, msg->am_MouseY);
+    takes = FALSE;
+    env.index = 0;
+    if( dg ) {
+        TD_GetDockGadgetEnvironment(dg->dg, &env);
+        if( env.index != 0 ) {
+            takes = gadget_takes_drop(dg->dg);
+        }
+    }
+
     dwelt = dock->wbVacant ? TRUE : dwell_elapsed(dock);
 
     dock->hoverOverDock = FALSE;
@@ -1710,23 +1723,15 @@ BOOL rearrange_want_insert(struct DockWindow *dock, struct AppMessage *msg,
         DEBUG(DB_Printf("rearrange_want_insert: placeholder\n"));
         return TRUE;
     }
-    if( dwelt ) {
-        DEBUG(DB_Printf("rearrange_want_insert: dwelt dest=%ld\n", (LONG)*dest));
-        return TRUE;
-    }
-
-    dg = get_gadget_at(dock, msg->am_MouseX, msg->am_MouseY);
-    takes = FALSE;
-    env.index = 0;
-    if( dg ) {
-        TD_GetDockGadgetEnvironment(dg->dg, &env);
-        if( env.index != 0 ) {
-            takes = gadget_takes_drop(dg->dg);
-        }
-    }
+    /* Drop on Open/Button/Trash/AppIcon always goes to that item.
+       The beat only opens a vacant slot for drops that miss those. */
     if( takes ) {
         DEBUG(DB_Printf("rearrange_want_insert: use gadget\n"));
         return FALSE;
+    }
+    if( dwelt ) {
+        DEBUG(DB_Printf("rearrange_want_insert: dwelt dest=%ld\n", (LONG)*dest));
+        return TRUE;
     }
     DEBUG(DB_Printf("rearrange_want_insert: insert dest=%ld\n", (LONG)*dest));
     return TRUE;

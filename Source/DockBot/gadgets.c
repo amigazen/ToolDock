@@ -52,8 +52,10 @@ BOOL init_gadget_classes(struct DockWindow *dock)
 
     if( dock->gadgetPort = CreateMsgPort() ) {
         if( dock->handleClass = init_dock_handle_class() ) {
-            return TRUE;
-        }   
+            if( init_dock_icons(dock) ) {
+                return TRUE;
+            }
+        }
     }
 
     DEBUG(DB_Printf(__FUNC__ ": Failed\n"));

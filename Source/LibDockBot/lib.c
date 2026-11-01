@@ -177,6 +177,10 @@ APTR FuncTable[] = {
 
     TD_SelectFile,
 
+    TD_AddDockIconA,
+    TD_RemoveDockIcon,
+    TD_RedrawDockIcon,
+
     (APTR)-1
 };
 

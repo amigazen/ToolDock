@@ -14,7 +14,6 @@ SC_OPTS = NOICONS NOCHKABORT DEFINE=DEBUG_BUILD NOSTANDARDIO
 LD_OPTS = NOICONS
 DEF_BV = DEFINE=BUILDVER="1.11"
 DEF_DS = DEFINE=DS="31.10.26"
-ROADSHOW = DEV:RoadshowSDK
 
 TRITON = ///OpenTriton
 TRITON_INC = $(TRITON)/SDK/Include_h
@@ -29,7 +28,7 @@ OUT = /$(DIR)/Gadgets
 BTN_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Button IDIR=../DockBot IDIR=$(NDK_INC) IDIR=$(PM_INC) $(DEF_DS) $(DEF_BV)
 CLK_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Clock $(DEF_DS) $(DEF_BV)
 MEM_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Mem $(DEF_DS) $(DEF_BV)
-NET_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Net IDIR=$(ROADSHOW) $(DEF_DS) $(DEF_BV)
+NET_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Net $(DEF_DS) $(DEF_BV)
 SW_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Switcher $(DEF_DS) $(DEF_BV)
 EYES_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Eyes $(DEF_DS) $(DEF_BV)
 TRASH_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Trash IDIR=../DockBot IDIR=$(NDK_INC) IDIR=$(PM_INC) $(DEF_DS) $(DEF_BV)
@@ -60,6 +59,7 @@ SP_OBJS = Spacer/lib.o Spacer/spacer.o Spacer/dockspacer_cat.o
 all: button
 all: clock
 all: mem
+all: net
 all: switcher
 all: eyes
 all: trash
@@ -191,7 +191,7 @@ Net/pragmas.h: template.fd
 	$(FD_CONV) template.fd Net/pragmas.h
 
 Net/lib.o: Net/lib.c template.c
-Net/net.o: Net/net.c
+Net/net.o: Net/net.c Net/net_socket.h
 Net/docknet_cat.o: Net/docknet_cat.c
 
 $(NET_OBJS):

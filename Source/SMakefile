@@ -18,8 +18,6 @@ LD_OPTS = NOICONS
 DEF_BV = DEFINE=BUILDVER="1.11"
 DEF_DS = DEFINE=DS="31.10.26"
 
-ROADSHOW = netinclude:
-
 TRITON = //OpenTriton
 TRITON_INC = $(TRITON)/SDK/Include_h
 TRITON_LIB = $(TRITON)/SDK/lib/triton.lib
@@ -28,7 +26,7 @@ TRITON_LIB = $(TRITON)/SDK/lib/triton.lib
 NDK_INC = ///NDK3.2R4/Include_H
 PM_INC = //popupmenu.library/SDK/Include_H
 
-LIB_OPTS = CPU=$(CPU) $(SC_OPTS) IDIR=/include IDIR=LibDockBot $(DEF_DS) $(DEF_BV)
+LIB_OPTS = CPU=$(CPU) $(SC_OPTS) IDIR=/include IDIR=LibDockBot IDIR=$(NDK_INC) $(DEF_DS) $(DEF_BV)
 MOTION_INC = //Motion/include
 EXE_OPTS = CPU=$(CPU) $(SC_OPTS) IDIR=/include IDIR=shared IDIR=DockBot IDIR=$(NDK_INC) IDIR=$(MOTION_INC) IDIR=$(PM_INC) $(DEF_DS) $(DEF_BV)
 PREFS_OPTS = CPU=$(CPU) $(SC_OPTS) IDIR=/include IDIR=shared IDIR=DockBotPrefs IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
@@ -36,7 +34,7 @@ DOCK_OPTS = CPU=$(CPU) $(SC_OPTS) IDIR=/include IDIR=DockPrefs IDIR=$(NDK_INC) $
 BTN_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Button IDIR=DockBot IDIR=$(NDK_INC) IDIR=$(PM_INC) IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
 CLK_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Clock IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
 MEM_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Mem IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
-NET_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Net IDIR=$(ROADSHOW) IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
+NET_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Net IDIR=netinclude: IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
 SW_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Switcher IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
 EYES_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Eyes IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
 TRASH_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO IDIR=/include IDIR=Classes IDIR=Classes/Trash IDIR=DockBot IDIR=$(NDK_INC) IDIR=$(PM_INC) IDIR=$(TRITON_INC) $(DEF_DS) $(DEF_BV)
@@ -51,14 +49,16 @@ EYES_LIBS = $(CLASS_LIBS) LIB:scm.lib
 
 LIB_OBJS = LibDockBot/lib.o LibDockBot/gfx.o LibDockBot/gadget.o \
  LibDockBot/settings.o LibDockBot/memory.o LibDockBot/dock_gadget.o \
- LibDockBot/classes.o LibDockBot/req.o LibDockBot/debug.o
+ LibDockBot/classes.o LibDockBot/req.o LibDockBot/debug.o \
+ LibDockBot/dockicon.o
 
 EXE_OBJS = DockBot/main.o DockBot/dock.o DockBot/dockbot_cat.o \
  shared/dock_gadget.o DockBot/dock_handle.o DockBot/events.o \
  DockBot/gadgets.o DockBot/layout.o DockBot/settings.o \
  DockBot/debug.o DockBot/window.o \
  DockBot/cx.o DockBot/appicon.o DockBot/timer.o DockBot/rearrange.o \
- DockBot/dropzone.o DockBot/applife.o
+ DockBot/dropzone.o DockBot/applife.o DockBot/dockicon.o \
+ DockBot/dock_appicon.o
 
 PREFS_OBJS = DockBotPrefs/main.o DockBotPrefs/dockbotprefs_cat.o \
  shared/dock_gadget.o DockBotPrefs/settings.o \
@@ -117,6 +117,7 @@ all: dock
 all: button
 all: clock
 all: mem
+all: net
 all: switcher
 all: eyes
 all: trash
@@ -267,6 +268,7 @@ LibDockBot/dock_gadget.o: LibDockBot/dock_gadget.c LibDockBot/lib.h
 LibDockBot/classes.o: LibDockBot/classes.c LibDockBot/lib.h
 LibDockBot/req.o: LibDockBot/req.c LibDockBot/lib.h
 LibDockBot/debug.o: LibDockBot/debug.c LibDockBot/lib.h
+LibDockBot/dockicon.o: LibDockBot/dockicon.c /include/dockicon.h
 
 $(LIB_OBJS):
 	@echo "        Compiling $*.c..."
@@ -292,9 +294,11 @@ DockBot/timer.o: DockBot/timer.c DockBot/dock.h
 DockBot/rearrange.o: DockBot/rearrange.c DockBot/rearrange.h DockBot/dock.h DockBot/dropzone.h
 DockBot/dropzone.o: DockBot/dropzone.c DockBot/dropzone.h DockBot/dock.h DockBot/rearrange.h
 DockBot/applife.o: DockBot/applife.c DockBot/applife.h
+DockBot/dockicon.o: DockBot/dockicon.c DockBot/dockicon_host.h DockBot/dock.h
+DockBot/dock_appicon.o: DockBot/dock_appicon.c DockBot/dock_appicon.h DockBot/dockicon_host.h
 shared/dock_gadget.o: shared/dock_gadget.c shared/dock_gadget.h
 
-DockBot/main.o DockBot/dock.o DockBot/dockbot_cat.o DockBot/dock_handle.o DockBot/events.o DockBot/gadgets.o DockBot/layout.o DockBot/settings.o DockBot/debug.o DockBot/window.o DockBot/cx.o DockBot/appicon.o DockBot/timer.o DockBot/rearrange.o DockBot/dropzone.o DockBot/applife.o shared/dock_gadget.o:
+DockBot/main.o DockBot/dock.o DockBot/dockbot_cat.o DockBot/dock_handle.o DockBot/events.o DockBot/gadgets.o DockBot/layout.o DockBot/settings.o DockBot/debug.o DockBot/window.o DockBot/cx.o DockBot/appicon.o DockBot/timer.o DockBot/rearrange.o DockBot/dropzone.o DockBot/applife.o DockBot/dockicon.o DockBot/dock_appicon.o shared/dock_gadget.o:
 	@echo "        Compiling $*.c..."
 	@$(COMPILER) $(EXE_OPTS) $*.c to $*.o
 
@@ -373,7 +377,7 @@ Classes/Net/pragmas.h: Classes/template.fd
 	$(FD_CONV) Classes/template.fd Classes/Net/pragmas.h
 
 Classes/Net/lib.o: Classes/Net/lib.c Classes/template.c Classes/Net/class_def.h
-Classes/Net/net.o: Classes/Net/net.c
+Classes/Net/net.o: Classes/Net/net.c Classes/Net/net_socket.h
 Classes/Net/docknet_cat.o: Classes/Net/docknet_cat.c
 
 $(NET_OBJS):
@@ -586,7 +590,7 @@ clean:
 	-Delete DockBot/layout.o DockBot/settings.o DockBot/debug.o
 	-Delete DockBot/window.o DockBot/cx.o
 	-Delete DockBot/appicon.o DockBot/timer.o DockBot/rearrange.o DockBot/dropzone.o
-	-Delete DockBot/applife.o
+	-Delete DockBot/applife.o DockBot/dockicon.o DockBot/dock_appicon.o
 	-Delete DockBotPrefs/main.o DockBotPrefs/dockbotprefs_cat.o
 	-Delete DockBotPrefs/settings.o DockBotPrefs/new_gadget.o
 	-Delete DockBotPrefs/gadget_list.o DockBotPrefs/tags.o
@@ -609,7 +613,7 @@ cleanobj:
 	-Delete DockBot/layout.o DockBot/settings.o DockBot/debug.o
 	-Delete DockBot/window.o DockBot/cx.o
 	-Delete DockBot/appicon.o DockBot/timer.o DockBot/rearrange.o DockBot/dropzone.o
-	-Delete DockBot/applife.o
+	-Delete DockBot/applife.o DockBot/dockicon.o DockBot/dock_appicon.o
 	-Delete DockBotPrefs/main.o DockBotPrefs/dockbotprefs_cat.o
 	-Delete DockBotPrefs/settings.o DockBotPrefs/new_gadget.o
 	-Delete DockBotPrefs/gadget_list.o DockBotPrefs/tags.o

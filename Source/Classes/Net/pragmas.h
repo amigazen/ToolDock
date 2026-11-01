@@ -2,9 +2,7 @@
 /*                                  */
 /*  DockBot - A Dock For AmigaOS 3  */
 /*                                  */
-/*  SPDX-License-Identifier: MIT */
-/*  ToolDock changes Copyright 2026 amigazen project */
-/*  DockBot Copyright 2019 Andrew Kennan */
+/*  © 2016 Andrew Kennan            */
 /*                                  */
 /************************************/
 /* */

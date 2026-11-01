@@ -160,8 +160,10 @@ VOID reload_config(struct DockWindow *dock)
 
     drain_gadget_messages(dock);
     disable_layout(dock);
+    dock_icons_preserve(dock);
     remove_dock_gadgets(dock);
     load_config(dock);
+    dock_icons_restore(dock);
 }
 
 BOOL load_config(struct DockWindow *dock)

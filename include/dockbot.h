@@ -45,6 +45,7 @@ extern BOOL __DebugEnabled;
 #define DB_SPACER_CLASS "DockSpacer"
 #define DB_OPEN_CLASS   "DockOpen"
 #define DB_TRASH_CLASS  "DockTrash"
+#define DB_APPICON_CLASS "DockAppIcon"
 
 typedef enum
 {

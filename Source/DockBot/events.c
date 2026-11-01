@@ -23,12 +23,14 @@
 #define TIMER_SIG(dw) SIG(dw->timerPort)
 #define GADGET_SIG(dw) SIG(dw->gadgetPort)
 #define CX_SIG(dw) SIG(dw->cxPort)
+#define PUB_SIG(dw) SIG(dw->pubPort)
+#define DIREPLY_SIG(dw) SIG(dw->diReplyPort)
 
 
 VOID run_event_loop(struct DockWindow *dock)
 {
     ULONG signals, winsig, iconsig, docksig, notifysig, 
-          timersig, gadgetsig, cxsig, totsig,
+          timersig, gadgetsig, cxsig, pubsig, direplysig, totsig,
           customsig;
 
     while( dock->runState != RS_STOPPED ) {
@@ -142,8 +144,11 @@ VOID run_event_loop(struct DockWindow *dock)
                 timersig    = TIMER_SIG(dock);
                 gadgetsig   = GADGET_SIG(dock);
                 cxsig       = CX_SIG(dock);
+                pubsig      = PUB_SIG(dock);
+                direplysig  = DIREPLY_SIG(dock);
 
-                totsig = winsig | docksig | iconsig | notifysig | timersig | gadgetsig | cxsig | SIGBREAKF_CTRL_C;
+                totsig = winsig | docksig | iconsig | notifysig | timersig
+                    | gadgetsig | cxsig | pubsig | direplysig | SIGBREAKF_CTRL_C;
 
                 customsig = get_custom_sigs(dock);
 
@@ -184,6 +189,14 @@ VOID run_event_loop(struct DockWindow *dock)
 
                     if( signals & cxsig ) {
                         handle_cx_message(dock);
+                    }
+
+                    if( signals & pubsig ) {
+                        handle_pub_port(dock);
+                    }
+
+                    if( signals & direplysig ) {
+                        handle_dockicon_replies(dock);
                     }
 
                     if( dock->reloadPending
