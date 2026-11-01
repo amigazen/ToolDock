@@ -83,7 +83,9 @@ struct Library *open_lib(STRPTR name, UWORD version, BOOL optional)
 VOID close_lib(STRPTR name, struct Library *lib) 
 {
     if( lib ) {
-        DEBUG(DB_Printf("Closing %s\n", name));
+        if( ToolDockBase ) {
+            DEBUG(DB_Printf("Closing %s\n", name));
+        }
         CloseLibrary(lib);
     }
 }
@@ -149,7 +151,13 @@ int main(int argc, char** argv)
                                 close_lib("workbench.library", WorkbenchBase);
                             }
                             close_lib("gadtools.library", GadToolsBase);
-                        }        
+                        }
+                        /* Expunge VFPrintf's the debug stream and then
+                           CloseLibrary's intuition/graphics/dos. Do that
+                           while those libraries are still open. */
+                        DEBUG(TD_RegisterDebugStream(NULL));
+                        close_lib("tooldock.library", ToolDockBase);
+                        ToolDockBase = NULL;
                         close_lib("intuition.library", (struct Library *)IntuitionBase);
                     }
                     close_lib("layers.library", LayersBase);
@@ -157,7 +165,6 @@ int main(int argc, char** argv)
                 close_lib("graphics.library", GfxBase);
             }
             close_lib("dos.library", DosBase);
-        }  
-        close_lib("tooldock.library", ToolDockBase);
+        }
     }
 }

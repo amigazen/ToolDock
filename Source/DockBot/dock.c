@@ -217,98 +217,19 @@ STATIC BOOL execute_workbench(STRPTR path, STRPTR args)
 
 VOID show_about(struct DockWindow *dock)
 {
-    STRPTR msg;
     STRPTR body;
-    STRPTR p;
-    STRPTR name;
-    STRPTR version;
-    STRPTR desc;
-    STRPTR copy;
     STRPTR cursor;
-    ULONG msgLen;
     ULONG bodyLen;
-    ULONG l;
-    UBYTE fmtArgs[8];
-    struct DgNode *curr;
-    ClassID lastClass;
-    ClassID currClass;
+    UBYTE fmtArgs[4];
 
-    lastClass = 0;
-    msg = NULL;
-    body = NULL;
-    msgLen = 0;
-    FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
-
-        if( ! dock_gadget_builtin(curr->dg) ) {
-
-            currClass = OCLASS(curr->dg)->cl_ID;
-            if( currClass == lastClass ) {
-                continue;
-            }
-            lastClass = currClass;
-
-            dock_gadget_get_info(curr->dg, &name, &version, &desc, &copy);
-
-            msgLen += strlen(name) + strlen(version) + strlen(desc) + strlen(copy) + 8;
-        }
-    }
-
-    if( msgLen > 0 ) {
-        msg = (STRPTR)TD_AllocMem(msgLen, MEMF_CLEAR);
-    }
-
-    if( msg ) {
-        p = msg;
-        lastClass = 0;
-
-        FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
-
-            if( ! dock_gadget_builtin(curr->dg) ) {
-
-                currClass = OCLASS(curr->dg)->cl_ID;
-                if( currClass == lastClass ) {
-                    continue;
-                }
-                lastClass = currClass;
-
-                dock_gadget_get_info(curr->dg, &name, &version, &desc, &copy);
-
-                l = strlen(name);
-                CopyMem(name, p, l);
-                p += l;
-                *(p++) = ' ';
-                l = strlen(version);
-                CopyMem(version, p, l);
-                p += l;
-                *(p++) = '\n';
-                l = strlen(desc);
-                CopyMem(desc, p, l);
-                p += l;
-                *(p++) = '\n';
-                l = strlen(copy);
-                CopyMem(copy, p, l);
-                p += l;
-                *(p++) = '\n';
-                *(p++) = '\n';
-            }
-        }
-        *p = '\0';
-    }
-
-    bodyLen = strlen((STRPTR)MSG_ABOUT_Text) + strlen(VERSION_STR)
-        + (msg ? msgLen : 0) + 1;
+    bodyLen = strlen((STRPTR)MSG_ABOUT_Text) + strlen(VERSION_STR) + 1;
     if( body = (STRPTR)TD_AllocMem(bodyLen, MEMF_CLEAR) ) {
         *(STRPTR *)fmtArgs = VERSION_STR;
-        *(STRPTR *)(fmtArgs + 4) = msg ? msg : (STRPTR)"";
         cursor = body;
         RawDoFmt((STRPTR)MSG_ABOUT_Text, fmtArgs, (VOID (*)())put_fmt_char, &cursor);
         TD_OpenRequest(dock->win, (STRPTR)MSG_ABOUT_Title, body,
             (STRPTR)MSG_OK, TDREQIMAGE_INFO);
         TD_FreeMem(body, bodyLen);
-    }
-
-    if( msg ) {
-        TD_FreeMem(msg, msgLen);
     }
 }
 

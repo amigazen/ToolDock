@@ -94,8 +94,8 @@ A propos de ToolDock
 ; About ToolDock
 ;
 MSG_ABOUT_Text
-Version de ToolDock %s\n\nUn Dock pour AmigaOS 3\n\nCopyright 2026 amigazen project\nBased on DockBot by Andrew Kennan\n\n%s
-; ToolDock Version %s\n\nA Dock For AmigaOS 3\n\nCopyright 2026 amigazen project\nBased on DockBot by Andrew Kennan\n\n%s
+Version de ToolDock %s\n\nUn Dock pour AmigaOS 3\n\nCopyright 2026 amigazen project\nBased on DockBot by Andrew Kennan
+; ToolDock Version %s\n\nA Dock For AmigaOS 3\n\nCopyright 2026 amigazen project\nBased on DockBot by Andrew Kennan
 ;
 MSG_CX_Description
 Un Dock pour AmigaOS 3

@@ -39,7 +39,7 @@ struct FC_String DockBot_Strings[27] = {
     { (STRPTR) "Open Preferences...", 18 },
     { (STRPTR) "S", 19 },
     { (STRPTR) "About ToolDock", 20 },
-    { (STRPTR) "ToolDock Version %s\n\nA Dock For AmigaOS 3\n\nCopyright 2026 amigazen project\nBased on DockBot by Andrew Kennan\n\n%s", 21 },
+    { (STRPTR) "ToolDock Version %s\n\nA Dock For AmigaOS 3\n\nCopyright 2026 amigazen project\nBased on DockBot by Andrew Kennan", 21 },
     { (STRPTR) "A Dock For AmigaOS 3", 22 },
     { (STRPTR) "Remove", 23 },
     { (STRPTR) "Remove", 24 },
