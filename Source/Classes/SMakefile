@@ -19,6 +19,8 @@ ROADSHOW = DEV:RoadshowSDK
 TRITON = ///OpenTriton
 TRITON_INC = $(TRITON)/SDK/Include_h
 TRITON_LIB = $(TRITON)/Source/lib/triton.lib
+NDK_INC = ////NDK3.2R4/Include_H
+PM_INC = ///popupmenu.library/SDK/Include_H
 
 INC = IDIR=//include IDIR=. IDIR=$(TRITON_INC)
 CLASS_LIBS = LIB:sc.lib LIB:amiga.lib $(TRITON_LIB)
@@ -30,8 +32,9 @@ MEM_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Mem $(DEF_DS) $(DEF_BV)
 NET_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Net IDIR=$(ROADSHOW) $(DEF_DS) $(DEF_BV)
 SW_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Switcher $(DEF_DS) $(DEF_BV)
 EYES_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Eyes $(DEF_DS) $(DEF_BV)
-TRASH_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Trash $(DEF_DS) $(DEF_BV)
+TRASH_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Trash IDIR=../DockBot IDIR=$(NDK_INC) IDIR=$(PM_INC) $(DEF_DS) $(DEF_BV)
 OPEN_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Open $(DEF_DS) $(DEF_BV)
+EX_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Exchange IDIR=../DockBot IDIR=$(NDK_INC) IDIR=$(PM_INC) $(DEF_DS) $(DEF_BV)
 
 BTN_OBJS = Button/lib.o Button/button.o Button/triton_icon.o Button/dockbutton_cat.o
 CLK_OBJS = Clock/lib.o Clock/clock.o Clock/dockclock_cat.o
@@ -39,8 +42,11 @@ MEM_OBJS = Mem/lib.o Mem/mem.o Mem/dockmem_cat.o
 NET_OBJS = Net/lib.o Net/net.o Net/docknet_cat.o
 SW_OBJS = Switcher/lib.o Switcher/switcher.o Switcher/prefs.o Switcher/window_list.o Switcher/switcher_cat.o
 EYES_OBJS = Eyes/lib.o Eyes/eyes.o Eyes/eyes_cat.o
-TRASH_OBJS = Trash/lib.o Trash/trash.o Trash/trash_move.o Trash/docktrash_cat.o
+TRASH_CLASS_OBJS = Trash/lib.o Trash/trash.o Trash/trash_move.o Trash/docktrash_cat.o
+TRASH_OBJS = $(TRASH_CLASS_OBJS) ../DockBot/applife.o
 OPEN_OBJS = Open/lib.o Open/open.o Open/open_item.o Open/dockopen_cat.o
+EX_CLASS_OBJS = Exchange/lib.o Exchange/exchange.o Exchange/dockexchange_cat.o
+EX_OBJS = $(EX_CLASS_OBJS) ../DockBot/applife.o
 
 .c.o:
 	@echo "        Compiling $*.c..."
@@ -55,6 +61,7 @@ all: switcher
 all: eyes
 all: trash
 all: open
+all: exchange
 
 button: $(OUT)/DockButton.class
 clock: $(OUT)/DockClock.class
@@ -64,6 +71,7 @@ switcher: $(OUT)/Switcher.class
 eyes: $(OUT)/Eyes.class
 trash: $(OUT)/DockTrash.class
 open: $(OUT)/DockOpen.class
+exchange: $(OUT)/DockExchange.class
 
 $(OUT)/DockButton.class: dirs Button/dockbutton_cat.c Button/pragmas.h $(BTN_OBJS)
 	$(LINKER) WITH <<
@@ -118,6 +126,13 @@ $(OUT)/DockOpen.class: dirs Open/dockopen_cat.c Open/pragmas.h $(OPEN_OBJS)
 	$(LINKER) WITH <<
 TO $(OUT)/DockOpen.class
 FROM $(OPEN_OBJS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
+<
+
+$(OUT)/DockExchange.class: dirs Exchange/dockexchange_cat.c Exchange/pragmas.h $(EX_OBJS)
+	$(LINKER) WITH <<
+TO $(OUT)/DockExchange.class
+FROM $(EX_OBJS)
 LIB $(CLASS_LIBS) $(LD_OPTS)
 <
 
@@ -202,7 +217,7 @@ Trash/trash.o: Trash/trash.c trash_move.h
 Trash/trash_move.o: Trash/trash_move.c trash_move.h
 Trash/docktrash_cat.o: Trash/docktrash_cat.c
 
-$(TRASH_OBJS):
+$(TRASH_CLASS_OBJS):
 	@echo "        Compiling $*.c..."
 	@$(COMPILER) $(TRASH_OPTS) $*.c to $*.o
 
@@ -218,12 +233,24 @@ $(OPEN_OBJS):
 	@echo "        Compiling $*.c..."
 	@$(COMPILER) $(OPEN_OPTS) $*.c to $*.o
 
+Exchange/pragmas.h: template.fd
+	$(FD_CONV) template.fd Exchange/pragmas.h
+
+Exchange/lib.o: Exchange/lib.c template.c
+Exchange/exchange.o: Exchange/exchange.c
+Exchange/dockexchange_cat.o: Exchange/dockexchange_cat.c
+
+$(EX_CLASS_OBJS):
+	@echo "        Compiling $*.c..."
+	@$(COMPILER) $(EX_OPTS) $*.c to $*.o
+
 clean:
-	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS) $(TRASH_OBJS) $(OPEN_OBJS)
+	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS) $(TRASH_OBJS) $(OPEN_OBJS) $(EX_OBJS)
 	-Delete $(OUT)/DockButton.class $(OUT)/DockClock.class
 	-Delete $(OUT)/DockMem.class $(OUT)/DockNet.class
 	-Delete $(OUT)/Switcher.class $(OUT)/Eyes.class
 	-Delete $(OUT)/DockTrash.class $(OUT)/DockOpen.class
+	-Delete $(OUT)/DockExchange.class
 
 cleanobj:
-	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS) $(TRASH_OBJS) $(OPEN_OBJS)
+	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS) $(TRASH_OBJS) $(OPEN_OBJS) $(EX_OBJS)

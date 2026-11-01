@@ -94,7 +94,7 @@ VOID gadget_selected(struct DockPrefs *prefs, LONG index)
         gadCount++;
     }
 
-    if( gadCount == 0 || index < 0 ) {
+    if( gadCount == 0 || index < 0 || dg == NULL ) {
         set_main_disabled(prefs, GID_BTN_UP, TRUE);
         set_main_disabled(prefs, GID_BTN_DOWN, TRUE);
         set_main_disabled(prefs, GID_BTN_EDIT, TRUE);

@@ -49,3 +49,18 @@ Start Type
 MSG_UI_Console (//)
 Console
 ;
+;
+; App popup
+;
+MSG_POP_Open (//)
+Open
+;
+MSG_POP_Show (//)
+Show
+;
+MSG_POP_Hide (//)
+Hide
+;
+MSG_POP_Quit (//)
+Quit
+;

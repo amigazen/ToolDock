@@ -132,6 +132,7 @@ typedef enum {
 	DM_HOTKEY			= 1305,
     DM_LAUNCHED         = 1306,
     DM_MESSAGE          = 1307,
+    DM_POPUP            = 1308,
 
     // Rendering.
 	DM_GETSIZE 		    = 1400,
@@ -181,6 +182,12 @@ struct DockMessageClick
 {
 	ULONG MethodID;
 	UWORD x,y;
+};
+
+struct DockMessagePopup
+{
+	ULONG MethodID;
+	struct Window *window;
 };
 
 struct DockMessageDrop

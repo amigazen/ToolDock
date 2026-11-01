@@ -14,3 +14,9 @@ TRASH: is not available. Start WBTrash first.
 MSG_ERR_MoveFailed (//)
 Could not move the dropped item to the trash.
 ;
+MSG_POP_Empty (//)
+Empty Trash
+;
+MSG_ERR_EmptyFailed (//)
+Could not empty the trash.
+;

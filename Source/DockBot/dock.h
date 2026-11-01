@@ -22,8 +22,16 @@
 #include <intuition/intuition.h>
 #include <intuition/intuitionbase.h>
 #include <intuition/classes.h>
+/* NDK proto: official intuition.library LVOs. Do not add libcalls. */
+#include <proto/intuition.h>
 #include <libraries/commodities.h>
 #include <graphics/layers.h>
+#include <utility/hooks.h>
+#include <exec/semaphores.h>
+
+#define REARRANGE_MAX_GADGETS 48
+#define REARRANGE_MAX_ZONES   96
+#define REARRANGE_ZONE_BASE   1000
 
 #include "dockbot.h"
 #include "dockbot_protos.h"
@@ -68,7 +76,8 @@ typedef enum {
     RS_STOP_EDIT = 12,
 	RS_CHANGING = 13,
 
-    RS_HIDDEN = 14
+    RS_HIDDEN = 14,
+    RS_REARRANGING = 15
 } RunState;
 
 typedef enum {
@@ -123,6 +132,7 @@ struct DockWindow
     struct NotifyRequest notifyReq; 
     BOOL notifyEnabled;
     BOOL notifySupported;
+    BOOL reloadPending;
 
     // Timer
     struct timerequest *timerReq;
@@ -148,8 +158,6 @@ struct DockWindow
 
     // Gadget name tooltips
     Object *hoverGad;
-    struct Window *hoverWin;
-    UWORD hoverCount;
 
     // Background image
     APTR bgBrush;
@@ -171,11 +179,53 @@ struct DockWindow
 	struct Layer *renderL;
 	struct BitMap *renderBM;
 	UWORD renderW, renderH;
+
+    /* Dwell-to-rearrange: reserved slot, WB hover, internal drag, Motion. */
+    WORD gapIndex;
+    UWORD gapSize;
+    UWORD dwellCount;
+    BOOL hoverOverDock;
+    BOOL rearrangeFromWB;
+    BOOL dragArmed;
+    BOOL motionBusy;
+    struct DgNode *placeholder;
+    WORD dropOnto;
+    struct DgNode *dragNode;
+    UWORD dragW;
+    UWORD dragH;
+    WORD dragStartX;
+    WORD dragStartY;
+    struct Hook dropHook;
+    struct AppWindowDropZone *dropZones[REARRANGE_MAX_ZONES];
+    struct IBox zoneBoxes[REARRANGE_MAX_ZONES];
+    UWORD dropZoneCount;
+    struct IBox restBox[REARRANGE_MAX_GADGETS];
+    struct IBox drawBox[REARRANGE_MAX_GADGETS];
+    struct IBox hookDest[REARRANGE_MAX_GADGETS];
+    UWORD snapCount;
+    struct BitMap *snapBM;
+    struct BitMap *snapBG;
+    struct BitMap *hookBM;
+    UWORD snapW;
+    UWORD snapH;
+    BOOL snapBGReady;
+    UWORD hookEnterCount;
+    UWORD hookLeaveCount;
+    UWORD zoneSnapCount;
+    UWORD zoneSnapW;
+    UWORD zoneSnapH;
+    struct SignalSemaphore dropLock;
+    BOOL dropValid;
+    WORD shownGap;
+    APTR motionHandle;
+    APTR motionDisplay;
+    struct IBox *motionFrom;
+    struct IBox *motionModel;
+    UWORD motionCount;
+    UWORD motionTick;
 };
 
 #define TIMER_INTERVAL 250L
-
-#define HOVER_COUNT 8
 
 /* GetDiskObject()/GetIconTagList() append ".info" to this name. */
 #define APP_ICON "PROGDIR:" APP_NAME
@@ -183,6 +233,8 @@ struct DockWindow
 #define DOCK_HORIZONTAL(dock) (dock->cfg.pos == DP_TOP || dock->cfg.pos == DP_BOTTOM)
 
 #define DOCK_EDITING(dock) (dock->runState == RS_EDITING || dock->runState == RS_CHANGING)
+
+#define DOCK_REARRANGING(dock) (dock->runState == RS_REARRANGING)
 
 // dock.c - Startup/shutdown, general functions.
 
@@ -211,6 +263,8 @@ VOID free_config_notification(struct DockWindow *dock);
 
 VOID handle_notify_message(struct DockWindow *dock);
 
+VOID reload_config(struct DockWindow *dock);
+
 VOID load_icon_brushes(struct DockWindow *dock);
 
 VOID free_icon_brushes(struct DockWindow *dock);
@@ -218,6 +272,9 @@ VOID free_icon_brushes(struct DockWindow *dock);
 VOID save_config(struct DockWindow *dock);
 
 VOID add_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name);
+
+BOOL insert_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name,
+    struct DgNode *before);
 
 // window.c - Window functions
 
@@ -292,8 +349,6 @@ ULONG get_custom_sigs(struct DockWindow *dock);
 
 VOID handle_custom_message(struct DockWindow *dock, ULONG signal);
 
-VOID hide_gadget_label(struct DockWindow *dock);
-
 VOID update_entire_window(struct DockWindow *dock);
 
 // layout.c
@@ -302,6 +357,8 @@ ULONG get_window_top(struct Screen* screen, DockPosition pos, DockAlign align, U
 
 ULONG get_window_left(struct Screen* screen, DockPosition pos, DockAlign align, UWORD width);
 
+VOID measure_dock_size(struct DockWindow *dock, UWORD *outW, UWORD *outH);
+
 VOID layout_gadgets(struct DockWindow *dock);
 
 VOID disable_layout(struct DockWindow *dock);
@@ -309,6 +366,8 @@ VOID disable_layout(struct DockWindow *dock);
 VOID enable_layout(struct DockWindow *dock);
 
 VOID free_render_bitmap(struct DockWindow *dock);
+
+VOID update_render_bitmap(struct DockWindow *dock, UWORD w, UWORD h);
 
 // cx.c - Commodities Exchange handling
 

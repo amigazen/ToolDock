@@ -15,7 +15,6 @@
 #include <intuition/screens.h>
 #include <clib/exec_protos.h>
 #include <clib/alib_protos.h>
-#include <clib/intuition_protos.h>
 #include <clib/graphics_protos.h>
 #include <clib/layers_protos.h>
 
@@ -79,7 +78,11 @@ VOID update_render_bitmap(struct DockWindow *dock, UWORD w, UWORD h)
         return;
     }
 
-    DEBUG(DB_Printf(__FUNC__ ": New window size: %d, %d\n", w, h));
+    DEBUG(DB_Printf(__FUNC__ ": New window size: %ld, %ld\n", (LONG)w, (LONG)h));
+
+    if( w < 1 || h < 1 ) {
+        return;
+    }
 
     free_render_bitmap(dock);
 
@@ -129,6 +132,75 @@ VOID update_render_bitmap(struct DockWindow *dock, UWORD w, UWORD h)
     }
 }
 
+VOID measure_dock_size(struct DockWindow *dock, UWORD *outW, UWORD *outH)
+{
+    UWORD w;
+    UWORD h;
+    UWORD max;
+    UWORD size;
+    UWORD maxSize;
+    struct DgNode *curr;
+    struct Screen *screen;
+
+    w = DEFAULT_SIZE;
+    h = DEFAULT_SIZE;
+    max = 0;
+    size = 0;
+    maxSize = 1024;
+    if( screen = LockPubScreen(NULL) ) {
+        maxSize = get_max_window_size(screen, dock->cfg.pos);
+        UnlockPubScreen(NULL, screen);
+    }
+    if( maxSize < 8 ) {
+        maxSize = 1024;
+    }
+
+    FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
+        dock_gadget_get_size(curr->dg, dock->cfg.pos, dock->cfg.align, &w, &h);
+        if( w < 1 || w > 128 ) {
+            w = DEFAULT_SIZE;
+        }
+        if( h < 1 || h > 128 ) {
+            h = DEFAULT_SIZE;
+        }
+        w += dock->cfg.gadgetPadding * 2;
+        h += dock->cfg.gadgetPadding * 2;
+        if( DOCK_HORIZONTAL(dock) ) {
+            if( size + w > maxSize ) {
+                break;
+            }
+            size += w;
+            if( max < h ) {
+                max = h;
+            }
+        } else {
+            if( size + h > maxSize ) {
+                break;
+            }
+            size += h;
+            if( max < w ) {
+                max = w;
+            }
+        }
+    }
+    if( size < 8 ) {
+        size = DEFAULT_SIZE;
+    }
+    if( max < 8 ) {
+        max = DEFAULT_SIZE;
+    }
+    if( ! dock->cfg.showGadgetBorders ) {
+        max += 1;
+    }
+    if( DOCK_HORIZONTAL(dock) ) {
+        *outW = size;
+        *outH = max;
+    } else {
+        *outW = max;
+        *outH = size;
+    }
+}
+
 VOID layout_gadgets(struct DockWindow *dock)
 {
     UWORD w, h, x = 0, y = 0, i, max, size = 0, maxSize, wx, wy;
@@ -141,6 +213,9 @@ VOID layout_gadgets(struct DockWindow *dock)
     DEBUG(DB_Printf(__FUNC__ "\n"));
 
     if( dock->disableLayout ) {
+        return;
+    }
+    if( dock->hoverOverDock ) {
         return;
     }
 
@@ -180,9 +255,21 @@ VOID layout_gadgets(struct DockWindow *dock)
                 FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
 
                     dock_gadget_get_size(curr->dg, dock->cfg.pos, dock->cfg.align, &w, &h);
+                    if( w < 1 || w > 128 ) {
+                        w = DEFAULT_SIZE;
+                    }
+                    if( h < 1 || h > 128 ) {
+                        h = DEFAULT_SIZE;
+                    }
                         
                     w += dock->cfg.gadgetPadding * 2;
                     h += dock->cfg.gadgetPadding * 2;
+
+                    if( curr == dock->dragNode && dock->runState == RS_REARRANGING ) {
+                        sizes[i] = 0;
+                        i++;
+                        continue;
+                    }
 
                     if( size + w > maxSize ) {
                         break;
@@ -192,6 +279,11 @@ VOID layout_gadgets(struct DockWindow *dock)
                     size += w;
                     sizes[i] = w;
                     i++;
+                }
+
+                if( dock->runState == RS_REARRANGING && ! dock->rearrangeFromWB
+                    && dock->gapIndex >= 0 ) {
+                    size += dock->gapSize;
                 }
              
                 wx = get_window_left(screen, dock->cfg.pos, dock->cfg.align, size);
@@ -213,6 +305,16 @@ VOID layout_gadgets(struct DockWindow *dock)
                 env.windowBounds.h = y;
 
                 FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
+
+                    if( dock->runState == RS_REARRANGING && ! dock->rearrangeFromWB
+                        && i == dock->gapIndex ) {
+                        x += dock->gapSize;
+                    }
+
+                    if( curr == dock->dragNode && dock->runState == RS_REARRANGING ) {
+                        i++;
+                        continue;
+                    }
                 
                     env.index = i;
                     env.isLast = i == gadgetCount - 1;
@@ -224,7 +326,12 @@ VOID layout_gadgets(struct DockWindow *dock)
                     
                     x += sizes[i];
                     i++;
-                }                
+                }
+
+                if( dock->runState == RS_REARRANGING && ! dock->rearrangeFromWB
+                    && i == dock->gapIndex ) {
+                    x += dock->gapSize;
+                } 
 
             } else {
     
@@ -232,9 +339,21 @@ VOID layout_gadgets(struct DockWindow *dock)
                 FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
 
                     dock_gadget_get_size(curr->dg, dock->cfg.pos, dock->cfg.align, &w, &h);
+                    if( w < 1 || w > 128 ) {
+                        w = DEFAULT_SIZE;
+                    }
+                    if( h < 1 || h > 128 ) {
+                        h = DEFAULT_SIZE;
+                    }
 
                     w += dock->cfg.gadgetPadding * 2;
                     h += dock->cfg.gadgetPadding * 2;
+
+                    if( curr == dock->dragNode && dock->runState == RS_REARRANGING ) {
+                        sizes[i] = 0;
+                        i++;
+                        continue;
+                    }
 
                     if( size + h > maxSize ) {
                         break;
@@ -244,6 +363,11 @@ VOID layout_gadgets(struct DockWindow *dock)
                     size += h;
                     sizes[i] = h;
                     i++;
+                }
+
+                if( dock->runState == RS_REARRANGING && ! dock->rearrangeFromWB
+                    && dock->gapIndex >= 0 ) {
+                    size += dock->gapSize;
                 }
 
                 wx = get_window_left(screen, dock->cfg.pos, dock->cfg.align, max);
@@ -265,6 +389,16 @@ VOID layout_gadgets(struct DockWindow *dock)
                 env.windowBounds.h = y;
 
                 FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
+
+                    if( dock->runState == RS_REARRANGING && ! dock->rearrangeFromWB
+                        && i == dock->gapIndex ) {
+                        y += dock->gapSize;
+                    }
+
+                    if( curr == dock->dragNode && dock->runState == RS_REARRANGING ) {
+                        i++;
+                        continue;
+                    }
                 
                     env.index = i;
                     env.isLast = i == gadgetCount - 1;
@@ -276,11 +410,49 @@ VOID layout_gadgets(struct DockWindow *dock)
 
                     y += sizes[i];
                     i++;
-                }                
+                }
+
+                if( dock->runState == RS_REARRANGING && ! dock->rearrangeFromWB
+                    && i == dock->gapIndex ) {
+                    y += dock->gapSize;
+                } 
 
             }
 
-            ChangeWindowBox(dock->win, wx, wy, x, y);
+            if( x < 1 ) {
+                x = 1;
+            }
+            if( y < 1 ) {
+                y = 1;
+            }
+            /* Never grow to screen size. y=maxSize is a full-height empty
+               window that looks like a requester. */
+            if( DOCK_HORIZONTAL(dock) ) {
+                if( x > size + 2 ) {
+                    x = size;
+                }
+                if( y > 128 ) {
+                    y = DEFAULT_SIZE;
+                }
+            } else {
+                if( y > size + 2 ) {
+                    y = size;
+                }
+                if( x > 128 ) {
+                    x = DEFAULT_SIZE;
+                }
+            }
+
+            DEBUG(DB_Printf("layout_gadgets: box %ld,%ld %ld x %ld\n",
+                (LONG)wx, (LONG)wy, (LONG)x, (LONG)y));
+
+            if( dock->win
+                && (dock->win->LeftEdge != (WORD)wx
+                    || dock->win->TopEdge != (WORD)wy
+                    || dock->win->Width != x
+                    || dock->win->Height != y) ) {
+                ChangeWindowBox(dock->win, wx, wy, x, y);
+            }
 
             update_render_bitmap(dock, x, y);
             

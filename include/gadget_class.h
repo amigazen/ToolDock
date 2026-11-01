@@ -47,7 +47,8 @@ VOID geta4(VOID);
 //#define METHOD_TICK         
 //#define METHOD_CLICK        
 //#define METHOD_DROP     
-//#define METHOD_HOTKEY		
+//#define METHOD_HOTKEY
+//#define METHOD_POPUP
 
 //#define METHOD_GETSIZE      
 //#define METHOD_DRAW         

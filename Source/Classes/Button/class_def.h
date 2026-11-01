@@ -17,8 +17,8 @@
 
 #define CLASS_NAME      "DockButton"
 #define CLASS_VERSION   1
-#define CLASS_REVISION  3
-#define CLASS_VER_STR   "1.3 (" DS ")"
+#define CLASS_REVISION  4
+#define CLASS_VER_STR   "1.4 (" DS ")"
 #define CLASS_COPYRIGHT "Copyright 2026 amigazen project. Based on DockBot by Andrew Kennan"
 #define PRIVATE_DATA    ButtonGadgetData
 #define PARENT_CLASS    DB_ROOT_CLASS
@@ -53,6 +53,7 @@
 #define METHOD_GETLABEL     button_get_label
 
 #define METHOD_INITBUTTON   button_init
+#define METHOD_POPUP        button_popup
 
 struct ButtonLibData
 {
@@ -77,6 +78,20 @@ struct ButtonGadgetData
     UWORD counter;
     UWORD iconState;
     STRPTR selectedPath;
+    /* Program-icon TD_* tooltypes. Copied off the DiskObject. */
+    STRPTR tdCx;
+    STRPTR tdRx;
+    STRPTR tdRxShow;
+    STRPTR tdRxHide;
+    STRPTR tdRxQuit;
+    STRPTR tdRxOpen;
+    UWORD tdLaunch;
+    UWORD tdOpen;
+    BOOL appRunning;
+    UWORD hbCount;
+    STRPTR pendingRx[16];
+    UWORD pendingRxCount;
+    UWORD pendingRxTries;
 };
 
 #endif

@@ -19,6 +19,17 @@ it are clock, memory meter, network monitor and window switcher gadgets.
 This archive includes source code and binaries compiled for 68000, 68020 and
 68040 CPUs.
 
+ToolDock is a fork of DockBot, allowed under MIT license terms.
+
+Compared to DockBot, ToolDock offers these improvements:
+* Applications
+* A new Open widget creates a smart launcher that will open the Default Tool for  
+* 
+* Animations use motion.library, also from amigazen project, when available
+* A new Trash widget adds Trashcan support when using WBTrash, also from amigazen project
+* Instead of WBRun/parm.library, Workbench style launching uses workbench.library OpenWorkbenchObject() directly
+
+
 The source repository can be found at https://github.com/amigazen/ToolDock
 
 Changes:

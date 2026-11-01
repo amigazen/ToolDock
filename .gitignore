@@ -41,3 +41,4 @@ Compile*.info
 *.tmp
 
 *.uaem
+output.txt

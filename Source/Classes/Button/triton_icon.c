@@ -181,7 +181,12 @@ TR_METHOD(Icon, EVENT, EventData)
 
 BOOL init_icon_class(TR_App *app)
 {
-    return TR_AddClassTags(app, 
+    static BOOL added;
+
+    if( added ) {
+        return TRUE;
+    }
+    if( TR_AddClassTags(app, 
         TROB_Icon, TROB_DisplayObject, 
         NULL, sizeof(struct TROD_Icon),
 
@@ -191,6 +196,10 @@ BOOL init_icon_class(TR_App *app)
         TROM_SETATTRIBUTE,  TRDP_Icon_SETATTRIBUTE,
         TROM_GETATTRIBUTE,  TRDP_Icon_GETATTRIBUTE,
         TROM_EVENT,         TRDP_Icon_EVENT,
-        TAG_END);   
+        TAG_END) ) {
+        added = TRUE;
+        return TRUE;
+    }
+    return FALSE;
 }
 

@@ -89,6 +89,7 @@ VOID init_config(struct DockPrefs *prefs)
     prefs->cfg.showGadgetLabels = TRUE;
     prefs->cfg.showGadgetBorders = TRUE;
     prefs->cfg.bgBrushPath = NULL;
+    prefs->cfg.gadgetPadding = MIN_PADDING;
     
     NewList(&prefs->cfg.gadgets);
     NewList(&prefs->gadLabels);

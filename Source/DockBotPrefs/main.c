@@ -482,6 +482,7 @@ int main(char **argv, int argc)
 
             if( UtilityBase = open_lib("utility.library", 37) ) {
 
+                memset(&prefs, 0, sizeof(prefs));
                 init_config(&prefs);
 
                 if( prefs.mainWindow = open_main_window() ) {

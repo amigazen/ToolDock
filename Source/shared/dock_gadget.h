@@ -23,6 +23,8 @@ VOID dock_gadget_tick(Object *obj);
 
 VOID dock_gadget_click(Object *obj, UWORD x, UWORD y);
 
+BOOL dock_gadget_popup(Object *obj, struct Window *window);
+
 VOID dock_gadget_drop(Object *obj, STRPTR *paths, UWORD count);
 
 VOID dock_gadget_launched(Object *obj, STRPTR path, STRPTR args, STRPTR console, BOOL wb);

@@ -21,3 +21,11 @@ MSG_ERR_MoveFailed
 Impossibile spostare l'elemento nel cestino.
 ; Could not move the dropped item to the trash.
 ;
+MSG_POP_Empty
+Svuota il cestino
+; Empty Trash
+;
+MSG_ERR_EmptyFailed
+Impossibile svuotare il cestino.
+; Could not empty the trash.
+;

@@ -227,6 +227,7 @@ ULONG __saveds dock_gadget_dispatch(Class *c, Object *o, Msg msg)
         case DM_CLICK:
         case DM_DROP:
         case DM_HOTKEY:
+        case DM_POPUP:
         
         case DM_WRITECONFIG:
         case DM_INITBUTTON:

@@ -1,0 +1,25 @@
+;
+; DockExchange
+;
+;
+MSG_Description (//)
+A commodities Exchange gadget
+;
+MSG_Label (//)
+Exchange
+;
+MSG_POP_Show (//)
+Show
+;
+MSG_POP_Hide (//)
+Hide
+;
+MSG_POP_Quit (//)
+Quit
+;
+MSG_POP_None (//)
+None
+;
+MSG_ERR_NoExchange (//)
+Could not find SYS:Utilities/Exchange.
+;

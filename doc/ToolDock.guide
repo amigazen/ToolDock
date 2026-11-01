@@ -114,6 +114,10 @@ The available gadgets are:
 
 - DockNet - A network monitor for Roadshow.
 
+- DockTrash - a trashcan that uses the TRASH: volume. Right-click to empty the trash.
+
+- DockExchange - a commodities Exchange gadget. Right-click lists running commodities with Show, Hide and Quit.
+
 Once added to the dock, gadgets can be ordered with the Up and Down buttons. If the gadget has additional configuration options the Edit button will be enabled when the gadget is selected.
 
 @endnode

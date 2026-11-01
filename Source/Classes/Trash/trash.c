@@ -18,6 +18,7 @@
 #include <utility/tagitem.h>
 
 #include "trash_move.h"
+#include "applife.h"
 
 #include <clib/exec_protos.h>
 #include <clib/alib_protos.h>
@@ -231,6 +232,7 @@ ULONG __saveds trash_lib_init(struct TrashLibData *tld)
             if( tld->wbBase = OpenLibrary("workbench.library", 37) ) {
                 WorkbenchBase = tld->wbBase;
                 StaticData = tld;
+                applife_init();
                 return 1;
             }
             CloseLibrary(tld->iconBase);
@@ -245,6 +247,7 @@ ULONG __saveds trash_lib_init(struct TrashLibData *tld)
 
 ULONG __saveds trash_lib_expunge(struct TrashLibData *tld)
 {
+    applife_expunge();
     if( tld->wbBase ) {
         CloseLibrary(tld->wbBase);
         tld->wbBase = NULL;
@@ -368,6 +371,27 @@ DB_METHOD_D(CLICK)
     data->counter = 2;
     TD_RequestDockGadgetDraw(o);
     TD_RequestLaunch(o, TRASH_VOLUME, NULL, NULL, TRUE);
+    return 1;
+}
+
+DB_METHOD_DM(POPUP, DockMessagePopup)
+
+    ULONG choice;
+    BOOL canEmpty;
+
+    refresh_trash_state(data);
+    canEmpty = (data->devicePresent && data->hasContents) ? TRUE : FALSE;
+    choice = applife_open_choice_popup(msg->window, (STRPTR)MSG_Label,
+        (STRPTR)MSG_POP_Empty, canEmpty ? FALSE : TRUE);
+    if( choice ) {
+        if( ! data->devicePresent ) {
+            TD_ShowError((STRPTR)MSG_ERR_NoTrash);
+        } else if( ! trash_empty() ) {
+            TD_ShowError((STRPTR)MSG_ERR_EmptyFailed);
+        }
+        refresh_trash_state(data);
+        TD_RequestDockGadgetDraw(o);
+    }
     return 1;
 }
 

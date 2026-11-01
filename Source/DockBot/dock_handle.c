@@ -14,7 +14,6 @@
 #include <intuition/intuition.h>
 #include <intuition/classes.h>
 
-#include <clib/intuition_protos.h>
 #include <clib/alib_protos.h>
 #include <clib/graphics_protos.h>
 #include <clib/dos_protos.h>

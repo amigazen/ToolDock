@@ -3,7 +3,7 @@ LIBNAME=	DockTrash
 VERSION=	1
 REVISION=	0
 
-INC=		INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/ INCLUDEDIRECTORY=////OpenTriton/SDK/Include_h
+INC=		INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/ INCLUDEDIRECTORY=../../DockBot INCLUDEDIRECTORY=/////NDK3.2R4/Include_H INCLUDEDIRECTORY=////popupmenu.library/SDK/Include_H INCLUDEDIRECTORY=////OpenTriton/SDK/Include_h
 DIR=		/bin
 
 LIBFILE=	$(LIBNAME).class
@@ -16,7 +16,7 @@ C_OPTS=		CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO $(INC) $(DEF_DS) $(DEF_BV)
 
 C_SOURCES=	lib.c trash.c trash_move.c docktrash_cat.c
 
-OBJECTS=	lib.o trash.o trash_move.o docktrash_cat.o
+OBJECTS=	lib.o trash.o trash_move.o docktrash_cat.o ../../DockBot/applife.o
 
 LIBS=		LIB:sc.lib LIB:amiga.lib ////OpenTriton/Source/lib/triton.lib
 

@@ -68,6 +68,18 @@ VOID dock_gadget_click(Object *obj, UWORD x, UWORD y)
 	DoMethodA(obj, (Msg)&msg);
 }
 
+BOOL dock_gadget_popup(Object *obj, struct Window *window)
+{
+    struct DockMessagePopup msg = {
+        DM_POPUP
+    };
+
+    DEBUG(printf(__FUNC__ ": %8x\n", obj));
+
+    msg.window = window;
+    return (BOOL)(DoMethodA(obj, (Msg)&msg) ? TRUE : FALSE);
+}
+
 VOID dock_gadget_drop(Object *obj, STRPTR* paths, UWORD count)
 {
 	struct DockMessageDrop msg = {

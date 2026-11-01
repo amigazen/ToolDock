@@ -4,13 +4,13 @@
 #
 include ../debug.defs
 
-INC = INCLUDEDIRECTORY=//include INCLUDEDIRECTORY=/shared
+INC = INCLUDEDIRECTORY=//include INCLUDEDIRECTORY=/shared INCLUDEDIRECTORY=///Motion/include
 EXENAME = ToolDock
 EXEPATH = /$(DIR)/
 
 C_OPTS = cpu=$(CPU) $(SC_OPTS) $(INC) $(DEF_DS) $(DEF_BV)
 
-OBJECTS = main.o dock.o dockbot_cat.o /shared/dock_gadget.o dock_handle.o events.o gadgets.o layout.o settings.o debug.o window.o cx.o appicon.o timer.o
+OBJECTS = main.o dock.o dockbot_cat.o /shared/dock_gadget.o dock_handle.o events.o gadgets.o layout.o settings.o debug.o window.o cx.o appicon.o timer.o rearrange.o
 
 all: $(EXENAME)
 
@@ -37,6 +37,7 @@ window.o: window.c
 cx.o: cx.c
 appicon.o: appicon.c
 timer.o: timer.c
+rearrange.o: rearrange.c rearrange.h
 
 /shared/dock_gadget.o: /shared/dock_gadget.c
 	$(COMPILER) $(C_OPTS) /shared/dock_gadget.c

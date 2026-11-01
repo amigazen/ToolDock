@@ -27,6 +27,7 @@
 
 #include "button.h"
 #include "dockbutton_cat.h"
+#include "applife.h"
 
 #define S_NAME      "name"
 #define S_PATH      "path"
@@ -35,6 +36,19 @@
 #define S_ARGS      "args"
 #define S_CON       "console"
 #define S_HOTKEY    "key"
+
+#define TT_CX       "TD_CX"
+#define TT_RX       "TD_RX"
+#define TT_RXSHOW   "TD_RXSHOW"
+#define TT_RXHIDE   "TD_RXHIDE"
+#define TT_RXQUIT   "TD_RXQUIT"
+#define TT_RXOPEN   "TD_RXOPEN"
+#define TT_LAUNCH   "TD_LAUNCH"
+#define TT_OPEN     "TD_OPEN"
+
+#define TT_LEN_CX   23
+#define TT_LEN_RX   80
+#define TT_LEN_CMD  128
 
 #define ST_WB 0
 #define ST_SH 1
@@ -83,6 +97,253 @@ struct Library *IconBase;
 struct Library *GfxBase;
 struct ButtonLibData *StaticData;
 
+STATIC BOOL tt_eq(STRPTR val, STRPTR want)
+{
+    UBYTE a, b;
+
+    if( val == NULL || want == NULL ) {
+        return FALSE;
+    }
+    while( *val && *want ) {
+        a = *val;
+        b = *want;
+        if( a >= 'A' && a <= 'Z' ) {
+            a = (UBYTE)(a + 32);
+        }
+        if( b >= 'A' && b <= 'Z' ) {
+            b = (UBYTE)(b + 32);
+        }
+        if( a != b ) {
+            return FALSE;
+        }
+        val++;
+        want++;
+    }
+    return (BOOL)(*val == *want);
+}
+
+STATIC VOID copy_td_string(STRPTR *dst, STRPTR src, UWORD maxLen)
+{
+    UWORD n;
+
+    FREE_STRING(*dst);
+    if( src == NULL || src[0] == 0 ) {
+        return;
+    }
+    n = 0;
+    while( src[n] && n < maxLen ) {
+        n++;
+    }
+    if( n == 0 ) {
+        return;
+    }
+    if( *dst = (STRPTR)TD_AllocMem(n + 1, MEMF_CLEAR) ) {
+        CopyMem(src, *dst, n);
+    }
+}
+
+STATIC VOID zero_applife(struct ButtonGadgetData *data)
+{
+    UWORD i;
+
+    data->tdCx = NULL;
+    data->tdRx = NULL;
+    data->tdRxShow = NULL;
+    data->tdRxHide = NULL;
+    data->tdRxQuit = NULL;
+    data->tdRxOpen = NULL;
+    data->tdLaunch = TD_LAUNCH_MULTI;
+    data->tdOpen = TD_OPEN_DEFAULT;
+    data->appRunning = FALSE;
+    data->hbCount = 0;
+    data->pendingRxCount = 0;
+    data->pendingRxTries = 0;
+    for( i = 0; i < 16; i++ ) {
+        data->pendingRx[i] = NULL;
+    }
+}
+
+STATIC VOID free_pending_rx(struct ButtonGadgetData *data)
+{
+    UWORD i;
+
+    if( data->pendingRxCount > 16 ) {
+        data->pendingRxCount = 0;
+        data->pendingRxTries = 0;
+        return;
+    }
+    for( i = 0; i < data->pendingRxCount; i++ ) {
+        FREE_STRING(data->pendingRx[i]);
+    }
+    data->pendingRxCount = 0;
+    data->pendingRxTries = 0;
+}
+
+STATIC VOID free_td_strings(struct ButtonGadgetData *data)
+{
+    FREE_STRING(data->tdCx);
+    FREE_STRING(data->tdRx);
+    FREE_STRING(data->tdRxShow);
+    FREE_STRING(data->tdRxHide);
+    FREE_STRING(data->tdRxQuit);
+    FREE_STRING(data->tdRxOpen);
+    data->tdLaunch = TD_LAUNCH_MULTI;
+    data->tdOpen = TD_OPEN_DEFAULT;
+    free_pending_rx(data);
+}
+
+STATIC VOID parse_tooltypes(struct ButtonGadgetData *data)
+{
+    STRPTR *tts;
+    STRPTR val;
+
+    free_td_strings(data);
+
+    if( data->diskObj == NULL || data->diskObj->do_ToolTypes == NULL ) {
+        return;
+    }
+
+    tts = data->diskObj->do_ToolTypes;
+    copy_td_string(&data->tdCx, FindToolType(tts, (STRPTR)TT_CX), TT_LEN_CX);
+    copy_td_string(&data->tdRx, FindToolType(tts, (STRPTR)TT_RX), TT_LEN_RX);
+    copy_td_string(&data->tdRxShow, FindToolType(tts, (STRPTR)TT_RXSHOW), TT_LEN_CMD);
+    copy_td_string(&data->tdRxHide, FindToolType(tts, (STRPTR)TT_RXHIDE), TT_LEN_CMD);
+    copy_td_string(&data->tdRxQuit, FindToolType(tts, (STRPTR)TT_RXQUIT), TT_LEN_CMD);
+    copy_td_string(&data->tdRxOpen, FindToolType(tts, (STRPTR)TT_RXOPEN), TT_LEN_CMD);
+
+    val = FindToolType(tts, (STRPTR)TT_LAUNCH);
+    if( tt_eq(val, (STRPTR)"ONCE") ) {
+        data->tdLaunch = TD_LAUNCH_ONCE;
+    } else if( tt_eq(val, (STRPTR)"DOCS") ) {
+        data->tdLaunch = TD_LAUNCH_DOCS;
+    } else {
+        data->tdLaunch = TD_LAUNCH_MULTI;
+    }
+
+    val = FindToolType(tts, (STRPTR)TT_OPEN);
+    if( tt_eq(val, (STRPTR)"WB") ) {
+        data->tdOpen = TD_OPEN_WB;
+    } else if( tt_eq(val, (STRPTR)"CLI") ) {
+        data->tdOpen = TD_OPEN_CLI;
+    } else if( tt_eq(val, (STRPTR)"RX") ) {
+        data->tdOpen = TD_OPEN_RX;
+    } else {
+        data->tdOpen = TD_OPEN_DEFAULT;
+    }
+}
+
+STATIC UWORD effective_open(struct ButtonGadgetData *data)
+{
+    if( data->tdOpen == TD_OPEN_DEFAULT ) {
+        if( data->startType == ST_WB ) {
+            return TD_OPEN_WB;
+        }
+        return TD_OPEN_CLI;
+    }
+    return data->tdOpen;
+}
+
+STATIC BOOL can_control(struct ButtonGadgetData *data)
+{
+    if( data->tdCx && data->tdCx[0] ) {
+        return TRUE;
+    }
+    if( data->tdRx && data->tdRx[0] ) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+STATIC VOID flash_button(Object *o, struct ButtonGadgetData *data)
+{
+    data->counter = 2;
+    data->iconState = 1;
+    TD_RequestDockGadgetDraw(o);
+}
+
+STATIC VOID queue_pending_rx(struct ButtonGadgetData *data, STRPTR *paths,
+    UWORD count)
+{
+    UWORD i;
+    UWORD n;
+    UWORD len;
+
+    free_pending_rx(data);
+    if( paths == NULL || count == 0 ) {
+        return;
+    }
+    n = count;
+    if( n > 16 ) {
+        n = 16;
+    }
+    for( i = 0; i < n; i++ ) {
+        if( paths[i] == NULL ) {
+            continue;
+        }
+        len = strlen(paths[i]);
+        if( data->pendingRx[data->pendingRxCount] =
+            (STRPTR)TD_AllocMem(len + 1, MEMF_CLEAR) ) {
+            CopyMem(paths[i], data->pendingRx[data->pendingRxCount], len);
+            data->pendingRxCount++;
+        }
+    }
+    if( data->pendingRxCount ) {
+        data->pendingRxTries = AL_RXOPEN_TRIES;
+    }
+}
+
+STATIC VOID send_rxopen_paths(struct ButtonGadgetData *data, STRPTR *paths,
+    UWORD count)
+{
+    UWORD i;
+    STRPTR cmd;
+
+    if( data->tdRx == NULL || data->tdRxOpen == NULL ) {
+        return;
+    }
+    for( i = 0; i < count; i++ ) {
+        if( paths[i] == NULL ) {
+            continue;
+        }
+        cmd = applife_format_rxopen(data->tdRxOpen, paths[i]);
+        if( cmd ) {
+            applife_send_rexx(data->tdRx, cmd);
+            FREE_STRING(cmd);
+        }
+    }
+}
+
+STATIC VOID try_pending_rx(struct ButtonGadgetData *data)
+{
+    if( data->pendingRxCount == 0 ) {
+        return;
+    }
+    if( data->appRunning ) {
+        send_rxopen_paths(data, data->pendingRx, data->pendingRxCount);
+        free_pending_rx(data);
+        return;
+    }
+    if( data->pendingRxTries > 0 ) {
+        data->pendingRxTries--;
+        if( data->pendingRxTries == 0 ) {
+            free_pending_rx(data);
+        }
+    }
+}
+
+STATIC VOID update_running(Object *o, struct ButtonGadgetData *data)
+{
+    BOOL running;
+
+    applife_reap();
+    running = applife_is_running(data->tdCx, data->tdRx);
+    if( running != data->appRunning ) {
+        data->appRunning = running;
+        TD_RequestDockGadgetDraw(o);
+    }
+    try_pending_rx(data);
+}
+
 VOID dock_button_launch(Object *o, struct ButtonGadgetData *dbd, Msg msg, STRPTR* dropNames, UWORD dropCount) 
 {
     STRPTR args = NULL;
@@ -115,6 +376,75 @@ VOID dock_button_launch(Object *o, struct ButtonGadgetData *dbd, Msg msg, STRPTR
     TD_RequestLaunch(o, dbd->path, args, dbd->con, dbd->startType == ST_WB ? TRUE : FALSE);
 }
 
+STATIC VOID launch_one_file(Object *o, struct ButtonGadgetData *data,
+    STRPTR path)
+{
+    STRPTR names[1];
+
+    names[0] = path;
+    dock_button_launch(o, data, NULL, names, 1);
+}
+
+STATIC VOID handle_files(Object *o, struct ButtonGadgetData *data,
+    STRPTR *paths, UWORD count)
+{
+    UWORD i;
+    UWORD openHow;
+
+    openHow = effective_open(data);
+
+    if( openHow == TD_OPEN_RX ) {
+        if( data->tdRxOpen == NULL || data->tdRxOpen[0] == 0 ) {
+            return;
+        }
+        if( data->appRunning ) {
+            send_rxopen_paths(data, paths, count);
+            return;
+        }
+        dock_button_launch(o, data, NULL, NULL, 0);
+        queue_pending_rx(data, paths, count);
+        data->hbCount = AL_HB_TICKS;
+        return;
+    }
+
+    if( data->tdLaunch == TD_LAUNCH_DOCS ) {
+        for( i = 0; i < count; i++ ) {
+            if( paths[i] ) {
+                launch_one_file(o, data, paths[i]);
+            }
+        }
+        data->hbCount = AL_HB_TICKS;
+        return;
+    }
+
+    dock_button_launch(o, data, NULL, paths, count);
+    data->hbCount = AL_HB_TICKS;
+}
+
+STATIC VOID dock_button_activate(Object *o, struct ButtonGadgetData *data,
+    STRPTR *paths, UWORD count)
+{
+    if( count > 0 ) {
+        if( data->tdLaunch == TD_LAUNCH_ONCE && data->appRunning ) {
+            handle_files(o, data, paths, count);
+            return;
+        }
+        handle_files(o, data, paths, count);
+        return;
+    }
+
+    if( data->appRunning ) {
+        if( data->tdLaunch == TD_LAUNCH_ONCE
+            || data->tdLaunch == TD_LAUNCH_DOCS ) {
+            applife_show(data->tdCx, data->tdRx, data->tdRxShow);
+            return;
+        }
+    }
+
+    dock_button_launch(o, data, NULL, NULL, 0);
+    data->hbCount = AL_HB_TICKS;
+}
+
 VOID load_icon(struct ButtonGadgetData *data, STRPTR path)
 {
     struct Screen *screen;
@@ -123,9 +453,10 @@ VOID load_icon(struct ButtonGadgetData *data, STRPTR path)
 
     if( data->diskObj ) {
         FreeDiskObject(data->diskObj);
+        data->diskObj = NULL;
     }
-    
-    if( data->diskObj = GetDiskObjectNew(path) ) {
+
+    if( path && (data->diskObj = GetDiskObjectNew(path)) ) {
         if( screen = LockPubScreen(NULL) ) {
 
             LayoutIconA(data->diskObj, screen, NULL);
@@ -133,6 +464,8 @@ VOID load_icon(struct ButtonGadgetData *data, STRPTR path)
             UnlockPubScreen(NULL, screen);
         }
     }
+
+    parse_tooltypes(data);
 }
 
 STRPTR get_start_type(struct Values *values, UWORD val) {
@@ -240,6 +573,7 @@ ULONG __saveds button_lib_init(struct ButtonLibData* cld)
             if( cld->iconBase = OpenLibrary("icon.library", 46) ) {
 
                 IconBase = cld->iconBase;
+                applife_init();
 
                 return 1;
             }
@@ -255,6 +589,8 @@ ULONG __saveds button_lib_init(struct ButtonLibData* cld)
 
 ULONG __saveds button_lib_expunge(struct ButtonLibData *cld)
 {
+    applife_expunge();
+
     if( cld->iconBase ) {
         CloseLibrary(cld->iconBase);
     }
@@ -277,6 +613,7 @@ DB_METHOD_D(DISPOSE)
     FREE_STRING(data->con);    
     FREE_STRING(data->hotKey);
     FREE_STRING(data->brushPath);
+    free_td_strings(data);
 
     if( data->diskObj ) {
         FreeDiskObject(data->diskObj);
@@ -293,11 +630,18 @@ DB_METHOD_D(DISPOSE)
 DB_METHOD_DM(DRAW, DockMessageDraw)
 
     struct GadgetEnvironment env;
+    ULONG drawState;
+    UWORD mx, my;
     
     TD_GetDockGadgetEnvironment(o, &env);
 
     if( env.gadgetBounds.w == 0 || env.gadgetBounds.h == 0 ) {
         return 1;
+    }
+
+    drawState = data->iconState;
+    if( data->appRunning && data->counter == 0 ) {
+        drawState = 1;
     }
 
     if( data->brushImg ) {
@@ -316,10 +660,17 @@ DB_METHOD_DM(DRAW, DockMessageDraw)
                 NULL, 
                 env.gadgetBounds.x + (env.gadgetBounds.w - data->imageW) / 2, 
                 env.gadgetBounds.y + (env.gadgetBounds.h - data->imageH) / 2,
-                data->iconState,
+                drawState,
                 ICONDRAWA_Borderless, TRUE, 
                 ICONDRAWA_EraseBackground, FALSE,
                 TAG_END); 
+    }
+
+    if( data->appRunning ) {
+        mx = env.gadgetBounds.x + env.gadgetBounds.w / 2;
+        my = env.gadgetBounds.y + env.gadgetBounds.h - 4;
+        SetAPen(msg->rp, 3);
+        RectFill(msg->rp, mx - 2, my - 2, mx + 1, my + 1);
     }
 
     if( env.showBorders ) {
@@ -358,27 +709,81 @@ DB_METHOD_D(TICK)
         }
     }
 
+    if( can_control(data) || data->pendingRxCount ) {
+        data->hbCount++;
+        if( data->hbCount >= AL_HB_TICKS ) {
+            data->hbCount = 0;
+            update_running(o, data);
+        }
+    }
+
     return 1;
 }
 
 DB_METHOD_D(CLICK)
 
-    dock_button_launch(o, data, m, NULL, 0);
-
-    data->counter = 2;
-    data->iconState = 1;
-    TD_RequestDockGadgetDraw(o);
+    dock_button_activate(o, data, NULL, 0);
+    flash_button(o, data);
 
     return 1;
 }
 
 DB_METHOD_DM(DROP,DockMessageDrop)
 
-    dock_button_launch(o, data, m, msg->paths, msg->pathCount);
+    dock_button_activate(o, data, msg->paths, msg->pathCount);
+    flash_button(o, data);
 
-    data->counter = 2;
-    data->iconState = 1;
-    TD_RequestDockGadgetDraw(o);
+    return 1;
+}
+
+DB_METHOD_DM(POPUP, DockMessagePopup)
+
+    UWORD flags;
+    ULONG choice;
+    STRPTR title;
+
+    flags = AL_CAN_OPEN;
+    if( data->appRunning ) {
+        flags = 0;
+        if( data->tdCx || data->tdRxShow ) {
+            flags |= AL_CAN_SHOW;
+        }
+        if( data->tdCx || data->tdRxHide ) {
+            flags |= AL_CAN_HIDE;
+        }
+        if( data->tdCx || data->tdRxQuit ) {
+            flags |= AL_CAN_QUIT;
+        }
+    }
+
+    title = data->name;
+    if( title == NULL && data->path ) {
+        title = FilePart(data->path);
+    }
+
+    choice = applife_open_app_popup(msg->window, title,
+        (STRPTR)MSG_POP_Open, (STRPTR)MSG_POP_Show,
+        (STRPTR)MSG_POP_Hide, (STRPTR)MSG_POP_Quit, flags);
+
+    switch( choice ) {
+        case AL_POP_OPEN:
+            dock_button_activate(o, data, NULL, 0);
+            flash_button(o, data);
+            break;
+        case AL_POP_SHOW:
+            applife_show(data->tdCx, data->tdRx, data->tdRxShow);
+            break;
+        case AL_POP_HIDE:
+            applife_hide(data->tdCx, data->tdRx, data->tdRxHide);
+            break;
+        case AL_POP_QUIT:
+            applife_quit(data->tdCx, data->tdRx, data->tdRxQuit);
+            data->appRunning = FALSE;
+            TD_RequestDockGadgetDraw(o);
+            break;
+        default:
+            break;
+    }
 
     return 1;
 }
@@ -414,6 +819,8 @@ DB_METHOD_DM(READCONFIG,DockMessageConfig)
     struct DockSettingValue v;
     struct Values *vals;
     UWORD len;
+
+    zero_applife(data);
 
     while( TD_ReadSetting(msg->settings, &v) ) {
         
@@ -466,7 +873,16 @@ DB_METHOD_DM(WRITECONFIG,DockMessageConfig)
         TD_WriteSetting(s, S_HOTKEY, data->hotKey);
     }
 
-    TD_WriteSetting(s, S_START, get_start_type(StartValues, data->startType));
+    {
+        STRPTR startName;
+        startName = get_start_type(StartValues, data->startType);
+        if( startName == NULL ) {
+            startName = StartValues[0].Name;
+        }
+        if( startName ) {
+            TD_WriteSetting(s, S_START, startName);
+        }
+    }
 
     if( data->con ) {
         TD_WriteSetting(s, S_CON, data->con);
@@ -516,7 +932,7 @@ DB_METHOD_DM(GETEDITOR, DockMessageGetEditor)
             Space,
             HorizGroupSC,
                 Space,
-                TextT(data->path), TRAT_ID, OBJ_TXT_PATH,
+                TextT(data->path ? data->path : (STRPTR)""), TRAT_ID, OBJ_TXT_PATH,
                 Space,
             EndGroup,
             Space,
@@ -694,6 +1110,8 @@ DB_METHOD_DM(GETLABEL,DockMessageGetLabel)
 DB_METHOD_DM(INITBUTTON,DockMessageInitButton)
 
     UWORD len;
+
+    zero_applife(data);
 
     len = strlen(msg->name) + 1;
     if( ! (data->name = TD_AllocMem(len, MEMF_ANY) ) ) {

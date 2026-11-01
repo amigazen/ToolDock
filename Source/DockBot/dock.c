@@ -19,12 +19,13 @@
 #include <clib/exec_protos.h>
 #include <clib/dos_protos.h>
 #include <clib/alib_protos.h>
-#include <clib/intuition_protos.h>
 #include <clib/layers_protos.h>
 #include <clib/graphics_protos.h>
 #include <devices/timer.h>
 #include "dock_handle.h"
+#include "rearrange.h"
 #include "td_request.h"
+#include "applife.h"
 
 #ifndef WBOPENA_ArgLock
 #define WBOPENA_ArgLock  (TAG_USER + 0x1B01)
@@ -367,6 +368,8 @@ struct DockWindow* create_dock(VOID)
 
                         if( get_prog_path(dock) ) {
 
+                            rearrange_init(dock);
+                            applife_init();
                             return dock;
                         }
                     }
@@ -386,6 +389,10 @@ VOID free_dock(struct DockWindow* dock)
     DEBUG(DB_Printf("free_dock\n"));
 
     free_cx_broker(dock);
+
+    applife_expunge();
+
+    rearrange_cleanup(dock);
 
     hide_dock_window(dock);
 

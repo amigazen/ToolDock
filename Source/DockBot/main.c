@@ -24,7 +24,7 @@ const char __ver[40] = "$VER:" APP_NAME " " VERSION_STR;
 struct Library *DosBase;
 struct Library *LayersBase;
 struct Library *GfxBase;
-struct Library *IntuitionBase;
+struct IntuitionBase *IntuitionBase;
 struct Library *WorkbenchBase;
 struct Library *ToolDockBase;
 struct Library *GadToolsBase;
@@ -117,7 +117,7 @@ int main(int argc, char** argv)
 
                 if( LayersBase = open_lib("layers.library", 39, FALSE) ) {
 
-                    if( IntuitionBase = open_lib("intuition.library", 39, FALSE) ) {
+                    if( IntuitionBase = (struct IntuitionBase *)open_lib("intuition.library", 39, FALSE) ) {
     
                         if( GadToolsBase = open_lib("gadtools.library", 39, FALSE) ) {
         
@@ -150,7 +150,7 @@ int main(int argc, char** argv)
                             }
                             close_lib("gadtools.library", GadToolsBase);
                         }        
-                        close_lib("intuition.library", IntuitionBase);
+                        close_lib("intuition.library", (struct Library *)IntuitionBase);
                     }
                     close_lib("layers.library", LayersBase);
                 }

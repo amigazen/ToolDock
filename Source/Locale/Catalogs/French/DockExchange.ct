@@ -1,0 +1,35 @@
+## version $VER: DockExchange.catalog 1.0 (01.11.2026)
+## language français
+## codeset 0
+;
+; DockExchange
+;
+;
+MSG_Description
+Un gadget Exchange pour les commodities
+; A commodities Exchange gadget
+;
+MSG_Label
+Exchange
+; Exchange
+;
+MSG_POP_Show
+Afficher
+; Show
+;
+MSG_POP_Hide
+Cacher
+; Hide
+;
+MSG_POP_Quit
+Quitter
+; Quit
+;
+MSG_POP_None
+Aucune
+; None
+;
+MSG_ERR_NoExchange
+Impossible de trouver SYS:Utilities/Exchange.
+; Could not find SYS:Utilities/Exchange.
+;

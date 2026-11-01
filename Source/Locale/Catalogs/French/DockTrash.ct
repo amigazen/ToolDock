@@ -21,3 +21,11 @@ MSG_ERR_MoveFailed
 Impossible de deplacer l'element vers la corbeille.
 ; Could not move the dropped item to the trash.
 ;
+MSG_POP_Empty
+Vider la corbeille
+; Empty Trash
+;
+MSG_ERR_EmptyFailed
+Impossible de vider la corbeille.
+; Could not empty the trash.
+;

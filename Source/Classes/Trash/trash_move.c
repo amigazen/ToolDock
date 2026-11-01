@@ -49,6 +49,7 @@
 #define TRASH_MAX_LEAF      107
 #define TRASH_COMMENT_PREFIX "WBT="
 #define TRASH_TOOLTYPE_ORIG  "WBTRASH_ORIG"
+#define TRASH_VOLUME         "TRASH:"
 
 extern struct Library *IconBase;
 extern struct Library *WorkbenchBase;
@@ -1067,4 +1068,99 @@ BOOL trash_move_path(STRPTR src)
         return FALSE;
     }
     return move_to_trash_dir(src, trashdir);
+}
+
+STATIC BOOL delete_path_tree(STRPTR path);
+
+/*
+ * Empty one drawer. keepDiskInfo leaves the overlay volume icon in place.
+ * Restart after each delete so ExNext is never used on a mutated dir.
+ */
+STATIC BOOL empty_dir_contents(STRPTR dir, BOOL keepDiskInfo)
+{
+    BPTR lock;
+    struct FileInfoBlock *fib;
+    UBYTE child[MAX_PATH_LEN];
+    BOOL found;
+    BOOL examined;
+    LONG passes;
+
+    passes = 0;
+    for( ;; ) {
+        if( ++passes > 10000 ) {
+            return FALSE;
+        }
+        lock = Lock(dir, SHARED_LOCK);
+        if( lock == ZERO ) {
+            return FALSE;
+        }
+        fib = (struct FileInfoBlock *)AllocMem(sizeof(struct FileInfoBlock),
+            MEMF_PUBLIC | MEMF_CLEAR);
+        if( fib == NULL ) {
+            UnLock(lock);
+            return FALSE;
+        }
+        found = FALSE;
+        child[0] = '\0';
+        examined = Examine(lock, fib);
+        if( examined ) {
+            while( ExNext(lock, fib) ) {
+                if( fib->fib_FileName[0] == '.' ) {
+                    continue;
+                }
+                if( keepDiskInfo
+                    && text_eq_i(fib->fib_FileName, "Disk.info") ) {
+                    continue;
+                }
+                if( ! safe_join(child, sizeof(child), dir,
+                        fib->fib_FileName) ) {
+                    continue;
+                }
+                found = TRUE;
+                break;
+            }
+        }
+        FreeMem(fib, sizeof(struct FileInfoBlock));
+        UnLock(lock);
+        if( ! examined ) {
+            return FALSE;
+        }
+        if( ! found ) {
+            return TRUE;
+        }
+        if( ! delete_path_tree(child) ) {
+            return FALSE;
+        }
+    }
+}
+
+STATIC BOOL delete_path_tree(STRPTR path)
+{
+    if( path == NULL || path[0] == '\0' ) {
+        return FALSE;
+    }
+    if( path_is_drawer(path) ) {
+        if( ! empty_dir_contents(path, FALSE) ) {
+            return FALSE;
+        }
+    }
+    trash_update_wb(path, UPDATEWB_ObjectRemoved);
+    clear_delete_protect(path);
+    if( DeleteFile(path) ) {
+        return TRUE;
+    }
+    trash_update_wb(path, UPDATEWB_ObjectAdded);
+    return FALSE;
+}
+
+/*
+ * Empty the TRASH: overlay itself. Do not walk Volume:Trashcan - that
+ * path is the handler into itself on the overlay volume.
+ */
+BOOL trash_empty(VOID)
+{
+    if( ! path_is_drawer(TRASH_VOLUME) ) {
+        return FALSE;
+    }
+    return empty_dir_contents(TRASH_VOLUME, TRUE);
 }

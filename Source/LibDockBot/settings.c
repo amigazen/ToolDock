@@ -176,7 +176,17 @@ static BOOL ReadString(struct DockSettings *settings, STRPTR str)
 
     for( i = 0; i < len; i++ ) {
         if( c == bufEnd || (*c) != str[i] ) {
-
+            /* "begin" / "end" at EOF or CR is still a match. */
+            if( str[i] == '\n' && (c == bufEnd || *c == '\r') ) {
+                if( c < bufEnd && *c == '\r' ) {
+                    c++;
+                    if( c < bufEnd && *c == '\n' ) {
+                        c++;
+                    }
+                }
+                settings->pos = c - settings->buffer;
+                return TRUE;
+            }
             return FALSE;
         }   
         c++;
@@ -213,14 +223,22 @@ static BOOL ReadTo(struct DockSettings *settings, UBYTE b, UWORD *len, BOOL allo
     bufEnd = settings->buffer + settings->size;
     c = settings->buffer + settings->pos;
 
-    while( c < bufEnd && (allowNewLine || (*c) != '\n') ) {
-        if( (*c) == b ) {
+    while( c < bufEnd && (allowNewLine || ((*c) != '\n' && (*c) != '\r')) ) {
+        if( (*c) == b || (b == '\n' && (*c) == '\r') ) {
             (*len) = i;
             settings->pos += (i + 1);
+            if( (*c) == '\r' && (c + 1) < bufEnd && c[1] == '\n' ) {
+                settings->pos++;
+            }
             return TRUE;
         }
         c++;
         i++;
+    }
+    if( c == bufEnd && allowNewLine && i > 0 ) {
+        (*len) = i;
+        settings->pos += i;
+        return TRUE;
     }
     return FALSE;
 }
@@ -442,12 +460,14 @@ BOOL __asm __saveds TD_ReadConfig(
     struct DockSettingValue v;
     struct Values* vals;
     UWORD l;
+    UWORD pos;
     BOOL r;
 
     r = TRUE;
     if( TD_ReadBeginBlock(settings) ) {
 
         while( TRUE ) {
+            pos = settings->pos;
 
             if( TD_ReadBeginBlock(settings) ) {
                 if( ! read_dock_gadget(cfg, settings) ) {
@@ -490,6 +510,11 @@ BOOL __asm __saveds TD_ReadConfig(
                     }
                 }
 
+            }
+
+            if( settings->pos == pos ) {
+                r = FALSE;
+                break;
             }
         }
     }

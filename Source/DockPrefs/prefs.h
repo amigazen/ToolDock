@@ -58,6 +58,7 @@
 #define CLASS_SWITCHER "Switcher"
 #define CLASS_TRASH    "DockTrash"
 #define CLASS_OPEN     "DockOpen"
+#define CLASS_EXCHANGE "DockExchange"
 
 #define S_NAME     "name"
 #define S_PATH     "path"

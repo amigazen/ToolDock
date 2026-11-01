@@ -13,10 +13,10 @@ PRAGMA_FILE = pragmas.h
 TRITON_INC = ////OpenTriton/SDK/Include_h
 TRITON_LIB = ////OpenTriton/Source/lib/triton.lib
 
-INC = INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/ INCLUDEDIRECTORY=$(TRITON_INC)
+INC = INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/ INCLUDEDIRECTORY=../../DockBot INCLUDEDIRECTORY=/////NDK3.2R4/Include_H INCLUDEDIRECTORY=////popupmenu.library/SDK/Include_H INCLUDEDIRECTORY=$(TRITON_INC)
 C_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO $(INC) $(DEF_DS) $(DEF_BV)
 
-OBJECTS = lib.o trash.o trash_move.o docktrash_cat.o
+OBJECTS = lib.o trash.o trash_move.o docktrash_cat.o ../../DockBot/applife.o
 CLASS_LIBS = LIB:sc.lib LIB:amiga.lib $(TRITON_LIB)
 
 all: $(LIBFILE)

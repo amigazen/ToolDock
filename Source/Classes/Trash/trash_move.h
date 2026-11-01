@@ -19,5 +19,6 @@
 #include <dos/dos.h>
 
 BOOL trash_move_path(STRPTR src);
+BOOL trash_empty(VOID);
 
 #endif

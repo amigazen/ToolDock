@@ -30,7 +30,7 @@ VOID gadget_selected(struct DockPrefs *prefs, ULONG index)
         gadCount++;
     }
          
-    if( gadCount == 0 ) 
+    if( gadCount == 0 || dg == NULL ) 
     {
         TR_SetAttribute(prefs->mainWindow, OBJ_BTN_UP, TRAT_Disabled, TRUE);
         TR_SetAttribute(prefs->mainWindow, OBJ_BTN_DOWN, TRAT_Disabled, TRUE);

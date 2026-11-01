@@ -21,3 +21,11 @@ MSG_ERR_MoveFailed
 No se pudo mover el elemento a la papelera.
 ; Could not move the dropped item to the trash.
 ;
+MSG_POP_Empty
+Vaciar la papelera
+; Empty Trash
+;
+MSG_ERR_EmptyFailed
+No se pudo vaciar la papelera.
+; Could not empty the trash.
+;

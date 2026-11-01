@@ -1,0 +1,37 @@
+begin
+  align=center
+  position=right
+  labels=true
+  borders=true
+  padding=0
+  begin
+    gadget=DockButton
+    name=Intellifont
+    path=System3.2:System/Intellifont
+    start=wb
+  end
+  begin
+    gadget=DockButton
+    name=FixFonts
+    path=System3.2:System/FixFonts
+    start=wb
+  end
+  begin
+    gadget=DockButton
+    name=Find
+    path=System3.2:System/Find
+    start=wb
+  end
+  begin
+    gadget=DockButton
+    name=Mounter
+    path=System3.2:System/Mounter
+    start=wb
+  end
+  begin
+    gadget=DockButton
+    name=NoFastMem
+    path=System3.2:System/NoFastMem
+    start=wb
+  end
+end

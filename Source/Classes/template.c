@@ -389,6 +389,10 @@ APTR __saveds __asm GetLibData(VOID)
     METHOD_DEF(HOTKEY)
 #endif
 
+#ifdef METHOD_POPUP
+    METHOD_DEF(POPUP)
+#endif
+
 #ifdef METHOD_INITBUTTON
     METHOD_DEF(INITBUTTON)
 #endif
@@ -546,6 +550,10 @@ ULONG __saveds GadgetDispatch(Class *c, Object *o, Msg msg)
 
 #ifdef METHOD_HOTKEY
         METHOD_DIS(HOTKEY)
+#endif
+
+#ifdef METHOD_POPUP
+        METHOD_DIS(POPUP)
 #endif
 
         case DM_GETLABEL:

@@ -1,0 +1,54 @@
+#
+# SAS/C smake for DockExchange.class
+# From src/Classes/Exchange: smake
+#
+include ../../debug.defs
+
+LIBNAME = DockExchange
+LIBFILE = $(LIBNAME).class
+LIBDIR = //$(DIR)/Gadgets/
+FD_FILE = /template.fd
+PRAGMA_FILE = pragmas.h
+
+TRITON_INC = ////OpenTriton/SDK/Include_h
+TRITON_LIB = ////OpenTriton/SDK/lib/triton.lib
+NDK_INC = /////NDK3.2R4/Include_H
+PM_INC = ////popupmenu.library/SDK/Include_H
+
+INC = INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/ INCLUDEDIRECTORY=../../DockBot INCLUDEDIRECTORY=$(NDK_INC) INCLUDEDIRECTORY=$(PM_INC) INCLUDEDIRECTORY=$(TRITON_INC)
+C_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO $(INC) $(DEF_DS) $(DEF_BV)
+
+OBJECTS = lib.o exchange.o dockexchange_cat.o ../../DockBot/applife.o
+CLASS_LIBS = LIB:sc.lib LIB:amiga.lib $(TRITON_LIB)
+
+all: $(LIBFILE)
+
+$(LIBFILE): $(OBJECTS) $(PRAGMA_FILE)
+	$(LINKER) WITH <<
+TO $(LIBDIR)$(LIBFILE)
+FROM $(OBJECTS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
+<
+
+.c.o:
+	$(COMPILER) $(C_OPTS) $*.c
+
+lib.o: lib.c /template.c
+exchange.o: exchange.c
+dockexchange_cat.o: dockexchange_cat.c
+
+$(PRAGMA_FILE): $(FD_FILE)
+	$(FD_CONV) $(FD_FILE) $(PRAGMA_FILE)
+
+cleanobj:
+	-Delete $(OBJECTS)
+
+clean:
+	-Delete $(OBJECTS)
+	-Delete $(LIBDIR)$(LIBFILE)(|.info)
+	-Delete $(PRAGMA_FILE)
+
+reload:
+	@copy $(LIBDIR)$(LIBFILE) LIBS:
+	@version $(LIBFILE)
+	@flushlibs

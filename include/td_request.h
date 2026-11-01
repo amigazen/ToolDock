@@ -23,8 +23,8 @@
 #include <utility/tagitem.h>
 
 #include <clib/exec_protos.h>
-#include <clib/intuition_protos.h>
 #include <clib/alib_protos.h>
+#include <proto/intuition.h>
 
 #ifndef REACTION_Dummy
 #define REACTION_Dummy (TAG_USER + 0x5000000)
@@ -69,63 +69,66 @@ STATIC LONG TD_OpenRequest(struct Window *win, STRPTR title, STRPTR body,
     struct TDOrRequest msg;
     struct TagItem tags[7];
     struct EasyStruct es;
-    struct Screen *screen;
     LONG result;
     UWORD n;
 
     result = 0;
-    screen = NULL;
     obj = NULL;
     reqClass = NULL;
 
-    RequesterBase = OpenLibrary("requester.class", 44);
-    if( RequesterBase ) {
-        reqClass = REQUESTER_GetClass();
-        if( reqClass ) {
-            n = 0;
-            tags[n].ti_Tag = TDREQ_Type;
-            tags[n].ti_Data = TDREQTYPE_INFO;
-            n++;
-            tags[n].ti_Tag = TDREQ_TitleText;
-            tags[n].ti_Data = (ULONG)title;
-            n++;
-            tags[n].ti_Tag = TDREQ_BodyText;
-            tags[n].ti_Data = (ULONG)body;
-            n++;
-            tags[n].ti_Tag = TDREQ_GadgetText;
-            tags[n].ti_Data = (ULONG)gadgets;
-            n++;
-            if( image && RequesterBase->lib_Version >= 47 ) {
-                tags[n].ti_Tag = TDREQ_Image;
-                tags[n].ti_Data = image;
+    /* requester.class with a NULL window opens an empty full-height
+       requester and deadlocks if Workbench still holds the layers. */
+    if( win != NULL ) {
+        RequesterBase = OpenLibrary("requester.class", 44);
+        if( RequesterBase ) {
+            reqClass = REQUESTER_GetClass();
+            if( reqClass ) {
+                n = 0;
+                tags[n].ti_Tag = TDREQ_Type;
+                tags[n].ti_Data = TDREQTYPE_INFO;
                 n++;
-            }
-            tags[n].ti_Tag = TAG_DONE;
-            tags[n].ti_Data = 0;
+                tags[n].ti_Tag = TDREQ_TitleText;
+                tags[n].ti_Data = (ULONG)title;
+                n++;
+                tags[n].ti_Tag = TDREQ_BodyText;
+                tags[n].ti_Data = (ULONG)body;
+                n++;
+                tags[n].ti_Tag = TDREQ_GadgetText;
+                tags[n].ti_Data = (ULONG)gadgets;
+                n++;
+                if( image && RequesterBase->lib_Version >= 47 ) {
+                    tags[n].ti_Tag = TDREQ_Image;
+                    tags[n].ti_Data = image;
+                    n++;
+                }
+                tags[n].ti_Tag = TAG_DONE;
+                tags[n].ti_Data = 0;
 
-            obj = (Object *)NewObjectA(reqClass, NULL, tags);
-            if( obj ) {
-                if( win == NULL && RequesterBase->lib_Version < 47 ) {
-                    screen = LockPubScreen(NULL);
+                obj = (Object *)NewObjectA(reqClass, NULL, tags);
+                if( obj ) {
+                    msg.MethodID = TDRM_OPENREQ;
+                    msg.or_Attrs = NULL;
+                    msg.or_Window = win;
+                    msg.or_Screen = NULL;
+                    result = (LONG)DoMethodA(obj, (Msg)&msg);
+                    DisposeObject(obj);
+                    CloseLibrary(RequesterBase);
+                    RequesterBase = NULL;
+                    return result;
                 }
-                msg.MethodID = TDRM_OPENREQ;
-                msg.or_Attrs = NULL;
-                msg.or_Window = win;
-                msg.or_Screen = screen;
-                result = (LONG)DoMethodA(obj, (Msg)&msg);
-                if( screen ) {
-                    UnlockPubScreen(NULL, screen);
-                }
-                DisposeObject(obj);
-                CloseLibrary(RequesterBase);
-                RequesterBase = NULL;
-                return result;
             }
+            CloseLibrary(RequesterBase);
+            RequesterBase = NULL;
         }
-        CloseLibrary(RequesterBase);
-        RequesterBase = NULL;
     }
 
+    /* intuition.doc EasyRequest: es_Title NULL is "System Request." */
+    if( title == NULL ) {
+        title = "ToolDock";
+    }
+    if( gadgets == NULL ) {
+        gadgets = "OK";
+    }
     es.es_StructSize = sizeof(struct EasyStruct);
     es.es_Flags = 0;
     es.es_Title = title;

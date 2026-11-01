@@ -69,3 +69,22 @@ MSG_UI_Console
 Console
 ; Console
 ;
+;
+; App popup
+;
+MSG_POP_Open
+Apri
+; Open
+;
+MSG_POP_Show
+Mostra
+; Show
+;
+MSG_POP_Hide
+Nascondi
+; Hide
+;
+MSG_POP_Quit
+Esci
+; Quit
+;

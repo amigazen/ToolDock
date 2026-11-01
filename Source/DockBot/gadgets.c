@@ -10,16 +10,17 @@
 ************************************/
 
 #include "dock.h"
+#include "dropzone.h"
 
 #include <clib/exec_protos.h>
 #include <clib/alib_protos.h>
-#include <clib/intuition_protos.h>
 #include <clib/layers_protos.h>
 #include <clib/graphics_protos.h>
 
 #include <graphics/gfxmacros.h>
 
 #include "dock_handle.h"
+#include "rearrange.h"
 
 BOOL create_dock_handle(struct DockWindow *dock)
 {
@@ -88,6 +89,7 @@ VOID remove_dock_gadgets(struct DockWindow *dock)
             TD_FreeGadget(dg);
         }
     }
+    dock->placeholder = NULL;
 }
 
 VOID fill_background(struct DockWindow *dock, struct RastPort *rp, struct Rect *b)
@@ -246,11 +248,32 @@ VOID draw_edit_controls(struct DockWindow *dock, struct Screen *screen, struct R
 
 VOID update_window(struct DockWindow *dock, UWORD x, UWORD y, UWORD w, UWORD h)
 {
-    DEBUG(DB_Printf(__FUNC__ ": %d,%d %d,%d\n", x, y, w, h));
+    UWORD ww;
+    UWORD wh;
 
-    if( dock->renderBM && dock->win ) {
-        BltBitMapRastPort(dock->renderBM, x, y, dock->win->RPort, x, y, w, h, 0xC0);
+    if( dock->hoverOverDock ) {
+        return;
     }
+    if( dock->renderBM == NULL || dock->win == NULL || dock->win->RPort == NULL ) {
+        return;
+    }
+    ww = dock->win->Width;
+    wh = dock->win->Height;
+    /* UWORD wrap of a negative ghost (e.g. 65528) is a Recoverable Alert. */
+    if( x >= ww || y >= wh || w < 1 || h < 1 ) {
+        return;
+    }
+    if( x + w > ww ) {
+        w = (UWORD)(ww - x);
+    }
+    if( y + h > wh ) {
+        h = (UWORD)(wh - y);
+    }
+    if( w < 1 || h < 1 ) {
+        return;
+    }
+    DEBUG(DB_Printf(__FUNC__ ": %ld,%ld %ld,%ld\n", (LONG)x, (LONG)y, (LONG)w, (LONG)h));
+    BltBitMapRastPort(dock->renderBM, x, y, dock->win->RPort, x, y, w, h, 0xC0);
 }
 
 VOID update_entire_window(struct DockWindow *dock)
@@ -270,6 +293,12 @@ struct Region *clip_to_gadget(struct DockWindow *dock, struct GadgetEnvironment 
     struct Rectangle bounds;
 
     if( ! dock->renderL ) {
+        return NULL;
+    }
+    if( env->gadgetBounds.w < 1 || env->gadgetBounds.h < 1 ) {
+        return NULL;
+    }
+    if( env->gadgetBounds.x > 32000 || env->gadgetBounds.y > 32000 ) {
         return NULL;
     }
 
@@ -319,8 +348,13 @@ VOID draw_gadgets(struct DockWindow *dock)
     struct Screen *screen;
     struct Region *region;
 
+    if( dock->hoverOverDock ) {
+        return;
+    }
+
     if( dock->renderBM ) {
 
+        dz_lock();
         rp =  &dock->renderRP;
         r.x = 0;
         r.y = 0;
@@ -328,8 +362,14 @@ VOID draw_gadgets(struct DockWindow *dock)
         r.h = dock->renderH;
 
         fill_background(dock, rp, &r);
+        rearrange_capture_bg(dock);
 
         FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
+
+            if( dock->runState == RS_REARRANGING && curr == dock->dragNode
+                && ! dock->rearrangeFromWB ) {
+                continue;
+            }
     
             DEBUG(DB_Printf(__FUNC__ ": Drawing %s\n", curr->n.ln_Name));
 
@@ -358,6 +398,7 @@ VOID draw_gadgets(struct DockWindow *dock)
         }
 
         update_window(dock, 0, 0, dock->renderW, dock->renderH);
+        dz_unlock();
     }
 }
 
@@ -424,102 +465,6 @@ struct DgNode *get_gadget_at(struct DockWindow *dock, UWORD x, UWORD y)
     return NULL;    
 }
 
-VOID hide_gadget_label(struct DockWindow *dock)
-{
-    if( dock->hoverWin ) {
-        CloseWindow(dock->hoverWin);
-        dock->hoverWin = NULL;
-    }
-}
-
-VOID show_gadget_label(struct DockWindow *dock, Object *gadget, STRPTR label)
-{
-    struct IntuiText text;
-    struct TextAttr ta;
-    struct Screen *screen;
-    struct DrawInfo *drawInfo;
-    struct GadgetEnvironment env;
-    struct Rect b;
-    UWORD w;
-
-	struct TagItem tags[] = {
-		{ WA_Left, 0 },
-		{ WA_Top, 0 },
-		{ WA_Width, 0 },
-		{ WA_Height, 0 },
-		{ WA_Borderless, TRUE },
-        { WA_SmartRefresh, TRUE },
-		{ TAG_DONE, NULL }
-	};
-
-    hide_gadget_label(dock);
-
-    text.ITextFont = &ta;
-   
-    if( screen = LockPubScreen(NULL) ) {
-    
-        if( drawInfo = GetScreenDrawInfo(screen) ) {
-
-            /* ITextFont is CONST TextAttr * in current NDK headers. */
-            ta.ta_Name = drawInfo->dri_Font->tf_Message.mn_Node.ln_Name;
-            ta.ta_YSize = drawInfo->dri_Font->tf_YSize;
-            ta.ta_Style = drawInfo->dri_Font->tf_Style;
-            ta.ta_Flags = drawInfo->dri_Font->tf_Flags;
-            text.FrontPen = drawInfo->dri_Pens[TEXTPEN];
-            text.BackPen = drawInfo->dri_Pens[BACKGROUNDPEN];
-            text.DrawMode = JAM2;
-
-            FreeScreenDrawInfo(screen, drawInfo);
-
-            text.ITextFont = &ta;
-            text.IText = label;
-            text.LeftEdge= 2;
-            text.TopEdge = 2;
-            text.NextText = NULL;
-                        
-            w = IntuiTextLength(&text);
-            tags[2].ti_Data = w + 4;
-            tags[3].ti_Data = text.ITextFont->ta_YSize + 4;
-
-            TD_GetDockGadgetEnvironment(gadget, &env);
-
-            switch( dock->cfg.pos ) {
-                case DP_LEFT:
-                    tags[0].ti_Data = dock->win->LeftEdge + dock->win->Width + 8;
-                    tags[1].ti_Data = dock->win->TopEdge + env.gadgetBounds.y + (env.gadgetBounds.h - text.ITextFont->ta_YSize - 4) / 2;
-                    break;
-
-                case DP_RIGHT:
-                    tags[0].ti_Data = dock->win->LeftEdge - w - 8;
-                    tags[1].ti_Data = dock->win->TopEdge + env.gadgetBounds.y + (env.gadgetBounds.h - text.ITextFont->ta_YSize - 4) / 2;
-                    break;
-
-                case DP_TOP:
-                    tags[0].ti_Data = dock->win->LeftEdge + env.gadgetBounds.x + (env.gadgetBounds.w - w - 4) / 2;
-                    tags[1].ti_Data = dock->win->TopEdge + dock->win->Height + 8;
-                    break;
-
-                case DP_BOTTOM: 
-                    tags[0].ti_Data = dock->win->LeftEdge + env.gadgetBounds.x + (env.gadgetBounds.w - w - 4) / 2;
-                    tags[1].ti_Data = dock->win->TopEdge - text.ITextFont->ta_YSize - 12;
-                    break;
-            }
-
-            if( (dock->hoverWin = OpenWindowTagList(NULL, tags) ) ) {
-    
-                PrintIText(dock->hoverWin->RPort, &text, 0, 0);
-                b.x = 0;
-                b.y = 0;
-                b.w = tags[2].ti_Data;
-                b.h = tags[3].ti_Data;
-                TD_DrawOutsetFrame(dock->hoverWin->RPort, &b);
-            }
-        }
-
-        UnlockPubScreen(NULL, screen);
-    }         
-}
-
 VOID update_hover_gadget(struct DockWindow *dock)
 {
     WORD mx = dock->win->MouseX;
@@ -527,7 +472,10 @@ VOID update_hover_gadget(struct DockWindow *dock)
     struct DgNode *node;
     Object *gadget;
     Object *oldHoverGad;
-    STRPTR label;
+
+    if( dock->hoverOverDock ) {
+        return;
+    }
 
     oldHoverGad = dock->hoverGad;
 
@@ -535,10 +483,7 @@ VOID update_hover_gadget(struct DockWindow *dock)
      || mx > dock->win->LeftEdge + dock->win->Width
      || my > dock->win->TopEdge + dock->win->Height ) {
 
-        hide_gadget_label(dock);     
-
         dock->hoverGad = NULL;
-        dock->hoverCount = HOVER_COUNT;
 
         if( oldHoverGad ) {
             draw_gadget(dock, oldHoverGad);
@@ -553,19 +498,6 @@ VOID update_hover_gadget(struct DockWindow *dock)
         }
 
         dock->hoverGad = gadget;
-
-        if( dock->cfg.showGadgetLabels ) {
-            if( dock->hoverCount <= 0 ) {
-                dock_gadget_get_label(gadget, &label);
-        
-                if( label && strlen(label) > 0 ) {
-
-                    show_gadget_label(dock, gadget, label);
-                }                
-            } else {
-                dock->hoverCount--;
-            }
-        }
 
         if( dock->runState == RS_EDITING ) {
 
@@ -648,11 +580,16 @@ VOID handle_gadget_message(struct DockWindow *dock)
     struct GadgetMessage *msg;
     
     while( msg = (struct GadgetMessage *)GetMsg(dock->gadgetPort) ) {
+        if( dock->hoverOverDock ) {
+            TD_FreeMem(msg, msg->m.mn_Length);
+            continue;
+        }
         if( dock->runState == RS_RUNNING ) {
 
             curr = get_gadget_node(dock, msg->sender);
             if( curr == NULL ) {
-                break;
+                TD_FreeMem(msg, msg->m.mn_Length);
+                continue;
             }
 
             switch( msg->messageType ) {

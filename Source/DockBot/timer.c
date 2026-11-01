@@ -15,9 +15,9 @@
 #include <devices/timer.h>
 #include <clib/exec_protos.h>
 #include <clib/alib_protos.h>
-#include <clib/intuition_protos.h>
 
 #include "debug.h"
+#include "rearrange.h"
 
 BOOL init_timer_notification(struct DockWindow *dock)
 {
@@ -72,9 +72,21 @@ VOID handle_timer_message(struct DockWindow *dock)
     while( msg = GetMsg(dock->timerPort) ) {
     }
 
+    /* wb.doc: Workbench holds the display for the whole icon drag.
+       The hook draws. This task must not call Intuition. */
+    if( dock->hoverOverDock ) {
+        if( dock->runState == RS_QUITTING ) {
+            dock->runState = RS_STOPPED;
+        } else if( dock->runState != RS_STOPPED ) {
+            set_timer(dock, TIMER_INTERVAL);
+        }
+        return;
+    }
+
     if( dock->runState == RS_RUNNING
-        || dock->runState == RS_CHANGING 
-        || dock->runState == RS_EDITING ) {
+        || dock->runState == RS_CHANGING
+        || dock->runState == RS_EDITING
+        || dock->runState == RS_REARRANGING ) {
 
         FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
 
@@ -94,8 +106,14 @@ VOID handle_timer_message(struct DockWindow *dock)
             set_timer(dock, TIMER_INTERVAL);
             break;            
 
+        case RS_REARRANGING:
+            rearrange_tick(dock);
+            set_timer(dock, REARRANGE_TICK_MS);
+            break;
+
         case RS_EDITING:
         case RS_RUNNING:
+            rearrange_tick(dock);
             update_hover_gadget(dock);
 
             set_timer(dock, TIMER_INTERVAL);

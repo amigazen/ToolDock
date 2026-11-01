@@ -10,6 +10,7 @@
 ************************************/
 
 #include "dock.h"
+#include "rearrange.h"
 
 #include <clib/exec_protos.h>
 
@@ -48,6 +49,7 @@ VOID run_event_loop(struct DockWindow *dock)
                 remap_gadgets(dock);
                 enable_layout(dock);
                 draw_gadgets(dock);
+                rearrange_sync(dock);
                 set_timer(dock, TIMER_INTERVAL);
                 dock->runState = RS_RUNNING;
                 update_settings_menu(dock);
@@ -57,20 +59,22 @@ VOID run_event_loop(struct DockWindow *dock)
             case RS_LOADING:
                 DEBUG(DB_Printf("runState = RS_LOADING\n"));
                 disable_notification(dock);
-                disable_layout(dock);
-
-                remove_dock_gadgets(dock);
-
-                load_config(dock);
+                reload_config(dock);
 
                 if( ! init_cx_broker(dock) ) {
-                    return;
+                    DEBUG(DB_Printf("reload: cx broker failed\n"));
                 }
-                remap_gadgets(dock);
-                enable_layout(dock);
-                draw_gadgets(dock);
-                dock->runState = RS_RUNNING;
-                update_settings_menu(dock);
+                if( dock->win ) {
+                    remap_gadgets(dock);
+                    enable_layout(dock);
+                    draw_gadgets(dock);
+                    rearrange_sync(dock);
+                    dock->runState = RS_RUNNING;
+                    update_settings_menu(dock);
+                } else {
+                    dock->disableLayout = FALSE;
+                    dock->runState = RS_HIDDEN;
+                }
                 enable_notification(dock);
                 break;
 
@@ -86,6 +90,7 @@ VOID run_event_loop(struct DockWindow *dock)
                     remap_gadgets(dock);
                     enable_layout(dock);
                     draw_gadgets(dock);
+                    rearrange_sync(dock);
                     dock->runState = RS_RUNNING;
                     break;
                 }
@@ -101,6 +106,7 @@ VOID run_event_loop(struct DockWindow *dock)
                 remap_gadgets(dock);
                 enable_layout(dock);
                 draw_gadgets(dock);
+                rearrange_sync(dock);
                 dock->runState = RS_RUNNING;
                 break;
 
@@ -178,6 +184,14 @@ VOID run_event_loop(struct DockWindow *dock)
 
                     if( signals & cxsig ) {
                         handle_cx_message(dock);
+                    }
+
+                    if( dock->reloadPending
+                        && ! dock->hoverOverDock
+                        && (dock->runState == RS_RUNNING
+                            || dock->runState == RS_HIDDEN) ) {
+                        dock->reloadPending = FALSE;
+                        dock->runState = RS_LOADING;
                     }
                 
                 break;
