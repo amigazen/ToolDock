@@ -42,6 +42,9 @@ extern BOOL __DebugEnabled;
 #endif
 
 #define DB_BUTTON_CLASS "DockButton"
+#define DB_SPACER_CLASS "DockSpacer"
+#define DB_OPEN_CLASS   "DockOpen"
+#define DB_TRASH_CLASS  "DockTrash"
 
 typedef enum
 {
@@ -153,7 +156,8 @@ typedef enum {
     // Getters.
     DM_GETINFO          = 1601,
 	DM_GETHOTKEY		= 1602,
-	DM_GETLABEL			= 1603
+	DM_GETLABEL			= 1603,
+    DM_GETPATH          = 1604
 
 } DockMessage;
 
@@ -249,6 +253,11 @@ struct DockMessageGetHotKey {
 struct DockMessageGetLabel {
 	ULONG MethodID;
 	STRPTR label;
+};
+
+struct DockMessageGetPath {
+	ULONG MethodID;
+	STRPTR path;
 };
 
 struct DockMessageCanEdit {

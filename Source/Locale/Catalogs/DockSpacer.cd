@@ -1,0 +1,10 @@
+;
+; DockSpacer
+;
+;
+MSG_Description (//)
+A separator line for ToolDock
+;
+MSG_Label (//)
+Spacer
+;

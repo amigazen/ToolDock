@@ -7,11 +7,10 @@
 **  ToolDock changes Copyright 2026 amigazen project
 **  DockBot Copyright 2019 Andrew Kennan
 **
-**  Workbench locks every window for the whole icon drag. Like SimpleDock
-**  the drop-zone hook squeezes a gap with graphics.library into its own
-**  bitmap and blits to adzm_RastPort. The window cannot grow. The dock
-**  task must not Open/Close/ChangeWindowBox or LockLayer until the drop.
-**  Motion is used only for an internal gadget drag.
+**  SimpleDock: during a Workbench drag the window layer is locked.
+**  After a beat the dock task composes a gap into hookBM (clean
+**  backdrop plus full-size tiles) and BltBitMaps that onto the screen.
+**  No ChangeWindowBox. Drop fills the hole; leaving restores.
 **
 ************************************/
 
@@ -25,7 +24,9 @@
 #include <workbench/startup.h>
 #include <workbench/workbench.h>
 #include <utility/tagitem.h>
+#include <exec/io.h>
 #include <devices/timer.h>
+#include <devices/input.h>
 #include <graphics/gfx.h>
 
 #include <clib/exec_protos.h>
@@ -34,20 +35,27 @@
 #include <clib/wb_protos.h>
 #include <clib/graphics_protos.h>
 #include <clib/timer_protos.h>
+#include <clib/input_protos.h>
 #include <pragmas/wb_pragmas.h>
 #include <pragmas/graphics_pragmas.h>
 #include <pragmas/timer_pragmas.h>
+#include <pragmas/input_pragmas.h>
 
 struct Library *MotionBase = NULL;
 struct Device *TimerBase = NULL;
+struct Device *InputBase = NULL;
+STATIC struct MsgPort *inputPort = NULL;
+STATIC struct IOStdReq *inputReq = NULL;
 
 #include <proto/motion.h>
 
 extern struct Library *WorkbenchBase;
 extern struct Library *GfxBase;
+extern struct IntuitionBase *IntuitionBase;
 
 STATIC VOID hook_glide(struct DockWindow *dock, struct RastPort *wrp, WORD gap);
 STATIC WORD gap_from_mouse(struct DockWindow *dock);
+STATIC BOOL dwell_elapsed(struct DockWindow *dock);
 STATIC VOID step_rearrange(struct DockWindow *dock);
 STATIC UWORD ease_p(UWORD p);
 STATIC VOID lerp_boxes(struct IBox *out, struct IBox *from, struct IBox *to,
@@ -241,20 +249,39 @@ STATIC UWORD typical_cell(struct DockWindow *dock)
     struct DgNode *curr;
     UWORD w;
     UWORD h;
+    UWORD along;
+    UWORD best;
     UWORD i;
 
+    best = 0;
     i = 0;
     FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
         if( i > 0 && curr != dock->dragNode ) {
             dock_gadget_get_size(curr->dg, dock->cfg.pos, dock->cfg.align, &w, &h);
-            if( DOCK_HORIZONTAL(dock) ) {
-                return (UWORD)(w + dock->cfg.gadgetPadding * 2);
+            if( w < 1 || w > 128 ) {
+                w = DEFAULT_SIZE;
             }
-            return (UWORD)(h + dock->cfg.gadgetPadding * 2);
+            if( h < 1 || h > 128 ) {
+                h = DEFAULT_SIZE;
+            }
+            if( DOCK_HORIZONTAL(dock) ) {
+                along = (UWORD)(w + dock->cfg.gadgetPadding * 2);
+            } else {
+                along = (UWORD)(h + dock->cfg.gadgetPadding * 2);
+            }
+            if( dock_gadget_wants_label(dock, curr->dg) ) {
+                along = (UWORD)(along + dock_label_band(dock));
+            }
+            if( along > best ) {
+                best = along;
+            }
         }
         i++;
     }
-    return DEFAULT_SIZE;
+    if( best < 16 ) {
+        return DEFAULT_SIZE;
+    }
+    return best;
 }
 
 UWORD rearrange_gap_index(struct DockWindow *dock, UWORD x, UWORD y)
@@ -613,6 +640,8 @@ STATIC VOID finish_rearrange(struct DockWindow *dock, BOOL restore)
     dock->dragArmed = FALSE;
     dock->rearrangeFromWB = FALSE;
     dock->dwellCount = 0;
+    dock->dwellReady = FALSE;
+    dock->wbVacant = FALSE;
     dock->hoverOverDock = FALSE;
     dock->motionBusy = FALSE;
     set_intuiticks(dock, FALSE);
@@ -685,65 +714,36 @@ STATIC VOID compute_dest(struct DockWindow *dock, WORD gap, struct IBox *dest)
     UWORD i;
     UWORD n;
     WORD extra;
-    WORD used;
-    WORD avail;
     WORD pos;
-    WORD cell;
-    WORD gapw;
     BOOL horiz;
 
     n = dock->snapCount;
     horiz = DOCK_HORIZONTAL(dock);
     extra = 0;
-    used = 0;
-    for( i = 0; i < n; i++ ) {
-        dest[i] = dock->restBox[i];
-        if( horiz ) {
-            used = (WORD)(used + dest[i].Width);
-        } else {
-            used = (WORD)(used + dest[i].Height);
-        }
-    }
-    if( n < 1 ) {
-        return;
-    }
     if( gap >= 1 ) {
         extra = (WORD)dock->gapSize;
         if( extra < 8 ) {
             extra = DEFAULT_SIZE;
         }
     }
-    if( extra < 1 ) {
-        return;
-    }
-    /* SimpleDock place(): the window cannot grow during a WB drag, so
-       n+1 cells are squeezed into the current length. */
-    avail = horiz ? (WORD)dock->snapW : (WORD)dock->snapH;
-    if( avail < 1 || used + extra < 1 ) {
-        return;
-    }
     pos = 0;
     for( i = 0; i < n; i++ ) {
-        if( gap == (WORD)i && i >= 1 ) {
-            gapw = (WORD)((LONG)extra * avail / (used + extra));
-            pos = (WORD)(pos + gapw);
+        dest[i] = dock->restBox[i];
+        if( extra > 0 && gap == (WORD)i && i >= 1 ) {
+            pos = (WORD)(pos + extra);
         }
         if( horiz ) {
-            cell = (WORD)((LONG)dock->restBox[i].Width * avail / (used + extra));
-            if( cell < 1 ) {
-                cell = 1;
-            }
             dest[i].Left = pos;
             dest[i].Top = dock->restBox[i].Top;
-            pos = (WORD)(pos + cell);
+            dest[i].Width = dock->restBox[i].Width;
+            dest[i].Height = dock->restBox[i].Height;
+            pos = (WORD)(pos + dest[i].Width);
         } else {
-            cell = (WORD)((LONG)dock->restBox[i].Height * avail / (used + extra));
-            if( cell < 1 ) {
-                cell = 1;
-            }
             dest[i].Top = pos;
             dest[i].Left = dock->restBox[i].Left;
-            pos = (WORD)(pos + cell);
+            dest[i].Width = dock->restBox[i].Width;
+            dest[i].Height = dock->restBox[i].Height;
+            pos = (WORD)(pos + dest[i].Height);
         }
     }
 }
@@ -765,8 +765,7 @@ STATIC VOID compose_hook(struct DockWindow *dock, struct RastPort *wrp,
     /* SimpleDock frame(): compose in hookBM, blit to adzm_RastPort at 0,0. */
     w = dock->snapW;
     h = dock->snapH;
-    if( dock->hookBM == NULL || dock->snapBM == NULL || wrp == NULL
-        || w < 1 || h < 1 ) {
+    if( dock->hookBM == NULL || dock->snapBM == NULL || w < 1 || h < 1 ) {
         return;
     }
 
@@ -784,8 +783,14 @@ STATIC VOID compose_hook(struct DockWindow *dock, struct RastPort *wrp,
         sy = dock->restBox[i].Top;
         dx = dest[i].Left;
         dy = dest[i].Top;
-        bw = dock->restBox[i].Width;
-        bh = dock->restBox[i].Height;
+        bw = dest[i].Width;
+        bh = dest[i].Height;
+        if( bw < 1 ) {
+            bw = dock->restBox[i].Width;
+        }
+        if( bh < 1 ) {
+            bh = dock->restBox[i].Height;
+        }
         if( sx < 0 ) {
             bw = (WORD)(bw + sx);
             dx = (WORD)(dx - sx);
@@ -825,14 +830,21 @@ STATIC VOID compose_hook(struct DockWindow *dock, struct RastPort *wrp,
             0xC0, 0xFF, NULL);
     }
 
-    if( w > 256 ) {
-        w = 256;
-    }
-    if( h > 256 ) {
-        h = 256;
-    }
     WaitBlit();
-    BltBitMapRastPort(dock->hookBM, 0, 0, wrp, 0, 0, w, h, 0xC0);
+    /* Window rastport ClipBlit/BltBitMapRastPort locks the layer and
+       stalls until Workbench drops. Blit the screen bitmap instead. */
+    if( dock->win && dock->win->WScreen
+        && dock->win->WScreen->RastPort.BitMap ) {
+        BltBitMap(dock->hookBM, 0, 0, dock->win->WScreen->RastPort.BitMap,
+            (WORD)(dock->win->LeftEdge + dock->win->BorderLeft),
+            (WORD)(dock->win->TopEdge + dock->win->BorderTop),
+            w, h, 0xC0, 0xFF, NULL);
+        WaitBlit();
+        return;
+    }
+    if( wrp ) {
+        BltBitMapRastPort(dock->hookBM, 0, 0, wrp, 0, 0, w, h, 0xC0);
+    }
 }
 
 STATIC VOID lerp_boxes(struct IBox *out, struct IBox *from, struct IBox *to,
@@ -867,11 +879,10 @@ STATIC VOID hook_glide(struct DockWindow *dock, struct RastPort *wrp, WORD gap)
     if( n == 0 || n > REARRANGE_MAX_GADGETS ) {
         return;
     }
-    if( wrp == NULL || dock->hookBM == NULL || dock->snapBM == NULL ) {
+    if( dock->hookBM == NULL || dock->snapBM == NULL ) {
         return;
     }
-    if( dock->snapW < 2 || dock->snapH < 2
-        || dock->snapW > 256 || dock->snapH > 256 ) {
+    if( dock->snapW < 2 || dock->snapH < 2 ) {
         return;
     }
     compute_dest(dock, gap, dock->hookDest);
@@ -892,6 +903,26 @@ STATIC VOID hook_glide(struct DockWindow *dock, struct RastPort *wrp, WORD gap)
         lerp_boxes(dock->drawBox, dock->restBox, dock->hookDest, n, p);
         compose_hook(dock, wrp, dock->drawBox, n);
     }
+    compose_hook(dock, wrp, dock->hookDest, n);
+    dock->shownGap = gap;
+}
+
+/* One blit, no GetSysTime spin. Safe to call from the dock timer. */
+STATIC VOID hook_show(struct DockWindow *dock, struct RastPort *wrp, WORD gap)
+{
+    UWORD n;
+
+    n = dock->snapCount;
+    if( n == 0 || n > REARRANGE_MAX_GADGETS ) {
+        return;
+    }
+    if( dock->hookBM == NULL || dock->snapBM == NULL ) {
+        return;
+    }
+    if( dock->snapW < 2 || dock->snapH < 2 ) {
+        return;
+    }
+    compute_dest(dock, gap, dock->hookDest);
     compose_hook(dock, wrp, dock->hookDest, n);
     dock->shownGap = gap;
 }
@@ -995,14 +1026,178 @@ STATIC VOID copy_rest(struct DockWindow *dock)
     }
     dock->snapCount = i;
     if( i > 1 ) {
+        for( i = 0; i + 1 < dock->snapCount; i++ ) {
+            if( DOCK_HORIZONTAL(dock) ) {
+                dock->restBox[i].Width =
+                    (WORD)(dock->restBox[i + 1].Left - dock->restBox[i].Left);
+                if( dock->restBox[i].Width < 1 ) {
+                    dock->restBox[i].Width = 1;
+                }
+            } else {
+                dock->restBox[i].Height =
+                    (WORD)(dock->restBox[i + 1].Top - dock->restBox[i].Top);
+                if( dock->restBox[i].Height < 1 ) {
+                    dock->restBox[i].Height = 1;
+                }
+            }
+        }
+        i = dock->snapCount - 1;
         if( DOCK_HORIZONTAL(dock) ) {
-            dock->gapSize = (UWORD)dock->restBox[1].Width;
+            dock->restBox[i].Width =
+                (WORD)((WORD)dock->snapW - dock->restBox[i].Left);
+            if( dock->restBox[i].Width < 1 ) {
+                dock->restBox[i].Width = 1;
+            }
         } else {
-            dock->gapSize = (UWORD)dock->restBox[1].Height;
+            dock->restBox[i].Height =
+                (WORD)((WORD)dock->snapH - dock->restBox[i].Top);
+            if( dock->restBox[i].Height < 1 ) {
+                dock->restBox[i].Height = 1;
+            }
         }
-        if( dock->gapSize < 8 ) {
-            dock->gapSize = DEFAULT_SIZE;
+    }
+    dock->gapSize = typical_cell(dock);
+}
+
+STATIC BOOL prepare_wb_snap(struct DockWindow *dock)
+{
+    struct RastPort rp;
+    struct Rect r;
+
+    if( ! ensure_snap(dock) ) {
+        return FALSE;
+    }
+    copy_rest(dock);
+    if( dock->snapCount < 1 ) {
+        return FALSE;
+    }
+    if( dock->renderRP.BitMap && dock->snapBM ) {
+        copy_rp(&dock->renderRP, dock->snapBM, dock->snapW, dock->snapH);
+    }
+    if( dock->snapBG ) {
+        InitRastPort(&rp);
+        rp.BitMap = dock->snapBG;
+        r.x = 0;
+        r.y = 0;
+        r.w = dock->snapW;
+        r.h = dock->snapH;
+        fill_background(dock, &rp, &r);
+        dock->snapBGReady = TRUE;
+    }
+    return TRUE;
+}
+
+STATIC VOID present_wb_vacant(struct DockWindow *dock)
+{
+    hook_glide(dock, NULL, dock->gapIndex);
+}
+
+STATIC VOID begin_wb_insert(struct DockWindow *dock, UWORD x, UWORD y)
+{
+    if( dock->wbVacant || dock->runState != RS_RUNNING ) {
+        return;
+    }
+    if( ! prepare_wb_snap(dock) ) {
+        DEBUG(DB_Printf("begin_wb_insert: snap failed\n"));
+        return;
+    }
+    dock->wbVacant = TRUE;
+    dock->dwellHold = TRUE;
+    dock->runState = RS_REARRANGING;
+    dock->rearrangeFromWB = TRUE;
+    dock->dragNode = NULL;
+    dock->hoverOverDock = FALSE;
+    dock->gapSize = typical_cell(dock);
+    dock->gapIndex = (WORD)rearrange_gap_index(dock, x, y);
+    if( dock->gapIndex < 1 ) {
+        dock->gapIndex = 1;
+    }
+    disable_notification(dock);
+    present_wb_vacant(dock);
+    DEBUG(DB_Printf("begin_wb_insert: gap=%ld size=%ld\n",
+        (LONG)dock->gapIndex, (LONG)dock->gapSize));
+}
+
+STATIC VOID cancel_wb_insert(struct DockWindow *dock)
+{
+    if( ! dock->wbVacant ) {
+        dock->dwellReady = FALSE;
+        return;
+    }
+    DEBUG(DB_Printf("cancel_wb_insert\n"));
+    hook_show(dock, NULL, (WORD)-1);
+    finish_rearrange(dock, FALSE);
+}
+
+VOID rearrange_wb_tick(struct DockWindow *dock)
+{
+    struct Window *w;
+    WORD mx;
+    WORD my;
+    WORD gap;
+
+    if( dock->runState != RS_RUNNING
+        && ! (dock->runState == RS_REARRANGING && dock->wbVacant) ) {
+        return;
+    }
+    w = dock->win;
+    if( w == NULL || w->WScreen == NULL ) {
+        return;
+    }
+    mx = (WORD)(w->WScreen->MouseX - w->LeftEdge);
+    my = (WORD)(w->WScreen->MouseY - w->TopEdge);
+
+    if( mx < 0 || my < 0 || mx >= (WORD)w->Width || my >= (WORD)w->Height ) {
+        if( dock->wbVacant || dock->dwellReady ) {
+            cancel_wb_insert(dock);
+            dock->dwellHold = FALSE;
+            DEBUG(DB_Printf("rearrange_wb_tick: leave\n"));
+        } else {
+            dock->dwellReady = FALSE;
+            dock->dwellHold = FALSE;
         }
+        return;
+    }
+
+    if( dock->dwellHold && ! dock->wbVacant ) {
+        return;
+    }
+
+    /* LMB up over the dock: keep the vacant slot, a drop may follow. */
+    if( dock->dragArmed || InputBase == NULL
+        || (PeekQualifier() & IEQUALIFIER_LEFTBUTTON) == 0 ) {
+        if( ! dock->wbVacant ) {
+            dock->dwellReady = FALSE;
+        }
+        return;
+    }
+
+    if( ! dock->dwellReady ) {
+        if( IntuitionBase ) {
+            dock->dwellSec = IntuitionBase->Seconds;
+            dock->dwellMicro = IntuitionBase->Micros;
+            dock->dwellReady = TRUE;
+        }
+        return;
+    }
+
+    if( ! dock->wbVacant && ! dwell_elapsed(dock) ) {
+        return;
+    }
+
+    if( ! dock->wbVacant ) {
+        begin_wb_insert(dock, (UWORD)mx, (UWORD)my);
+        return;
+    }
+
+    gap = (WORD)rearrange_gap_index(dock, (UWORD)mx, (UWORD)my);
+    if( gap < 1 ) {
+        gap = 1;
+    }
+    if( gap != dock->gapIndex ) {
+        dock->gapIndex = gap;
+        present_wb_vacant(dock);
+        DEBUG(DB_Printf("rearrange_wb_tick: gap=%ld\n", (LONG)gap));
     }
 }
 
@@ -1144,6 +1339,15 @@ VOID rearrange_init(struct DockWindow *dock)
     dock->gapIndex = (WORD)-1;
     dock->gapSize = 0;
     dock->dwellCount = 0;
+    dock->dwellSec = 0;
+    dock->dwellMicro = 0;
+    dock->dwellReady = FALSE;
+    dock->dwellHold = FALSE;
+    dock->wbVacant = FALSE;
+    dock->layoutX = 0;
+    dock->layoutY = 0;
+    dock->layoutW = 0;
+    dock->layoutH = 0;
     dock->hoverOverDock = FALSE;
     dock->rearrangeFromWB = FALSE;
     dock->dragNode = NULL;
@@ -1173,6 +1377,19 @@ VOID rearrange_init(struct DockWindow *dock)
         TimerBase = dock->timerReq->tr_node.io_Device;
     }
 
+    if( inputPort == NULL ) {
+        inputPort = CreateMsgPort();
+    }
+    if( inputPort && inputReq == NULL ) {
+        inputReq = (struct IOStdReq *)CreateIORequest(inputPort,
+            sizeof(struct IOStdReq));
+    }
+    if( inputReq && InputBase == NULL ) {
+        if( OpenDevice("input.device", 0, (struct IORequest *)inputReq, 0) == 0 ) {
+            InputBase = inputReq->io_Device;
+        }
+    }
+
     if( MotionBase == NULL ) {
         MotionBase = OpenLibrary(MOTIONNAME, MOTIONVERSION);
     }
@@ -1187,6 +1404,18 @@ VOID rearrange_cleanup(struct DockWindow *dock)
     if( MotionBase ) {
         CloseLibrary(MotionBase);
         MotionBase = NULL;
+    }
+    if( inputReq ) {
+        if( InputBase ) {
+            CloseDevice((struct IORequest *)inputReq);
+            InputBase = NULL;
+        }
+        DeleteIORequest((struct IORequest *)inputReq);
+        inputReq = NULL;
+    }
+    if( inputPort ) {
+        DeleteMsgPort(inputPort);
+        inputPort = NULL;
     }
 }
 
@@ -1264,7 +1493,8 @@ VOID rearrange_mouse_down(struct DockWindow *dock, UWORD x, UWORD y)
 
     dock->dragArmed = FALSE;
     dock->dragNode = NULL;
-    if( dock->hoverOverDock || dock->runState != RS_RUNNING ) {
+    if( dock->hoverOverDock || dock->dwellHold || dock->wbVacant
+        || dock->runState != RS_RUNNING ) {
         return;
     }
     dg = get_gadget_at(dock, x, y);
@@ -1343,6 +1573,11 @@ BOOL rearrange_mouse_up(struct DockWindow *dock, UWORD x, UWORD y)
     BOOL clicked;
 
     clicked = FALSE;
+    if( dock->dwellHold || dock->wbVacant ) {
+        dock->dragArmed = FALSE;
+        dock->dragNode = NULL;
+        return FALSE;
+    }
     if( dock->runState == RS_REARRANGING && dock->dragNode
         && ! dock->rearrangeFromWB ) {
         commit_move(dock);
@@ -1367,63 +1602,140 @@ BOOL rearrange_mouse_up(struct DockWindow *dock, UWORD x, UWORD y)
     return clicked;
 }
 
+STATIC BOOL class_name_is(STRPTR a, STRPTR b)
+{
+    if( a == NULL || b == NULL ) {
+        return FALSE;
+    }
+    while( *a && *b && *a == *b ) {
+        a++;
+        b++;
+    }
+    return (BOOL)(*a == 0 && *b == 0);
+}
+
+STATIC BOOL gadget_takes_drop(Object *obj)
+{
+    Class *cl;
+    STRPTR id;
+
+    if( obj == NULL ) {
+        return FALSE;
+    }
+    cl = OCLASS(obj);
+    if( cl == NULL ) {
+        return FALSE;
+    }
+    id = cl->cl_ID;
+    if( class_name_is(id, DB_BUTTON_CLASS) ) {
+        return TRUE;
+    }
+    if( class_name_is(id, DB_OPEN_CLASS) ) {
+        return TRUE;
+    }
+    if( class_name_is(id, DB_TRASH_CLASS) ) {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+STATIC BOOL dwell_elapsed(struct DockWindow *dock)
+{
+    ULONG nowSec;
+    ULONG nowMicro;
+    ULONG ms;
+
+    if( dock == NULL || ! dock->dwellReady ) {
+        return FALSE;
+    }
+    nowSec = 0;
+    nowMicro = 0;
+    if( IntuitionBase ) {
+        nowSec = IntuitionBase->Seconds;
+        nowMicro = IntuitionBase->Micros;
+    }
+    if( nowSec < dock->dwellSec ) {
+        return FALSE;
+    }
+    ms = (nowSec - dock->dwellSec) * 1000UL;
+    if( nowMicro >= dock->dwellMicro ) {
+        ms += (nowMicro - dock->dwellMicro) / 1000UL;
+    } else {
+        if( ms >= 1000UL ) {
+            ms -= 1000UL;
+        }
+        ms += (1000000UL + nowMicro - dock->dwellMicro) / 1000UL;
+    }
+    return (BOOL)(ms >= (ULONG)REARRANGE_DWELL_MS);
+}
+
 BOOL rearrange_want_insert(struct DockWindow *dock, struct AppMessage *msg,
     UWORD *dest)
 {
-    LONG gap;
-    LONG icon;
+    struct DgNode *dg;
+    struct GadgetEnvironment env;
+    BOOL dwelt;
+    BOOL takes;
 
     if( msg == NULL || dest == NULL ) {
         return FALSE;
     }
+
+    if( dock->gapIndex >= 1 ) {
+        *dest = (UWORD)dock->gapIndex;
+    } else {
+        *dest = rearrange_gap_index(dock, msg->am_MouseX, msg->am_MouseY);
+        if( *dest < 1 ) {
+            *dest = 1;
+        }
+    }
+
+    /* Insert only after the pointer has sat on the dock for a beat.
+       An immediate drop on Open/Button/Trash uses that item instead. */
+    dwelt = dock->wbVacant ? TRUE : dwell_elapsed(dock);
+
     dock->hoverOverDock = FALSE;
     dock->rearrangeFromWB = FALSE;
     dock->dwellCount = 0;
+    dock->dwellReady = FALSE;
+    dock->dwellHold = TRUE;
     dock->shownGap = (WORD)-1;
     dock->dropOnto = (WORD)-1;
     if( dock->runState == RS_REARRANGING ) {
         finish_rearrange(dock, FALSE);
     }
-    if( dock->placeholder ) {
-        *dest = 1;
-        dock->gapIndex = (WORD)-1;
-        return TRUE;
-    }
-    if( msg->am_Type == AMTYPE_APPWINDOW ) {
-        *dest = rearrange_gap_index(dock, msg->am_MouseX, msg->am_MouseY);
-        if( *dest < 1 ) {
-            *dest = 1;
-        }
-        dock->gapIndex = (WORD)-1;
-        return TRUE;
-    }
-    if( msg->am_Type == AMTYPE_APPWINDOWZONE ) {
-        gap = dz_gap(msg->am_ID);
-        icon = dz_icon(msg->am_ID);
-        if( icon >= 1 ) {
-            *dest = (UWORD)icon;
-        } else if( gap >= 1 ) {
-            *dest = (UWORD)gap;
-        } else if( dock->gapIndex >= 1 ) {
-            *dest = dock->gapIndex;
-        } else {
-            *dest = 1;
-        }
-        dock->gapIndex = (WORD)-1;
-        return TRUE;
-    }
-    if( rearrange_count(dock) <= 1 ) {
-        *dest = 1;
-        dock->gapIndex = (WORD)-1;
-        return TRUE;
-    }
     dock->gapIndex = (WORD)-1;
-    return FALSE;
+
+    if( dock->placeholder ) {
+        DEBUG(DB_Printf("rearrange_want_insert: placeholder\n"));
+        return TRUE;
+    }
+    if( dwelt ) {
+        DEBUG(DB_Printf("rearrange_want_insert: dwelt dest=%ld\n", (LONG)*dest));
+        return TRUE;
+    }
+
+    dg = get_gadget_at(dock, msg->am_MouseX, msg->am_MouseY);
+    takes = FALSE;
+    env.index = 0;
+    if( dg ) {
+        TD_GetDockGadgetEnvironment(dg->dg, &env);
+        if( env.index != 0 ) {
+            takes = gadget_takes_drop(dg->dg);
+        }
+    }
+    if( takes ) {
+        DEBUG(DB_Printf("rearrange_want_insert: use gadget\n"));
+        return FALSE;
+    }
+    DEBUG(DB_Printf("rearrange_want_insert: insert dest=%ld\n", (LONG)*dest));
+    return TRUE;
 }
 
 VOID rearrange_commit_drop(struct DockWindow *dock)
 {
     DEBUG(DB_Printf("rearrange_commit_drop\n"));
+    dock->dwellHold = FALSE;
     dz_remove(dock);
     remap_gadgets(dock);
     layout_gadgets(dock);

@@ -56,6 +56,8 @@ VOID dock_gadget_hotkey(Object *obj);
 
 VOID dock_gadget_get_label(Object *obj, STRPTR *label);
 
+VOID dock_gadget_get_path(Object *obj, STRPTR *path);
+
 BOOL dock_gadget_can_edit(Object *obj);
 
 struct TagItem * dock_gadget_get_editor(Object *obj);

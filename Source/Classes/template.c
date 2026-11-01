@@ -405,6 +405,10 @@ APTR __saveds __asm GetLibData(VOID)
     METHOD_DEF(MESSAGE)
 #endif
 
+#ifdef METHOD_GETPATH
+    METHOD_DEF(GETPATH)
+#endif
+
 #ifdef METHOD_GETLABEL
     METHOD_DEF(GETLABEL)
 #else
@@ -561,6 +565,14 @@ ULONG __saveds GadgetDispatch(Class *c, Object *o, Msg msg)
             return METHOD_GETLABEL (c, o, msg);
 #else
             return GetGadgetLabel(c, o, msg);
+#endif
+
+        case DM_GETPATH:
+#ifdef METHOD_GETPATH
+            return METHOD_GETPATH (c, o, msg);
+#else
+            ((struct DockMessageGetPath *)msg)->path = NULL;
+            return 1;
 #endif
 
         case DM_CANEDIT:

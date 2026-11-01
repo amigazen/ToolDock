@@ -422,7 +422,8 @@ VOID handle_drop_event(struct DockWindow* dock)
                     dest = (UWORD)rearrange_count(dock);
                     inserted = TRUE;
 
-                } else if( dock->runState == RS_RUNNING ) {
+                } else if( dock->runState == RS_RUNNING
+                    || (dock->runState == RS_REARRANGING && dock->wbVacant) ) {
 
                     if( ! rearrange_want_insert(dock, msg, &dest) ) {
                         dg = get_gadget_at(dock, msg->am_MouseX, msg->am_MouseY);
@@ -697,7 +698,7 @@ VOID handle_window_event(struct DockWindow *dock)
 
         /* Workbench icon drag: ignore mouse and layout. Must still
            answer IDCMP_REFRESHWINDOW or Intuition never unlocks. */
-        if( dock->hoverOverDock ) {
+        if( dock->hoverOverDock || dock->wbVacant ) {
             if( msgClass == IDCMP_REFRESHWINDOW ) {
                 BeginRefresh(dock->win);
                 EndRefresh(dock->win, TRUE);

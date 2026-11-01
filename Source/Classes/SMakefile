@@ -35,8 +35,9 @@ EYES_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Eyes $(DEF_DS) $(DEF_BV)
 TRASH_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Trash IDIR=../DockBot IDIR=$(NDK_INC) IDIR=$(PM_INC) $(DEF_DS) $(DEF_BV)
 OPEN_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Open $(DEF_DS) $(DEF_BV)
 EX_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Exchange IDIR=../DockBot IDIR=$(NDK_INC) IDIR=$(PM_INC) $(DEF_DS) $(DEF_BV)
+SP_OPTS = CPU=$(CPU) $(SC_OPTS) $(INC) IDIR=Spacer $(DEF_DS) $(DEF_BV)
 
-BTN_CLASS_OBJS = Button/lib.o Button/button.o Button/triton_icon.o Button/dockbutton_cat.o
+BTN_CLASS_OBJS = Button/lib.o Button/button.o Button/button_copy.o Button/triton_icon.o Button/dockbutton_cat.o
 BTN_OBJS = $(BTN_CLASS_OBJS) ../DockBot/applife.o
 CLK_OBJS = Clock/lib.o Clock/clock.o Clock/dockclock_cat.o
 MEM_OBJS = Mem/lib.o Mem/mem.o Mem/dockmem_cat.o
@@ -48,6 +49,7 @@ TRASH_OBJS = $(TRASH_CLASS_OBJS) ../DockBot/applife.o
 OPEN_OBJS = Open/lib.o Open/open.o Open/open_item.o Open/dockopen_cat.o
 EX_CLASS_OBJS = Exchange/lib.o Exchange/exchange.o Exchange/dockexchange_cat.o
 EX_OBJS = $(EX_CLASS_OBJS) ../DockBot/applife.o
+SP_OBJS = Spacer/lib.o Spacer/spacer.o Spacer/dockspacer_cat.o
 
 .c.o:
 	@echo "        Compiling $*.c..."
@@ -63,6 +65,7 @@ all: eyes
 all: trash
 all: open
 all: exchange
+all: spacer
 
 button: $(OUT)/DockButton.class
 clock: $(OUT)/DockClock.class
@@ -73,6 +76,7 @@ eyes: $(OUT)/Eyes.class
 trash: $(OUT)/DockTrash.class
 open: $(OUT)/DockOpen.class
 exchange: $(OUT)/DockExchange.class
+spacer: $(OUT)/DockSpacer.class
 
 $(OUT)/DockButton.class: dirs Button/dockbutton_cat.c Button/pragmas.h $(BTN_OBJS)
 	$(LINKER) WITH <<
@@ -137,6 +141,13 @@ FROM $(EX_OBJS)
 LIB $(CLASS_LIBS) $(LD_OPTS)
 <
 
+$(OUT)/DockSpacer.class: dirs Spacer/dockspacer_cat.c Spacer/pragmas.h $(SP_OBJS)
+	$(LINKER) WITH <<
+TO $(OUT)/DockSpacer.class
+FROM $(SP_OBJS)
+LIB $(CLASS_LIBS) $(LD_OPTS)
+<
+
 dirs:
 	-makedir $(DIR)
 	-makedir $(OUT)
@@ -146,6 +157,7 @@ Button/pragmas.h: template.fd
 
 Button/lib.o: Button/lib.c template.c
 Button/button.o: Button/button.c
+Button/button_copy.o: Button/button_copy.c
 Button/triton_icon.o: Button/triton_icon.c
 Button/dockbutton_cat.o: Button/dockbutton_cat.c
 
@@ -245,13 +257,24 @@ $(EX_CLASS_OBJS):
 	@echo "        Compiling $*.c..."
 	@$(COMPILER) $(EX_OPTS) $*.c to $*.o
 
+Spacer/pragmas.h: template.fd
+	$(FD_CONV) template.fd Spacer/pragmas.h
+
+Spacer/lib.o: Spacer/lib.c template.c
+Spacer/spacer.o: Spacer/spacer.c
+Spacer/dockspacer_cat.o: Spacer/dockspacer_cat.c
+
+$(SP_OBJS):
+	@echo "        Compiling $*.c..."
+	@$(COMPILER) $(SP_OPTS) $*.c to $*.o
+
 clean:
-	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS) $(TRASH_OBJS) $(OPEN_OBJS) $(EX_OBJS)
+	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS) $(TRASH_OBJS) $(OPEN_OBJS) $(EX_OBJS) $(SP_OBJS)
 	-Delete $(OUT)/DockButton.class $(OUT)/DockClock.class
 	-Delete $(OUT)/DockMem.class $(OUT)/DockNet.class
 	-Delete $(OUT)/Switcher.class $(OUT)/Eyes.class
 	-Delete $(OUT)/DockTrash.class $(OUT)/DockOpen.class
-	-Delete $(OUT)/DockExchange.class
+	-Delete $(OUT)/DockExchange.class $(OUT)/DockSpacer.class
 
 cleanobj:
-	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS) $(TRASH_OBJS) $(OPEN_OBJS) $(EX_OBJS)
+	-Delete $(BTN_OBJS) $(CLK_OBJS) $(MEM_OBJS) $(NET_OBJS) $(SW_OBJS) $(EYES_OBJS) $(TRASH_OBJS) $(OPEN_OBJS) $(EX_OBJS) $(SP_OBJS)

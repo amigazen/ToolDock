@@ -1,0 +1,12 @@
+## version $VER: DockSpacer.catalog 1.0 (2026-11-01)
+## language français
+## codeset 0
+;
+MSG_Description
+Une ligne de séparation pour ToolDock
+; A separator line for ToolDock
+;
+MSG_Label
+Séparateur
+; Spacer
+;

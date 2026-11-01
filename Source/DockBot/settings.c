@@ -18,12 +18,101 @@
 #include <clib/alib_protos.h>
 #include <clib/dos_protos.h>
 #include <clib/graphics_protos.h>
+#include <clib/icon_protos.h>
+
+extern struct Library *IconBase;
 
 #define ICON_PATH_HI "PROGDIR:icons_hi"
 #define ICON_PATH_MED "PROGDIR:icons_med"
 
 STATIC VOID ensure_placeholder(struct DockWindow *dock);
 STATIC VOID remove_placeholder(struct DockWindow *dock);
+
+STATIC VOID strip_trailing_slash(STRPTR path)
+{
+    UWORD n;
+
+    if( path == NULL ) {
+        return;
+    }
+    n = 0;
+    while( path[n] ) {
+        n++;
+    }
+    while( n > 1 && path[n - 1] == '/' ) {
+        n--;
+        path[n] = 0;
+    }
+}
+
+STATIC BOOL path_eq(STRPTR a, STRPTR b)
+{
+    UBYTE ca, cb;
+
+    if( a == NULL || b == NULL ) {
+        return FALSE;
+    }
+    while( *a || *b ) {
+        ca = *a;
+        cb = *b;
+        if( ca >= 'A' && ca <= 'Z' ) {
+            ca = (UBYTE)(ca + 32);
+        }
+        if( cb >= 'A' && cb <= 'Z' ) {
+            cb = (UBYTE)(cb + 32);
+        }
+        if( ca != cb ) {
+            return FALSE;
+        }
+        a++;
+        b++;
+    }
+    return TRUE;
+}
+
+STATIC BOOL same_source(STRPTR a, STRPTR b)
+{
+    BPTR la, lb;
+    LONG r;
+
+    if( path_eq(a, b) ) {
+        return TRUE;
+    }
+    if( a == NULL || b == NULL || a[0] == 0 || b[0] == 0 ) {
+        return FALSE;
+    }
+    la = Lock(a, ACCESS_READ);
+    if( la == NULL ) {
+        return FALSE;
+    }
+    lb = Lock(b, ACCESS_READ);
+    if( lb == NULL ) {
+        UnLock(la);
+        return FALSE;
+    }
+    r = SameLock(la, lb);
+    UnLock(lb);
+    UnLock(la);
+    return (BOOL)(r == LOCK_SAME);
+}
+
+STATIC BOOL dock_has_source(struct DockWindow *dock, STRPTR path)
+{
+    struct DgNode *curr;
+    STRPTR exist;
+
+    FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
+        if( curr == dock->placeholder ) {
+            continue;
+        }
+        exist = NULL;
+        dock_gadget_get_path(curr->dg, &exist);
+        if( exist && same_source(path, exist) ) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
 
 VOID free_config(struct DockWindow *dock)
 {
@@ -516,10 +605,13 @@ BOOL insert_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name,
     struct DgNode *before)
 {
     STRPTR path;
+    STRPTR label;
     struct FileInfoBlock *fib;
+    struct DiskObject *icon;
     struct DgNode *dg;
     BPTR lock;
     BOOL ok;
+    BOOL skip;
 
     ok = FALSE;
     DEBUG(DB_Printf(__FUNC__ "\n"));
@@ -536,8 +628,16 @@ BOOL insert_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name,
         path[0] = 0;
         NameFromLock(dir, path, MAX_PATH_LENGTH);
         AddPart(path, name, MAX_PATH_LENGTH);
+        strip_trailing_slash(path);
 
         DEBUG(DB_Printf(__FUNC__ ":  -> %s\n", path));
+
+        if( dock_has_source(dock, path) ) {
+            DEBUG(DB_Printf(__FUNC__ ": duplicate %s\n", path));
+            DisplayBeep(NULL);
+            TD_FreeMem(path, MAX_PATH_LENGTH);
+            return FALSE;
+        }
 
         if( lock = Lock(path, ACCESS_READ) ) {
 
@@ -545,11 +645,33 @@ BOOL insert_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name,
 
                 if( Examine(lock, fib) ) {
 
-                   if( fib->fib_DirEntryType < 0 ) {
+                    /* Disk, drawer, tool, and project icons become shortcuts.
+                       WBGARBAGE (Trash) is not a launcher. */
+                    skip = FALSE;
+                    icon = GetDiskObject(path);
+                    if( icon ) {
+                        if( icon->do_Type == WBGARBAGE ) {
+                            DEBUG(DB_Printf(__FUNC__ ": skip trashcan\n"));
+                            skip = TRUE;
+                        }
+                        FreeDiskObject(icon);
+                    }
+
+                    if( ! skip ) {
+                        label = name;
+                        if( label == NULL || label[0] == 0 ) {
+                            label = FilePart(path);
+                        }
+                        if( label == NULL || label[0] == 0 ) {
+                            label = fib->fib_FileName;
+                        }
+                        if( label == NULL || label[0] == 0 ) {
+                            label = path;
+                        }
 
                         if( dg = TD_AllocGadget(DB_BUTTON_CLASS) ) {
 
-                            dock_gadget_init_button(dg->dg, name, path);
+                            dock_gadget_init_button(dg->dg, label, path);
                             if( dock->gadgetPort ) {
                                 dock_gadget_added(dg->dg, dock->gadgetPort);
                             }
@@ -563,9 +685,6 @@ BOOL insert_dropped_icon(struct DockWindow *dock, BPTR dir, STRPTR name,
                             }
                             ok = TRUE;
                         }
-
-                    } else {
-                        DEBUG(DB_Printf(__FUNC__ ": skip directory\n"));
                     }
                 }
 

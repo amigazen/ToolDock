@@ -30,6 +30,7 @@ VOID rearrange_capture_bg(struct DockWindow *dock);
 VOID rearrange_sync(struct DockWindow *dock);
 
 VOID rearrange_tick(struct DockWindow *dock);
+VOID rearrange_wb_tick(struct DockWindow *dock);
 VOID rearrange_intuitick(struct DockWindow *dock);
 
 VOID rearrange_mouse_down(struct DockWindow *dock, UWORD x, UWORD y);

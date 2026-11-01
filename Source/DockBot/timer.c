@@ -74,13 +74,21 @@ VOID handle_timer_message(struct DockWindow *dock)
 
     dock->rmbHandled = FALSE;
 
-    /* wb.doc: Workbench holds the display for the whole icon drag.
-       The hook draws. This task must not call Intuition. */
-    if( dock->hoverOverDock ) {
+    rearrange_wb_tick(dock);
+
+    if( dock->wbVacant ) {
         if( dock->runState == RS_QUITTING ) {
             dock->runState = RS_STOPPED;
         } else if( dock->runState != RS_STOPPED ) {
-            set_timer(dock, TIMER_INTERVAL);
+            set_timer(dock, REARRANGE_TICK_MS);
+        }
+        return;
+    }
+
+    /* Waiting for the beat: do not call Intuition (WB may hold the display). */
+    if( dock->dwellReady && dock->runState == RS_RUNNING ) {
+        if( dock->runState != RS_STOPPED ) {
+            set_timer(dock, REARRANGE_TICK_MS);
         }
         return;
     }

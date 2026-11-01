@@ -16,7 +16,7 @@ TRITON_LIB = ////OpenTriton/Source/lib/triton.lib
 INC = INCLUDEDIRECTORY=///include INCLUDEDIRECTORY=/ INCLUDEDIRECTORY=$(TRITON_INC)
 C_OPTS = CPU=$(CPU) $(SC_OPTS) NOSTANDARDIO $(INC) $(DEF_DS) $(DEF_BV)
 
-OBJECTS = lib.o button.o triton_icon.o dockbutton_cat.o
+OBJECTS = lib.o button.o button_copy.o triton_icon.o dockbutton_cat.o
 CLASS_LIBS = LIB:sc.lib LIB:amiga.lib $(TRITON_LIB)
 
 all: $(LIBFILE)
@@ -33,6 +33,7 @@ LIB $(CLASS_LIBS) $(LD_OPTS)
 
 lib.o: lib.c /template.c
 button.o: button.c
+button_copy.o: button_copy.c
 triton_icon.o: triton_icon.c
 dockbutton_cat.o: dockbutton_cat.c
 

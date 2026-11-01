@@ -32,6 +32,7 @@
 
 #include <clib/exec_protos.h>
 #include <clib/alib_protos.h>
+#include <clib/dos_protos.h>
 #include <clib/graphics_protos.h>
 #include <clib/timer_protos.h>
 #include <clib/wb_protos.h>
@@ -254,8 +255,7 @@ STATIC BOOL dz_pointer_in(struct DockWindow *dock)
 }
 
 /* Workbench's task. graphics.library only. Always return NULL.
-   Drawing from this hook was a Recoverable Alert (System Request
-   with corrupt text). The hook is not installed. */
+   Do not install this hook: it deadlocks the display. */
 STATIC __SAVE_DS__ __ASM__ ULONG dz_hook(
     __REG__(a0, struct Hook *h),
     __REG__(a2, APTR reserved),
@@ -437,6 +437,7 @@ VOID dz_remove(struct DockWindow *dock)
         dock->dropZoneCount = 0;
         dock->dropValid = FALSE;
         dock->hoverOverDock = FALSE;
+        dock->dwellReady = FALSE;
     }
 }
 
@@ -481,11 +482,12 @@ LONG dz_icon(ULONG id)
 
 VOID dz_add(struct DockWindow *dock)
 {
-    /* AddAppWindowDropZone + hook blit is the Recoverable Alert with
-       corrupt text. AppWindow still accepts drops (AMTYPE_APPWINDOW). */
+    /* A drop-zone hook runs on Workbench's task with the display
+       locked. Even a hook that only stamps the clock deadlocks
+       (corrupt System Request). AppWindow drops stay AMTYPE_APPWINDOW.
+       Dwell is sampled from the dock timer instead. */
     (void)dock;
     DEBUG(DB_Printf("dz_add: no zones\n"));
-    return;
 }
 
 #if 0

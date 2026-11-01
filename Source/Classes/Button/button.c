@@ -26,6 +26,7 @@
 #include "class_def.h"
 
 #include "button.h"
+#include "button_copy.h"
 #include "dockbutton_cat.h"
 #include "applife.h"
 
@@ -649,6 +650,90 @@ STATIC VOID dock_button_activate(Object *o, struct ButtonGadgetData *data,
     data->hbCount = AL_HB_TICKS;
 }
 
+STATIC VOID strip_trailing_slash(STRPTR path)
+{
+    UWORD n;
+
+    if( path == NULL ) {
+        return;
+    }
+    n = 0;
+    while( path[n] ) {
+        n++;
+    }
+    while( n > 1 && path[n - 1] == '/' ) {
+        n--;
+        path[n] = 0;
+    }
+}
+
+STATIC struct DiskObject *load_object_icon(STRPTR path)
+{
+    struct DiskObject *icon;
+    struct TagItem tags[4];
+    LONG error;
+    UBYTE diskPath[40];
+    UWORD n;
+    BOOL isVol;
+
+    icon = NULL;
+    error = 0;
+    isVol = FALSE;
+    n = 0;
+    if( path == NULL || path[0] == 0 ) {
+        return NULL;
+    }
+    while( path[n] ) {
+        n++;
+    }
+    if( n > 0 && path[n - 1] == ':' ) {
+        isVol = TRUE;
+    }
+
+    /* Volume icons live in Disk.info (Work:disk). GetIconTagList("Work:")
+       succeeds with the generic disk image, so try disk first. */
+    if( isVol && n + 4 < sizeof(diskPath) ) {
+        CopyMem(path, diskPath, n);
+        diskPath[n] = 'd';
+        diskPath[n + 1] = 'i';
+        diskPath[n + 2] = 's';
+        diskPath[n + 3] = 'k';
+        diskPath[n + 4] = 0;
+        if( IconBase && IconBase->lib_Version >= 44 ) {
+            tags[0].ti_Tag = ICONGETA_FailIfUnavailable;
+            tags[0].ti_Data = TRUE;
+            tags[1].ti_Tag = ICONGETA_GetPaletteMappedIcon;
+            tags[1].ti_Data = TRUE;
+            tags[2].ti_Tag = ICONA_ErrorCode;
+            tags[2].ti_Data = (ULONG)&error;
+            tags[3].ti_Tag = TAG_DONE;
+            icon = GetIconTagList(diskPath, tags);
+        }
+        if( icon == NULL ) {
+            icon = GetDiskObject(diskPath);
+        }
+        if( icon ) {
+            return icon;
+        }
+    }
+
+    if( IconBase && IconBase->lib_Version >= 44 ) {
+        tags[0].ti_Tag = ICONGETA_GetPaletteMappedIcon;
+        tags[0].ti_Data = TRUE;
+        tags[1].ti_Tag = ICONA_ErrorCode;
+        tags[1].ti_Data = (ULONG)&error;
+        tags[2].ti_Tag = TAG_DONE;
+        icon = GetIconTagList(path, tags);
+    }
+    if( icon == NULL ) {
+        icon = GetDiskObject(path);
+    }
+    if( icon == NULL ) {
+        icon = GetDiskObjectNew(path);
+    }
+    return icon;
+}
+
 VOID load_icon(struct ButtonGadgetData *data, STRPTR path)
 {
     struct Screen *screen;
@@ -660,11 +745,13 @@ VOID load_icon(struct ButtonGadgetData *data, STRPTR path)
         data->diskObj = NULL;
     }
 
-    if( path && (data->diskObj = GetDiskObjectNew(path)) ) {
+    if( path ) {
+        strip_trailing_slash(path);
+    }
+    data->diskObj = load_object_icon(path);
+    if( data->diskObj ) {
         if( screen = LockPubScreen(NULL) ) {
-
             LayoutIconA(data->diskObj, screen, NULL);
-
             UnlockPubScreen(NULL, screen);
         }
     }
@@ -934,7 +1021,11 @@ DB_METHOD_D(CLICK)
 
 DB_METHOD_DM(DROP,DockMessageDrop)
 
-    dock_button_activate(o, data, msg->paths, msg->pathCount);
+    if( button_path_is_drawer(data->path) ) {
+        button_copy_paths(data->path, msg->paths, msg->pathCount);
+    } else {
+        dock_button_activate(o, data, msg->paths, msg->pathCount);
+    }
     flash_button(o, data);
 
     return 1;
@@ -1322,6 +1413,13 @@ DB_METHOD_DM(GETHOTKEY,DockMessageGetHotKey)
 DB_METHOD_DM(GETLABEL,DockMessageGetLabel)
 
     msg->label = data->name;
+
+    return 1;
+}
+
+DB_METHOD_DM(GETPATH,DockMessageGetPath)
+
+    msg->path = data->path;
 
     return 1;
 }

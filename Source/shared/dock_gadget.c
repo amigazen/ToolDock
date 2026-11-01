@@ -235,6 +235,20 @@ VOID dock_gadget_get_label(Object *obj
     *label = msg.label;
 }
 
+VOID dock_gadget_get_path(Object *obj, STRPTR *path)
+{
+    struct DockMessageGetPath msg = {
+        DM_GETPATH,
+        NULL
+    };
+
+    DEBUG(printf(__FUNC__ ": %8x\n", obj));
+
+    DoMethodA(obj, (Msg)&msg);
+
+    *path = msg.path;
+}
+
 BOOL dock_gadget_can_edit(Object *obj)
 {
     struct DockMessageCanEdit msg = {

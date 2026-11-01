@@ -139,6 +139,7 @@ VOID measure_dock_size(struct DockWindow *dock, UWORD *outW, UWORD *outH)
     UWORD max;
     UWORD size;
     UWORD maxSize;
+    UWORD extra;
     struct DgNode *curr;
     struct Screen *screen;
 
@@ -165,19 +166,23 @@ VOID measure_dock_size(struct DockWindow *dock, UWORD *outW, UWORD *outH)
         }
         w += dock->cfg.gadgetPadding * 2;
         h += dock->cfg.gadgetPadding * 2;
+        extra = 0;
+        if( dock_gadget_wants_label(dock, curr->dg) ) {
+            extra = dock_label_band(dock);
+        }
         if( DOCK_HORIZONTAL(dock) ) {
             if( size + w > maxSize ) {
                 break;
             }
             size += w;
-            if( max < h ) {
-                max = h;
+            if( max < h + extra ) {
+                max = h + extra;
             }
         } else {
-            if( size + h > maxSize ) {
+            if( size + h + extra > maxSize ) {
                 break;
             }
-            size += h;
+            size += h + extra;
             if( max < w ) {
                 max = w;
             }
@@ -204,6 +209,7 @@ VOID measure_dock_size(struct DockWindow *dock, UWORD *outW, UWORD *outH)
 VOID layout_gadgets(struct DockWindow *dock)
 {
     UWORD w, h, x = 0, y = 0, i, max, size = 0, maxSize, wx, wy;
+    UWORD extra, iconMax;
     struct DgNode *curr;
     struct Screen *screen;   
     UWORD* sizes;
@@ -252,6 +258,7 @@ VOID layout_gadgets(struct DockWindow *dock)
             if( DOCK_HORIZONTAL(dock) ) {
 
                 i = 0;
+                iconMax = 0;
                 FOR_EACH_GADGET(&dock->cfg.gadgets, curr) {
 
                     dock_gadget_get_size(curr->dg, dock->cfg.pos, dock->cfg.align, &w, &h);
@@ -264,6 +271,10 @@ VOID layout_gadgets(struct DockWindow *dock)
                         
                     w += dock->cfg.gadgetPadding * 2;
                     h += dock->cfg.gadgetPadding * 2;
+                    extra = 0;
+                    if( dock_gadget_wants_label(dock, curr->dg) ) {
+                        extra = dock_label_band(dock);
+                    }
 
                     if( curr == dock->dragNode && dock->runState == RS_REARRANGING ) {
                         sizes[i] = 0;
@@ -275,14 +286,17 @@ VOID layout_gadgets(struct DockWindow *dock)
                         break;
                     }
                                        
-                    max = max < h ? h : max;
+                    if( iconMax < h ) {
+                        iconMax = h;
+                    }
+                    max = max < (h + extra) ? (h + extra) : max;
                     size += w;
                     sizes[i] = w;
                     i++;
                 }
 
                 if( dock->runState == RS_REARRANGING && ! dock->rearrangeFromWB
-                    && dock->gapIndex >= 0 ) {
+                    && dock->gapIndex >= 0 && ! dock->wbVacant ) {
                     size += dock->gapSize;
                 }
              
@@ -320,7 +334,7 @@ VOID layout_gadgets(struct DockWindow *dock)
                     env.isLast = i == gadgetCount - 1;
                     env.gadgetBounds.x = x;
                     env.gadgetBounds.w = sizes[i];
-                    env.gadgetBounds.h = max;
+                    env.gadgetBounds.h = iconMax > 0 ? iconMax : max;
 
                     dock_gadget_set_environment(curr->dg, &env);
                     
@@ -348,6 +362,10 @@ VOID layout_gadgets(struct DockWindow *dock)
 
                     w += dock->cfg.gadgetPadding * 2;
                     h += dock->cfg.gadgetPadding * 2;
+                    extra = 0;
+                    if( dock_gadget_wants_label(dock, curr->dg) ) {
+                        extra = dock_label_band(dock);
+                    }
 
                     if( curr == dock->dragNode && dock->runState == RS_REARRANGING ) {
                         sizes[i] = 0;
@@ -355,18 +373,18 @@ VOID layout_gadgets(struct DockWindow *dock)
                         continue;
                     }
 
-                    if( size + h > maxSize ) {
+                    if( size + h + extra > maxSize ) {
                         break;
                     }                                       
 
                     max = max < w ? w : max;
-                    size += h;
-                    sizes[i] = h;
+                    size += h + extra;
+                    sizes[i] = h + extra;
                     i++;
                 }
 
                 if( dock->runState == RS_REARRANGING && ! dock->rearrangeFromWB
-                    && dock->gapIndex >= 0 ) {
+                    && dock->gapIndex >= 0 && ! dock->wbVacant ) {
                     size += dock->gapSize;
                 }
 
@@ -404,7 +422,12 @@ VOID layout_gadgets(struct DockWindow *dock)
                     env.isLast = i == gadgetCount - 1;
                     env.gadgetBounds.y = y;
                     env.gadgetBounds.w = max;
-                    env.gadgetBounds.h = sizes[i];
+                    dock_gadget_get_size(curr->dg, dock->cfg.pos, dock->cfg.align, &w, &h);
+                    if( h < 1 || h > 128 ) {
+                        h = DEFAULT_SIZE;
+                    }
+                    h += dock->cfg.gadgetPadding * 2;
+                    env.gadgetBounds.h = h;
 
                     dock_gadget_set_environment(curr->dg, &env);
 
@@ -443,10 +466,24 @@ VOID layout_gadgets(struct DockWindow *dock)
                 }
             }
 
+            /* A Workbench drag dies if the window moves or grows. Keep
+               the current box and let the hole push items off the end. */
+            if( dock->wbVacant && dock->win ) {
+                wx = dock->win->LeftEdge;
+                wy = dock->win->TopEdge;
+                x = dock->win->Width;
+                y = dock->win->Height;
+            }
+
             DEBUG(DB_Printf("layout_gadgets: box %ld,%ld %ld x %ld\n",
                 (LONG)wx, (LONG)wy, (LONG)x, (LONG)y));
 
-            if( dock->win
+            dock->layoutX = (WORD)wx;
+            dock->layoutY = (WORD)wy;
+            dock->layoutW = x;
+            dock->layoutH = y;
+
+            if( dock->win && ! dock->wbVacant
                 && (dock->win->LeftEdge != (WORD)wx
                     || dock->win->TopEdge != (WORD)wy
                     || dock->win->Width != x

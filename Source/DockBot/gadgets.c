@@ -18,9 +18,13 @@
 #include <clib/graphics_protos.h>
 
 #include <graphics/gfxmacros.h>
+#include <graphics/text.h>
+#include <intuition/screens.h>
 
 #include "dock_handle.h"
 #include "rearrange.h"
+
+extern struct Library *GfxBase;
 
 BOOL create_dock_handle(struct DockWindow *dock)
 {
@@ -287,6 +291,131 @@ VOID update_entire_window(struct DockWindow *dock)
     EndRefresh(dock->win, TRUE);
 }
 
+STATIC BOOL name_eq(STRPTR a, STRPTR b)
+{
+    if( a == NULL || b == NULL ) {
+        return FALSE;
+    }
+    while( *a || *b ) {
+        if( *a != *b ) {
+            return FALSE;
+        }
+        a++;
+        b++;
+    }
+    return TRUE;
+}
+
+UWORD dock_label_band(struct DockWindow *dock)
+{
+    struct Screen *screen;
+    struct DrawInfo *di;
+    UWORD h;
+
+    h = 10;
+    if( dock == NULL || ! dock->cfg.showGadgetLabels ) {
+        return 0;
+    }
+    if( screen = LockPubScreen(NULL) ) {
+        if( di = GetScreenDrawInfo(screen) ) {
+            if( di->dri_Font ) {
+                h = (UWORD)(di->dri_Font->tf_YSize + 2);
+            }
+            FreeScreenDrawInfo(screen, di);
+        }
+        UnlockPubScreen(NULL, screen);
+    }
+    return h;
+}
+
+BOOL dock_gadget_wants_label(struct DockWindow *dock, Object *gad)
+{
+    STRPTR name;
+    STRPTR version;
+    STRPTR desc;
+    STRPTR copy;
+    STRPTR label;
+
+    if( dock == NULL || gad == NULL || ! dock->cfg.showGadgetLabels ) {
+        return FALSE;
+    }
+    name = NULL;
+    version = NULL;
+    desc = NULL;
+    copy = NULL;
+    dock_gadget_get_info(gad, &name, &version, &desc, &copy);
+    if( name_eq(name, HANDLE_CLASS_NAME) || name_eq(name, DB_SPACER_CLASS) ) {
+        return FALSE;
+    }
+    label = NULL;
+    dock_gadget_get_label(gad, &label);
+    if( label == NULL || label[0] == 0 ) {
+        return FALSE;
+    }
+    if( name_eq(label, name) ) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+VOID draw_gadget_label(struct DockWindow *dock, struct RastPort *rp, Object *gad)
+{
+    struct GadgetEnvironment env;
+    struct Screen *screen;
+    struct DrawInfo *di;
+    struct TextFont *font;
+    STRPTR label;
+    UWORD len;
+    WORD x;
+    WORD y;
+
+    if( rp == NULL || ! dock_gadget_wants_label(dock, gad) ) {
+        return;
+    }
+    label = NULL;
+    dock_gadget_get_label(gad, &label);
+    if( label == NULL || label[0] == 0 ) {
+        return;
+    }
+    TD_GetDockGadgetEnvironment(gad, &env);
+    if( env.gadgetBounds.w < 4 ) {
+        return;
+    }
+    len = 0;
+    while( label[len] ) {
+        len++;
+    }
+    if( screen = LockPubScreen(NULL) ) {
+        if( di = GetScreenDrawInfo(screen) ) {
+            font = di->dri_Font;
+            if( font ) {
+                SetFont(rp, font);
+            }
+            while( len > 1
+                && TextLength(rp, label, len) > env.gadgetBounds.w ) {
+                len--;
+            }
+            x = env.gadgetBounds.x
+                + ((WORD)env.gadgetBounds.w - (WORD)TextLength(rp, label, len)) / 2;
+            if( x < env.gadgetBounds.x ) {
+                x = env.gadgetBounds.x;
+            }
+            y = env.gadgetBounds.y + env.gadgetBounds.h;
+            if( font ) {
+                y = (WORD)(y + font->tf_Baseline + 1);
+            } else {
+                y = (WORD)(y + 8);
+            }
+            SetAPen(rp, di->dri_Pens[TEXTPEN]);
+            SetDrMd(rp, JAM1);
+            Move(rp, x, y);
+            Text(rp, label, len);
+            FreeScreenDrawInfo(screen, di);
+        }
+        UnlockPubScreen(NULL, screen);
+    }
+}
+
 struct Region *clip_to_gadget(struct DockWindow *dock, struct GadgetEnvironment *env)
 {
     struct Region *oldR, *newR;
@@ -390,6 +519,7 @@ VOID draw_gadgets(struct DockWindow *dock)
                 }
 
                 unclip_gadget(dock, region);
+                draw_gadget_label(dock, rp, curr->dg);
             }
         }
         
@@ -444,6 +574,7 @@ VOID draw_gadget(struct DockWindow *dock, Object *gadget)
             }
 
             unclip_gadget(dock, region);
+            draw_gadget_label(dock, rp, gadget);
         }
 
         update_window(dock, env.gadgetBounds.x, env.gadgetBounds.y,

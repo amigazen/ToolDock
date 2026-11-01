@@ -186,6 +186,15 @@ struct DockWindow
     WORD gapIndex;
     UWORD gapSize;
     UWORD dwellCount;
+    ULONG dwellSec;
+    ULONG dwellMicro;
+    BOOL dwellReady;
+    BOOL dwellHold;
+    BOOL wbVacant;
+    WORD layoutX;
+    WORD layoutY;
+    UWORD layoutW;
+    UWORD layoutH;
     BOOL hoverOverDock;
     BOOL rearrangeFromWB;
     BOOL dragArmed;
@@ -356,6 +365,14 @@ ULONG get_custom_sigs(struct DockWindow *dock);
 VOID handle_custom_message(struct DockWindow *dock, ULONG signal);
 
 VOID update_entire_window(struct DockWindow *dock);
+
+UWORD dock_label_band(struct DockWindow *dock);
+
+BOOL dock_gadget_wants_label(struct DockWindow *dock, Object *gad);
+
+VOID draw_gadget_label(struct DockWindow *dock, struct RastPort *rp, Object *gad);
+
+VOID fill_background(struct DockWindow *dock, struct RastPort *rp, struct Rect *b);
 
 // layout.c
 

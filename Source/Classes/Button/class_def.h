@@ -52,6 +52,7 @@
   
 #define METHOD_GETHOTKEY    button_get_hotkey
 #define METHOD_GETLABEL     button_get_label
+#define METHOD_GETPATH      button_get_path
 
 #define METHOD_INITBUTTON   button_init
 #define METHOD_POPUP        button_popup

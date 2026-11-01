@@ -85,6 +85,17 @@ STATIC struct DiskObject *load_open_icon(VOID)
     error = 0;
     if( IconBase && IconBase->lib_Version >= 44 ) {
         tags[0].ti_Tag = ICONGETA_FailIfUnavailable;
+        tags[0].ti_Data = TRUE;
+        tags[1].ti_Tag = ICONA_ErrorCode;
+        tags[1].ti_Data = (ULONG)&error;
+        tags[2].ti_Tag = TAG_DONE;
+        icon = GetIconTagList("SYS:Utilities/MultiView", tags);
+    }
+    if( icon == NULL ) {
+        icon = GetDiskObject("SYS:Utilities/MultiView");
+    }
+    if( icon == NULL && IconBase && IconBase->lib_Version >= 44 ) {
+        tags[0].ti_Tag = ICONGETA_FailIfUnavailable;
         tags[0].ti_Data = FALSE;
         tags[1].ti_Tag = ICONA_ErrorCode;
         tags[1].ti_Data = (ULONG)&error;

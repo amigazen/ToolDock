@@ -64,6 +64,7 @@ VOID geta4(VOID);
   
 //#define METHOD_GETHOTKEY
 //#define METHOD_GETLABEL
+//#define METHOD_GETPATH
 
 //#define METHOD_LAUNCHED
 
